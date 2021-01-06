@@ -1,0 +1,77 @@
+{
+	"name": "ue4-intellisense-fixes",
+	"displayName": "UE4 Intellisense Fixes",
+	"description": "Automatically fixes UE4 Intellisense on startup.",
+	"version": "0.8.0",
+	"publisher": "boocs",
+	"license": "SEE LICENSE IN THE FILE LICENSE",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/boocs/ue4-intellisense-fixes"
+	},
+	"bugs": {
+		"url": "https://github.com/boocs/ue4-intellisense-fixes/issues"
+	},
+	"engines": {
+		"vscode": "^1.52.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "UE4 Intellisense fixes",
+			"properties": {
+				"UE4IntellisenseFixes.v426.fix.enableNoCompiler" :{
+					"type": "boolean",
+					"description": "(major) In compileCommands_YourProject.json, the compiler is left blank and breaks Intellisense.",
+					"default": false,
+					"scope": "application"
+				},
+				"UE4IntellisenseFixes.v426.fix.enableWrongProject" :{
+					"type": "boolean",
+					"description": "(median) When switching to another already created project, UE4's c_cpp_properties.json will have the wrong compileCommands path and name.",
+					"default": false,
+					"scope": "application"
+				},
+				"UE4IntellisenseFixes.v426.fix.enableUE4Source" :{
+					"type": "boolean",
+					"description": "(minor) UE4 Source files aren't in compileCommands so we need to setup backup Intellisense settings to prevent errors from showing in UE4 Source files.",
+					"default": false,
+					"scope": "application"
+				},
+				"UE4IntellisenseFixes.v426.pathSubstring" :{
+					"type": "string",
+					"description": "Don't change unless this extension can't identify your UE4 version. Use a small unique substring of your UE4 4.26 path.",
+					"default": "UE_4.26",
+					"scope": "application"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.52.0",
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.4",
+		"@types/node": "^12.11.7",
+		"eslint": "^7.15.0",
+		"@typescript-eslint/eslint-plugin": "^4.9.0",
+		"@typescript-eslint/parser": "^4.9.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.1.3",
+		"typescript": "^4.1.2",
+		"vscode-test": "^1.4.1"
+	}
+}
