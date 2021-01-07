@@ -2,12 +2,12 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE4 Intellisense Fixes",
 	"description": "Automatically fixes UE4 Intellisense on startup.",
-	"version": "0.8.0",
+	"version": "0.8.1",
 	"publisher": "boocs",
-	"license": "SEE LICENSE IN THE FILE LICENSE",
+	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/boocs/ue4-intellisense-fixes"
+		"url": "https://github.com/boocs/ue4-intellisense-fixes.git"
 	},
 	"bugs": {
 		"url": "https://github.com/boocs/ue4-intellisense-fixes/issues"
@@ -19,7 +19,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onStartupFinished"
+		"workspaceContains:*.uproject"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

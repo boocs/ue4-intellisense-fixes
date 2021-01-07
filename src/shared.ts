@@ -105,7 +105,15 @@ export function getUE4Path() :string {
  * @todo Can exclude pattern work somehow to filter out ue4 folder? This function still works with alternate exclude using filter.
  */
 export async function getUProjectFiles(excludeUE4: boolean = true) : Promise<vscode.Uri[] | undefined> {
-    let uprojectFiles = await vscode.workspace.findFiles(consts.GLOB_ANY_UPROJECT_IN_TOPLEVEL);
+
+    let uprojectFiles;
+    try{
+        uprojectFiles = await vscode.workspace.findFiles(consts.GLOB_ANY_UPROJECT_IN_TOPLEVEL);
+    }
+    catch{
+        console.error("Error finding uproject files in GetUprojectFiles()");
+        return;
+    }
 
     if (!uprojectFiles?.length){
         console.error("No uproject files found.");
@@ -118,9 +126,13 @@ export async function getUProjectFiles(excludeUE4: boolean = true) : Promise<vsc
             return;
         }
 
-        uprojectFiles = await Promise.all( uprojectFiles.filter( uri => {
-            return !uri.fsPath.includes(ue4WorkspaceFolder.uri.fsPath);
-        }));
+        try{
+            uprojectFiles = await Promise.all( uprojectFiles.filter( uri => { return !uri.fsPath.includes(ue4WorkspaceFolder.uri.fsPath); }));
+        }
+        catch(error){
+            console.error("Error filtering uproject files in GetUProjectFiles(): (exclude UE4).");
+            return;
+        }
     }
     
     return uprojectFiles;    
@@ -156,7 +168,15 @@ export async function findVSCodeFolderFiles(workspaceFolder: vscode.WorkspaceFol
 
     const glob = `.vscode/${globFilename}`;
     const include = !workspaceFolder ? glob : new vscode.RelativePattern( workspaceFolder, glob);
-    const foundFiles = await vscode.workspace.findFiles(include);
+
+    let foundFiles;
+    try {
+        foundFiles = await vscode.workspace.findFiles(include);
+    }
+    catch(error){
+        console.error(`Error finding ${globFilename} with findVSCodeFolderFiles()`);
+        return;
+    }
 
     if (!foundFiles?.length){
         console.log(`Couldn't find files in .vscode folder with glob: ${glob}`);

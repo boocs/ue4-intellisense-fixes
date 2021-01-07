@@ -22,13 +22,15 @@ async function activate(context) {
     }
     else if (ue4Version === 2 /* v425 */) {
         console.log("Detected UE4 4.25 project.\n");
-        console.log("No Fixes available yet.\n"); // @todo
+        console.log("No Fixes available yet."); // @todo
     }
     console.log("\nExtension is done.");
 }
 exports.activate = activate;
 function deactivate() {
-    console.outputChannel.dispose();
+    if (console.outputChannel) {
+        console.outputChannel.dispose();
+    }
 }
 exports.deactivate = deactivate;
 async function getUE4Version() {
@@ -39,7 +41,7 @@ async function getUE4Version() {
     const scopeMainWorkspace = await shared_1.getUE4ProjectsMainWorkspace();
     const extensionSettings = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION, scopeMainWorkspace);
     const ue4Versions = new Map([
-        [2 /* v425 */, undefined],
+        [2 /* v425 */, "UE_4.25"],
         [1 /* v426 */, extensionSettings.get(consts.CONFIG_SETTING_426_PATH_SUBSTRING, consts.UE4_426_DIR_FOLDER_NAME)]
     ]);
     const result = Array.from(ue4Versions.keys()).find(key => {

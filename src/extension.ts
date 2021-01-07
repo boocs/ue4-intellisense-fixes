@@ -15,7 +15,7 @@ import * as console from './console';
 export async function activate(context: vscode.ExtensionContext) {
 
 	console.log('Extension "UE4 Intellisense Fixes" is now active!');
-
+	
 	const ue4Version = await getUE4Version();
 	
 	if(ue4Version === UE4Version.none){
@@ -29,14 +29,17 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 	else if(ue4Version === UE4Version.v425){
 		console.log("Detected UE4 4.25 project.\n");
-		console.log ("No Fixes available yet.\n"); // @todo
+		console.log ("No Fixes available yet."); // @todo
 	}
 	
 	console.log("\nExtension is done.");
 }
 
+
 export function deactivate() {
-	console.outputChannel.dispose();
+	if(console.outputChannel) {
+		console.outputChannel.dispose();
+	}
 }
 
 
@@ -51,7 +54,7 @@ async function getUE4Version() : Promise<UE4Version> {
 	const extensionSettings = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION, scopeMainWorkspace);
 	
 	const ue4Versions = new Map<UE4Version.v425 | UE4Version.v426, string | undefined >  ([ 
-		[UE4Version.v425, undefined],  // @todo
+		[UE4Version.v425, "UE_4.25"],  // @todo
 		[UE4Version.v426, extensionSettings.get<string>(consts.CONFIG_SETTING_426_PATH_SUBSTRING, consts.UE4_426_DIR_FOLDER_NAME)]
 	]);
 	

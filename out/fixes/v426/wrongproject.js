@@ -25,12 +25,11 @@ async function fixWrongProject(outCCppProperties) {
 exports.fixWrongProject = fixWrongProject;
 async function fixCompileCommandPath(outCCppConfig) {
     const uprojectName = await shared.getProjectsUProjectName();
-    // @todo Set name as well? 
     const correctedPath = await getCorrectCompileCommandPath(uprojectName, outCCppConfig.compileCommands);
     if (!correctedPath) {
         return;
     }
-    console.log("Changing config's path.");
+    console.log("Fixing config's path.");
     outCCppConfig.compileCommands = correctedPath;
 }
 async function fixName(outCCppConfig) {
@@ -40,8 +39,15 @@ async function fixName(outCCppConfig) {
         console.error("Couldn't find main workspace's c_cpp_properties.json.");
         return;
     }
-    // First file found
-    const mainCCppProperties = JSON.parse(await shared.readJsonStringFromFile(mainCCppPropertiesFiles[0].fsPath));
+    let mainCCppProperties;
+    try {
+        // First file found
+        mainCCppProperties = JSON.parse(await shared.readJsonStringFromFile(mainCCppPropertiesFiles[0].fsPath));
+    }
+    catch (error) {
+        console.error(`Error(${error.code}): Tried to parse malformed json file.`);
+        return;
+    }
     // First config
     const mainCCppConfigName = (_b = (_a = mainCCppProperties === null || mainCCppProperties === void 0 ? void 0 : mainCCppProperties.configurations) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.name;
     if (!mainCCppConfigName) {
@@ -76,7 +82,14 @@ async function getCorrectCompileCommandPath(uprojectName, compileCommandsPath) {
         return "";
     }
     const relativePattern = new vscode.RelativePattern(ue4WorkspaceFolder, shared.getGlobCompileCommandFiles(uprojectName));
-    const projectCompileCommandFile = await vscode.workspace.findFiles(relativePattern, undefined, 1);
+    let projectCompileCommandFile;
+    try {
+        projectCompileCommandFile = await vscode.workspace.findFiles(relativePattern, undefined, 1);
+    }
+    catch (error) {
+        console.error(`Error(${error.code}): finding files in getCorrectCompileCommandPath()`);
+        return "";
+    }
     if (!(projectCompileCommandFile === null || projectCompileCommandFile === void 0 ? void 0 : projectCompileCommandFile.length)) {
         console.error("No project's compile command file found in UE4's .vscode folder.");
         return "";

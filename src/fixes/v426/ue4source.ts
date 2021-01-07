@@ -83,6 +83,10 @@ async function fixForcedInclude(outCCppConfig: CCppConfiguration) {
     ];
 }
 
+
+/**
+ * Get the path to the definitions file needed for forcedInclude setting
+ */
 async function getForcedPath() : Promise<string | undefined> {
     const mainWorkspace = await shared.getUE4ProjectsMainWorkspace();
     if (!mainWorkspace){
@@ -90,8 +94,15 @@ async function getForcedPath() : Promise<string | undefined> {
     }
 
     const relPatern = new vscode.RelativePattern(mainWorkspace, consts.GLOB_DEFINITIONS_FILES);
-    const definitionFiles = await vscode.workspace.findFiles(relPatern);
-
+    let definitionFiles;
+    try{
+        definitionFiles = await vscode.workspace.findFiles(relPatern);
+    }
+    catch(error){
+        console.error(`Error(${error.code}: finding files in getForcedPath().`);
+        return;
+    }
+    
     if (!definitionFiles.length) {
         return;
     }
