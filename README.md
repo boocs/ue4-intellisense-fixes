@@ -1,6 +1,6 @@
-### UE4 Intellisense Fix Readme
+### VSCode/UE4 Intellisense Fix
 
-Extension now supports Unreal Engine v4.25 and v4.26.
+VSCode Extension now supports Unreal Engine v4.25 and v4.26.
 
 Feel free to comment:
 
