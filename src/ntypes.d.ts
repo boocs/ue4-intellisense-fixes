@@ -16,6 +16,7 @@ export type CCppConfiguration = {
 	browse?: {
 		path?: string[];
 	}
+	defines?: string[]
 };
 
 export type CCppProperties = {

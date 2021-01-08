@@ -1,7 +1,10 @@
 
 ## [Unreleased]
 
-- add 4.25 support
+## [0.9.0] 2021-1-7
+
+- added 4.25 support
+- added better logging if fix isn't enabled
 
 ## [0.8.1] 2021-1-6
 

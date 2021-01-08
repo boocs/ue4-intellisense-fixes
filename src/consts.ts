@@ -13,6 +13,9 @@ export const CONFIG_SETTING_426_FIX_NO_COMPILER = "v426.fix.enableNoCompiler";
 export const CONFIG_SETTING_426_FIX_UE4_SOURCE = "v426.fix.enableUE4Source";
 export const CONFIG_SETTING_426_PATH_SUBSTRING = "v426.pathSubstring";
 
+export const CONFIG_SETTING_425_FIX_NO_DEFINES = "v425.fix.enableNoDefines";
+export const CONFIG_SETTING_425_PATH_SUBSTRING = "v425.pathSubstring";
+
 export const CONFIG_SETTING_DEFAULT_INCLUDE_PATH = "default.includePath";
 export const CONFIG_SETTING_DEFAULT_BROWSE_PATH = "default.browse.path";
 export const CONFIG_SETTING_DEFAULT_FORCED_INCLUDE = "default.forcedInclude";
@@ -36,6 +39,8 @@ export const GLOB_VSCODE_FOLDER = ".vscode/";
 export const GLOB_C_CPP_PROPERTIES_FILENAME = "c_cpp_properties.json";
 export const GLOB_ANY_UPROJECT_IN_TOPLEVEL = "*.uproject";
 export const GLOB_DEFINITIONS_FILES = "Intermediate/Build/**/Definitions.*.h";
+
+export const QUICK_CHECKER_DEFINITIONS_FILE = "Definitions.";
 
 export const UE4_BUILD_CONFIGURATION_DEVELOPMENT = "Development";
 

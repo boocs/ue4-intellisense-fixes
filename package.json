@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE4 Intellisense Fixes",
 	"description": "Automatically fixes UE4 Intellisense on startup.",
-	"version": "0.8.1",
+	"version": "0.9.0",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
@@ -26,28 +26,40 @@
 		"configuration": {
 			"title": "UE4 Intellisense fixes",
 			"properties": {
-				"UE4IntellisenseFixes.v426.fix.enableNoCompiler" :{
+				"UE4IntellisenseFixes.v426.fix.enableNoCompiler": {
 					"type": "boolean",
 					"description": "(major) In compileCommands_YourProject.json, the compiler is left blank and breaks Intellisense.",
 					"default": false,
 					"scope": "application"
 				},
-				"UE4IntellisenseFixes.v426.fix.enableWrongProject" :{
+				"UE4IntellisenseFixes.v426.fix.enableWrongProject": {
 					"type": "boolean",
 					"description": "(median) When switching to another already created project, UE4's c_cpp_properties.json will have the wrong compileCommands path and name.",
 					"default": false,
 					"scope": "application"
 				},
-				"UE4IntellisenseFixes.v426.fix.enableUE4Source" :{
+				"UE4IntellisenseFixes.v426.fix.enableUE4Source": {
 					"type": "boolean",
 					"description": "(minor) UE4 Source files aren't in compileCommands so we need to setup backup Intellisense settings to prevent errors from showing in UE4 Source files.",
 					"default": false,
 					"scope": "application"
 				},
-				"UE4IntellisenseFixes.v426.pathSubstring" :{
+				"UE4IntellisenseFixes.v426.pathSubstring": {
 					"type": "string",
-					"description": "Don't change unless this extension can't identify your UE4 version. Use a small unique substring of your UE4 4.26 path.",
+					"description": "Don't change unless this extension can't identify your UE4 version. Use a small unique substring of your UE 4.26 path.",
 					"default": "UE_4.26",
+					"scope": "application"
+				},
+				"UE4IntellisenseFixes.v425.fix.enableNoDefines": {
+					"type": "boolean",
+					"description": "(major) Defines aren't being set resulting in Intellisense errors.",
+					"default": false,
+					"scope": "application"
+				},
+				"UE4IntellisenseFixes.v425.pathSubstring": {
+					"type": "string",
+					"description": "Don't change unless this extension can't identify your UE4 version. Use a small unique substring of your UE 4.25 path.",
+					"default": "UE_4.25",
 					"scope": "application"
 				}
 			}
