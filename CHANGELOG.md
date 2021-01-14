@@ -1,5 +1,11 @@
 
 ## [Unreleased]
+- add backup Intellisense for Main Project folder
+    - Breaking change (Removes a setting and adds one)
+- add converter option 4.26 to 4.25 Intellisense
+- add temp statusbar indicator that links to logs
+- code: Changed Model class to a more specific class dealing with c_cpp_properties
+- code: Fixed getUE4Folder returning wrong value
 
 ## [0.9.0] 2021-1-7
 
