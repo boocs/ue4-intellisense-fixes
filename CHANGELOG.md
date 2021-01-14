@@ -1,5 +1,7 @@
 
 ## [Unreleased]
+
+- add a 4.25 fix that halves the tag parser cache size
 - add backup Intellisense for Main Project folder
     - Breaking change (Removes a setting and adds one)
 - add converter option 4.26 to 4.25 Intellisense
