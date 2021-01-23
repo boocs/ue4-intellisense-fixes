@@ -1,0 +1,15 @@
+
+async await with fs.readFile
+https://stackoverflow.com/questions/46867517/how-to-read-file-with-async-await-properly/46867579
+
+async with array map
+https://stackoverflow.com/questions/40140149/use-async-await-with-array-map
+
+extends keyof
+https://www.typescriptlang.org/docs/handbook/generics.html
+
+regex
+https://regex101.com/
+
+Split flags from re
+https://stackoverflow.com/questions/5555518/split-variable-from-last-slash-jquery
