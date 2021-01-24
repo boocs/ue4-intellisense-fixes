@@ -1,3 +1,7 @@
+## [0.9.6] 2021-1-23
+- Removed General Paths option
+   - Caused some Intellisense errors in certain files
+   - Shouldn't affect any fix since this setting was optional
 
 ## [0.9.5] 2021-1-23
 
@@ -31,8 +35,9 @@
 
 - Added support for Unreal Engine 4.26
 
-## [TODO]
+### [TODO]
+- Fix General Paths
 
-## [FUTURE]
+### [FUTURE]
 - Add tests... I only just started learning tests in python before starting Unreal Engine stuff again.
   I do see how needed they are, even with this small project. Maybe another extension.

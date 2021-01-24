@@ -86,7 +86,7 @@ async function fixUE4Project426(ue4Version) {
     const extensionSettings = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION, mainWorkspaceFolder);
     const isCompileCommandsFixEnabled = extensionSettings.get(consts.CONFIG_SETTING_426_ENABLE_COMPILE_COMMANDS_FIX);
     const isConverterFixEnabled = extensionSettings.get(consts.CONFIG_SETTING_426_ENABLE_CONVERTER_FIX);
-    const isGeneralIncludesEnabled = extensionSettings.get(consts.CONFIG_SETTING_426_ENABLE_GENERIC_INC);
+    const isGeneralIncludesEnabled = false; //extensionSettings.get<boolean>(consts.CONFIG_SETTING_426_ENABLE_GENERIC_INC, false);
     if (!isCompileCommandsFixEnabled && !isConverterFixEnabled) {
         console.log("*** No Fixes Enabled ***\n");
         return;

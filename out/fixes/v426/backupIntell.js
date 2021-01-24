@@ -39,7 +39,7 @@ async function fixBackup(outMainCCppProperties, outUE4CCppProperties, mainCompil
     let ccAllPaths = undefined;
     let ccUE4Paths = undefined;
     // Parse includes from compile commands
-    const isGeneralIncludesEnabled = extensionSettings.get(consts.CONFIG_SETTING_426_ENABLE_GENERIC_INC);
+    const isGeneralIncludesEnabled = false; //extensionSettings.get<boolean>(consts.CONFIG_SETTING_426_ENABLE_GENERIC_INC, false);
     if (!isGeneralIncludesEnabled) {
         const reStringParseIncludePaths = extensionSettings.get(consts.CONFIG_SETTING_426_INCLUDES_REGEX, consts.RE_COMPILE_COMMAND_INCLUDE_PATHS);
         const regExpAllIncludes = shared.getRegExp(reStringParseIncludePaths);

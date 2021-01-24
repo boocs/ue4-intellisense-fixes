@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE4 Intellisense Fixes",
 	"description": "Automatically fixes UE4 Intellisense on startup.",
-	"version": "0.9.5",
+	"version": "0.9.6",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
@@ -48,12 +48,6 @@
 					"type": "string",
 					"markdownDescription": "*(Don't change unless this extension can't identify your UE4 version.)* Use a small unique substring of your UE 4.25 path.",
 					"default": "UE_4.25",
-					"scope": "application"
-				},
-				"UE4IntellisenseFixes.v426.enableGeneralIncludes" : {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "Forces includePath setting to only contain UE4 Source and Intermediate folders instead of parsing compile command file for specific paths. Intellisense might be slower.",
 					"scope": "application"
 				},
 				"UE4IntellisenseFixes.v426.includesRegex" : {

@@ -111,7 +111,7 @@ async function fixUE4Project426(ue4Version: UE4Version) {
 
 	const isCompileCommandsFixEnabled = extensionSettings.get<boolean>(consts.CONFIG_SETTING_426_ENABLE_COMPILE_COMMANDS_FIX);
 	const isConverterFixEnabled = extensionSettings.get<boolean>(consts.CONFIG_SETTING_426_ENABLE_CONVERTER_FIX);
-	const isGeneralIncludesEnabled = extensionSettings.get<boolean>(consts.CONFIG_SETTING_426_ENABLE_GENERIC_INC);
+	const isGeneralIncludesEnabled = false; //extensionSettings.get<boolean>(consts.CONFIG_SETTING_426_ENABLE_GENERIC_INC, false);
 
 	if (!isCompileCommandsFixEnabled && !isConverterFixEnabled) {
 		console.log("*** No Fixes Enabled ***\n");
