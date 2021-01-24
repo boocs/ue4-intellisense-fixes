@@ -4,14 +4,14 @@ VSCode Extension now supports Unreal Engine v4.25 and v4.26.
 
 ## 2021-23-1
 
-#### 0.9.6 Bugs
-Bug found with the General Paths settings
-It's removed for now.
+### 0.9.6 Bug Fix
+Bug found with the General Paths settings so it's removed for now.
 
-**This settings is an optional setting**
+**This settings was optional**
 
 No fixes will be affected
 
+---
 #### Big Update 0.9.5 is out now
 - Tag Parser improvements
 - Universal general UE4 c_cpp_properties.json
