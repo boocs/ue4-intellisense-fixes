@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE4 Intellisense Fixes",
 	"description": "Automatically fixes UE4 Intellisense on startup.",
-	"version": "0.9.6",
+	"version": "1.0.0",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
@@ -26,47 +26,27 @@
 		"configuration": {
 			"title": "UE4 Intellisense fixes",
 			"properties": {
-				"UE4IntellisenseFixes.v426.compileCommands.enableFix": {
+				"UE4IntellisenseFixes.enableFixes": {
 					"type": "boolean",
-					"markdownDescription": "`(Fix)` Fixes No Compiler, Invalid Paths, and Backup Intellisense.",
+					"markdownDescription": "`(Fix)` Fixes 4.25.* and 4.26.1+ VSCode project's configuration.",
 					"default": false,
 					"scope": "application"
 				},
-				"UE4IntellisenseFixes.v426.pathSubstring": {
-					"type": "string",
-					"markdownDescription": "*(Don't change unless this extension can't identify your UE4 version.)* Use a small unique substring of your UE 4.26 path.",
-					"default": "UE_4.26",
-					"scope": "application"
-				},
-				"UE4IntellisenseFixes.v425.enableFix": {
+				"UE4IntellisenseFixes.enableOptionalFixes": {
 					"type": "boolean",
-					"markdownDescription": "`(Fix)` Fixes No Defines and improves Tag Parser performace.",
+					"markdownDescription": "`(Optimization)` Removes project specific references from the UE4 workspace and adds general Intellisense to the UE4 source code.",
 					"default": false,
 					"scope": "application"
 				},
-				"UE4IntellisenseFixes.v425.pathSubstring": {
+				"UE4IntellisenseFixes.cppStandard": {
 					"type": "string",
-					"markdownDescription": "*(Don't change unless this extension can't identify your UE4 version.)* Use a small unique substring of your UE 4.25 path.",
-					"default": "UE_4.25",
-					"scope": "application"
-				},
-				"UE4IntellisenseFixes.v426.includesRegex" : {
-					"type": "string",
-					"default": "(?<=-[IF]\")(.*?)(?=\")/gm",
-					"markdownDescription": "Regex to parse include paths from compileCommands files. Pattern: \"Regex/Flags\" The / is required but Flags aren't. *(Only change if it can't parse paths correctly. `GCC/Clang:` may be affected.)*",
-					"scope": "application"
-				},
-				"UE4IntellisenseFixes.v426.forcedRegex" : {
-					"type": "string",
-					"default": "(?<=-include \")(.*?)(?=\")/gm",
-					"markdownDescription": "Regex to parse forced include file paths from compileCommands files. Pattern: \"Regex/Flags\" The / is required but Flags aren't. *(Only change if it can't parse paths correctly. `GCC/Clang:` may be affected.)*",
-					"scope": "application"
-				},
-				"UE4IntellisenseFixes.v426.converter.enableFix" : {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "`(Alternate)` Converts back to old way of doing Intellisense instead of using compile commands. `(Will override Compile Command's Fix)`",
-					"scope": "application"
+					"default": "c++14",
+					"enum": ["c++14", "c++17", ""],
+					"enumDescriptions": [
+						"Sets Intellisense to UE4's default C++ version.",
+						"The full UE4 source code has the ability to be compiled to c++17.",
+						"Extension doesn't set the cppStandard setting."
+					]
 				}
 			}
 		}

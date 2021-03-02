@@ -13,3 +13,8 @@ https://regex101.com/
 
 Split flags from re
 https://stackoverflow.com/questions/5555518/split-variable-from-last-slash-jquery
+
+remove quotes
+https://stackoverflow.com/questions/2608665/how-can-i-trim-beginning-and-ending-double-quotes-from-a-string
+
+

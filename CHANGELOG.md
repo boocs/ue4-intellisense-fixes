@@ -1,3 +1,15 @@
+### [TODO]
+- n/a
+
+## [1.0.0] 2020-3-2
+- Added 4.26.1 support and removed 4.26.0 support
+- 4.26.1+ now adds missing source/header files to compile commands.
+- Added fix for wrong cppStandard setting.
+- Changed invalid paths to fix response file instead of compile commands.
+- Simplified settings.
+- code: Major rewrite using classes and cleaner code.
+- code: Fixed creating RegExp from string if there were no flags set
+
 ## [0.9.6] 2021-1-23
 - Removed General Paths option
    - Caused some Intellisense errors in certain files
@@ -34,9 +46,6 @@
 ## [0.8.0] 2021-1-6
 
 - Added support for Unreal Engine 4.26
-
-### [TODO]
-- Fix General Paths
 
 ### [FUTURE]
 - Add tests... I only just started learning tests in python before starting Unreal Engine stuff again.

@@ -14,7 +14,7 @@ function log(message) {
 exports.log = log;
 function error(message) {
     console.error(message);
-    exports.outputChannel.appendLine("*** Error ***: ".concat(message));
+    exports.outputChannel.appendLine("** Error **: ".concat(message));
     exports.outputChannel.show();
 }
 exports.error = error;

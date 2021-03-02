@@ -8,26 +8,15 @@ export const UE4_426_DIR_FOLDER_NAME = "UE_4.26";
 export const UE4_425_DIR_FOLDER_NAME = "UE_4.25";
 
 export const CONFIG_SECTION_EXTENSION = "UE4IntellisenseFixes";
-export const CONFIG_SECTION_C_CPP = "C_Cpp";
 
-
-export const CONFIG_SETTING_426_ENABLE_COMPILE_COMMANDS_FIX = "v426.compileCommands.enableFix";
-
-export const CONFIG_SETTING_426_ENABLE_GENERIC_INC = "v426.enableGeneralIncludes"; 
-export const CONFIG_SETTING_426_INCLUDES_REGEX = "v426.includesRegex";
-export const CONFIG_SETTING_426_FORCED_REGEX = "v426.forcedRegex";
-
-
-export const CONFIG_SETTING_426_PATH_SUBSTRING = "v426.pathSubstring";
-export const CONFIG_SETTING_426_ENABLE_CONVERTER_FIX = "v426.converter.enableFix";
-
-
-export const CONFIG_SETTING_425_ENABLE_FIX = "v425.enableFix";
-export const CONFIG_SETTING_425_PATH_SUBSTRING = "v425.pathSubstring";
+export const CONFIG_SETTING_ENABLE_FIXES = "enableFixes";
+export const CONFIG_SETTING_ENABLE_OPTIONAL_FIXES = "enableOptionalFixes"; 
 
 export const CONFIG_SETTING_DEFAULT_INCLUDE_PATH = "default.includePath";
 export const CONFIG_SETTING_DEFAULT_BROWSE_PATH = "default.browse.path";
 export const CONFIG_SETTING_DEFAULT_FORCED_INCLUDE = "default.forcedInclude";
+
+export const CONFIG_SETTING_LIMIT_SYMBOLS_TO_INCLUDED_HEADERS = "default.browse.limitSymbolsToIncludedHeaders";
 
 export const VSCODE_SPECIAL_VAR_DEFAULT = "${default}";
 
@@ -69,7 +58,7 @@ export const MAIN_STATUS_TEXT_DONE = "IF $(check)";
 export const MAIN_STATUS_ALIGN = vscode.StatusBarAlignment.Left;
 export const MAIN_STATUS_PRIORITY = -1500;
 export const MAIN_STATUS_COMMAND = "UE4IntellisenseFixes.showLog";
-export const MAIN_STATUS_LIFE = 30000;
+export const MAIN_STATUS_LIFE = 120000;
 
 export const RE_SEPARATOR = "/";
 export const RE_COMPILE_COMMAND_INCLUDE_PATHS = `(?<=-[IF]\")(.*?)(?=\")${RE_SEPARATOR}gm`;
@@ -83,3 +72,10 @@ export const RE_COMPILE_COMMAND_RELIABILITY_BAD_PATH = "(?<=[\\\\|\\/])Reliabili
 
 export const REPLACEMENT_NAME_INC_TO_DEVELOPEMENT = "Development";
 export const REPLACEMENT_NAME_RELIABILITY_TO_RELIABLE = "ReliableHComp";
+
+export const UE4_SOURCE_ENCODING = "utf-8";
+export const GLOB_UE4_SOURCE_FILE_VERSION_H = "Engine/Source/Runtime/Launch/Resources/Version.h";
+export const RE_UE4_VERSION = "(?<=#define\\sENGINE_(?:MAJOR|MINOR|PATCH)_VERSION\\s)\\d+";
+
+export const MAIN_WORKSPACE_SOURCE_DIRECTORY_NAME = "Source";
+export const GLOB_ALL_HEADERS_AND_SOURCE_FILES = "**/*.{h,hpp,hh,HPP,c,cpp,cc,CPP}";

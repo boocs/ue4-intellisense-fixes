@@ -1,13 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRegExp = exports.delay = exports.isEqualPaths = exports.getUE4ProjectsMainWorkspace = exports.getProjectsUProjectPath = exports.findVSCodeFolderFiles = exports.getProjectsUProjectName = exports.getUProjectFiles = exports.getUE4Path = exports.getUE4WorkspaceFolder = exports.createGlobCompileCommandFileName = exports.jsonParseSafe = exports.writeJsonToFile = exports.readJsonStringFromFile = void 0;
+exports.createRegExpFrom = exports.delay = exports.isEqualPaths = exports.findVSCodeFolderFiles = exports.createGlobCompileCommandFileName = exports.jsonParseSafe = exports.writeJsonToFileSync = exports.writeJsonToFile = exports.readStringFromFileSync = exports.readStringFromFile = void 0;
+const vscode = require("vscode");
 const path = require("path");
 const fs_1 = require("fs");
-const vscode = require("vscode");
+const fsSync = require("fs");
 const consts = require("./consts");
 const text = require("./text");
 const console = require("./console");
 /**
+ * Asynchronously reads string from file
+ *
  * @param path
  * @param encoding Default 'utf-8'
  *
@@ -15,22 +18,42 @@ const console = require("./console");
  *
  * @logs console.error Error.code
  */
-async function readJsonStringFromFile(path, encoding = consts.ENCODING_UTF_8) {
+async function readStringFromFile(path, encoding = consts.ENCODING_UTF_8) {
     try {
         return await fs_1.promises.readFile(path, encoding);
     }
     catch (error) {
         console.error(`Error reading ${path}. Message: ${error.message}; Reason: ${error.code}`);
-        return "";
+        return undefined;
     }
 }
-exports.readJsonStringFromFile = readJsonStringFromFile;
+exports.readStringFromFile = readStringFromFile;
 /**
+ * Synchronously reads string from file
+ *
+ * @param path
+ * @param encoding Default 'utf-8'
+ *
+ * @returns returns undefined on failure
+ *
+ * @logs console.error Error.code
+ */
+function readStringFromFileSync(path, encoding = consts.ENCODING_UTF_8) {
+    try {
+        return fsSync.readFileSync(path, encoding);
+    }
+    catch (error) {
+        console.error(`Error reading ${path}. Message: ${error.message}; Reason: ${error.code}`);
+        return undefined;
+    }
+}
+exports.readStringFromFileSync = readStringFromFileSync;
+/**
+ * Asynchronously write json to file
+ *
  * @param path
  * @param data Any data except string will use JSON.stringify
  * @param encoding Default 'utf-8'
- * @returns true on success and undefined on failure
- *
  * @logs console.error Error.code
  */
 async function writeJsonToFile(path, data, encoding = consts.ENCODING_UTF_8, spacing = consts.JSON_SPACING) {
@@ -46,7 +69,26 @@ async function writeJsonToFile(path, data, encoding = consts.ENCODING_UTF_8, spa
 }
 exports.writeJsonToFile = writeJsonToFile;
 /**
- * For when we first parse outside data. Unneeded after since we'd want it to throw exceptions on our code
+ * Synchronously write json to file
+ *
+ * @param path
+ * @param data Any data except string will use JSON.stringify
+ * @param encoding Default 'utf-8'
+ * @logs console.error Error.code
+ */
+function writeJsonToFileSync(path, data, encoding = consts.ENCODING_UTF_8, spacing = consts.JSON_SPACING) {
+    try {
+        const writeData = typeof data === "string" ? data : JSON.stringify(data, undefined, spacing);
+        fsSync.writeFileSync(path, writeData, encoding);
+    }
+    catch (error) {
+        console.error(`Error writing json file. Message: ${error.message}; Reason: ${error.code}`);
+        return;
+    }
+}
+exports.writeJsonToFileSync = writeJsonToFileSync;
+/**
+ * For when we first parse outside data.
  * @param data
  * @returns undefined on error
  * @logs console.error
@@ -70,80 +112,6 @@ function createGlobCompileCommandFileName(nameSuffix = "*") {
     return `compileCommands_${nameSuffix}.json`;
 }
 exports.createGlobCompileCommandFileName = createGlobCompileCommandFileName;
-/**
- * @returns If not valid vscode.WorkspaceFolder, returns undefined
- * @logs If can't find workspace.
- */
-function getUE4WorkspaceFolder() {
-    var _a;
-    const ue4Workspace = (_a = vscode.workspace.workspaceFolders) === null || _a === void 0 ? void 0 : _a.find(workspaceFolder => {
-        return workspaceFolder.name === consts.WORKSPACE_FOLDER_NAME_UE4;
-    });
-    if (!ue4Workspace) {
-        console.log("Couldn't find a UE4 workspace.");
-        return;
-    }
-    return ue4Workspace;
-}
-exports.getUE4WorkspaceFolder = getUE4WorkspaceFolder;
-function getUE4Path() {
-    var _a;
-    const ue4WorkspaceFolder = (_a = vscode.workspace.workspaceFolders) === null || _a === void 0 ? void 0 : _a.find(workspaceFolder => {
-        return workspaceFolder.name === consts.WORKSPACE_FOLDER_NAME_UE4;
-    });
-    return !!ue4WorkspaceFolder ? ue4WorkspaceFolder.uri.fsPath : "";
-}
-exports.getUE4Path = getUE4Path;
-/**
- * @param excludeUE4
- *
- * @logs console.error When no uproject files found.
- * @todo Can exclude pattern work somehow to filter out ue4 folder? This function still works with alternate exclude using filter.
- */
-async function getUProjectFiles(excludeUE4 = true) {
-    let uprojectFiles;
-    try {
-        uprojectFiles = await vscode.workspace.findFiles(consts.GLOB_ANY_UPROJECT_IN_TOPLEVEL);
-    }
-    catch {
-        console.error("Error finding uproject files in GetUprojectFiles()");
-        return;
-    }
-    if (!(uprojectFiles === null || uprojectFiles === void 0 ? void 0 : uprojectFiles.length)) {
-        console.error("No uproject files found.");
-        return;
-    }
-    if (excludeUE4) {
-        const ue4WorkspaceFolder = getUE4WorkspaceFolder();
-        if (!ue4WorkspaceFolder) {
-            return;
-        }
-        try {
-            uprojectFiles = await Promise.all(uprojectFiles.filter(uri => { return !uri.fsPath.includes(ue4WorkspaceFolder.uri.fsPath); }));
-        }
-        catch (error) {
-            console.error("Error filtering uproject files in GetUProjectFiles(): (exclude UE4).");
-            return;
-        }
-    }
-    return uprojectFiles;
-}
-exports.getUProjectFiles = getUProjectFiles;
-/**
- * We assume a project has only 1 uproject file and return it's name (excluding the UE4 path). Empty string is returned otherwise.
- *
- * @logs console.error No uproject file found or multiple uproject files found
- * @returns empty string on error
- */
-async function getProjectsUProjectName() {
-    const uprojectFiles = await getUProjectFiles();
-    if (!(uprojectFiles === null || uprojectFiles === void 0 ? void 0 : uprojectFiles.length) || uprojectFiles.length > 1) {
-        console.error(`Error in number of uproject files found: ${uprojectFiles === null || uprojectFiles === void 0 ? void 0 : uprojectFiles.length}`);
-        return "";
-    }
-    return path.parse(uprojectFiles[0].fsPath).name;
-}
-exports.getProjectsUProjectName = getProjectsUProjectName;
 /**
  * @param workspaceFolder null will find files in all workspaces
  * @param globFilename This param will always be appended with ".vscode/"
@@ -172,39 +140,6 @@ async function findVSCodeFolderFiles(workspaceFolder, globFilename) {
     return foundFiles;
 }
 exports.findVSCodeFolderFiles = findVSCodeFolderFiles;
-/**
- * @returns Note: Can return empty string
- */
-async function getProjectsUProjectPath() {
-    const uprojectFiles = await getUProjectFiles();
-    if (!(uprojectFiles === null || uprojectFiles === void 0 ? void 0 : uprojectFiles.length) || uprojectFiles.length > 1) {
-        console.error(`Error in number of uproject file paths: ${uprojectFiles === null || uprojectFiles === void 0 ? void 0 : uprojectFiles.length}`);
-        return "";
-    }
-    return path.parse(uprojectFiles[0].fsPath).dir;
-}
-exports.getProjectsUProjectPath = getProjectsUProjectPath;
-/**
- * @returns undefined if nothing could be found
- * @logs If noworkspaces found or main workspace not found
- */
-async function getUE4ProjectsMainWorkspace() {
-    var _a;
-    const mainWorkspacePath = await getProjectsUProjectPath();
-    if (!((_a = vscode.workspace.workspaceFolders) === null || _a === void 0 ? void 0 : _a.length)) {
-        console.log("No workspaces found in getUE4ProjectsMainWorkspace");
-        return;
-    }
-    const workspace = vscode.workspace.workspaceFolders.find(workspaceFolder => {
-        return path.normalize(workspaceFolder.uri.fsPath) === path.normalize(mainWorkspacePath);
-    });
-    if (!workspace) {
-        console.error("Main workspace not found in getUE4ProjectsMainWorkspace");
-        return;
-    }
-    return workspace;
-}
-exports.getUE4ProjectsMainWorkspace = getUE4ProjectsMainWorkspace;
 function isEqualPaths(path1, path2) {
     try {
         return !path.relative(path1, path2);
@@ -219,10 +154,14 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 exports.delay = delay;
-function getRegExp(regExpString) {
+/**
+ *
+ * @param regExpString Format: "re/flags" : The '/' is required but flags are optional
+ */
+function createRegExpFrom(regExpString) {
     // Build regex and regex flags from string
     const reSeparatedArray = regExpString.split(consts.RE_SEPARATOR);
-    const regexFlags = reSeparatedArray.pop();
+    const regexFlags = regExpString.endsWith(consts.RE_SEPARATOR) ? undefined : reSeparatedArray.pop();
     const regexString = reSeparatedArray.join(consts.RE_SEPARATOR);
     try {
         return new RegExp(regexString, regexFlags);
@@ -233,5 +172,5 @@ function getRegExp(regExpString) {
         throw error;
     }
 }
-exports.getRegExp = getRegExp;
+exports.createRegExpFrom = createRegExpFrom;
 //# sourceMappingURL=shared.js.map
