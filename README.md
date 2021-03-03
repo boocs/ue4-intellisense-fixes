@@ -16,7 +16,7 @@ VSCode Extension supports Unreal Engine **v4.25** and **v4.26.1+**
 - Fixes UE4 workspace's Tag Parser includes to increase performance.
 
 ---
-### v0.9.6 ReadMe link: (not updated yet)
+### v1.0.0 ReadMe link:
 
 ## [Gist ReadMe](https://gist.github.com/boocs/f63a4878156295b6e854cac68672f305)
 
