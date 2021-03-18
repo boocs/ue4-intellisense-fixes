@@ -11,7 +11,10 @@ import { delay } from "./shared";
 import * as console from "./console";
 
 
-export function activate(context: vscode.ExtensionContext) {
+let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
+let isExtensionRunning = false;
+
+export async function activate(context: vscode.ExtensionContext) {
 	console.log('Extension "UE4 Intellisense Fixes" is now active!\n');
 
 	context.subscriptions.push(vscode.commands.registerCommand("UE4IntellisenseFixes.showLog", () => {
@@ -19,20 +22,38 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 	));
 
+	const statusItem: vscode.StatusBarItem = createAndShowMainStatusItem();
+
 	// Don't add a command to run fixes. This must run on startup to run the fixes before Tag Parser starts adding unneeded symbols to cache.
-	runExtension();
+	const fixableProject = await runExtension();
+
+	resetEventFileWatcher = createResetEventFileWatcher(fixableProject?.project);
+
+	resetEventFileWatcher?.onDidChange( async e => {
+		if(isExtensionRunning){
+			return;
+		}
+		isExtensionRunning = true;
+		
+		console.log("Detected reset. About to run extension.\n");
+		await delay(consts.ON_RESET_WAIT_BEFORE_RUNNING_EXT);
+		
+		await runExtension();
+
+		isExtensionRunning = false;
+	});
+
+	await endRun(statusItem);
 }
 
 
 export function deactivate() {
-	if (console.outputChannel) {
-		console.outputChannel.dispose();
-	}
+	
+	console.outputChannel?.dispose();
+	resetEventFileWatcher?.dispose();
 }
 
-async function runExtension() {
-
-	const statusItem: vscode.StatusBarItem = createAndShowMainStatusItem();
+async function runExtension() : Promise<Fixable | undefined> {
 
 	let fixableProject: Fixable | undefined = await getFixableProject();
 
@@ -43,7 +64,7 @@ async function runExtension() {
 		await fixableProject.execFixes();
 	}
 
-	await endRun(statusItem);
+	return fixableProject;
 }
 
 function createAndShowMainStatusItem(): vscode.StatusBarItem {
@@ -101,15 +122,27 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 	}
 	else if (version.minor === 26) {
 
-		// We don't support 4.26.0
 		if (version.patch > 0) {
 			return new CCResponseFixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 		}
-		else {
+		else { // We don't support 4.26.0
 			console.log("Unreal Engine version 4.26.0 is no longer supported.");
 			return;
 		}
 	}
 
 	return;
+}
+
+function createResetEventFileWatcher(projectUE4: ProjectUE4 | undefined) : vscode.FileSystemWatcher | undefined {
+	const mainWorkspace = projectUE4?.mainWorkspaceFolder;
+
+	if(!mainWorkspace){
+		console.error("Project didn't have a main workspace folder. File watcher will not be created.");
+		return;
+	}
+
+	const relPattern = new vscode.RelativePattern(mainWorkspace, consts.GLOB_PROJECT_RESET_FILE_CREATION);
+
+	return vscode.workspace.createFileSystemWatcher(relPattern, true, false, true);
 }

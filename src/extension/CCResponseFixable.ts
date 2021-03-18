@@ -17,7 +17,7 @@ export class CCResponseFixable extends Fixable {
         super(isFixesEnabled, isOptionalFixesEnabled);
     }
     
-    protected get project(): CCResponseProject {
+    public get project(): CCResponseProject {
         return this._project as CCResponseProject;
     }
 

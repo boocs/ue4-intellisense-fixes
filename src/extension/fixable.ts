@@ -15,7 +15,7 @@ export abstract class Fixable{
         this._isOptionalFixesEnabled = isOptionalFixesEnabled;
     }
 
-    protected abstract get project(): ProjectUE4;
+    public abstract get project(): ProjectUE4;
    
     public async execFixes() : Promise<void> { 
         

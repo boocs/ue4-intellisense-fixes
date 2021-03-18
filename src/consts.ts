@@ -79,3 +79,6 @@ export const RE_UE4_VERSION = "(?<=#define\\sENGINE_(?:MAJOR|MINOR|PATCH)_VERSIO
 
 export const MAIN_WORKSPACE_SOURCE_DIRECTORY_NAME = "Source";
 export const GLOB_ALL_HEADERS_AND_SOURCE_FILES = "**/*.{h,hpp,hh,HPP,c,cpp,cc,CPP}";
+
+export const GLOB_PROJECT_RESET_FILE_CREATION = "Intermediate/TargetInfo.json";
+export const ON_RESET_WAIT_BEFORE_RUNNING_EXT = 3000;

@@ -1,6 +1,8 @@
 ## VSCode/UE4 Intellisense Fix
 
 VSCode Extension supports Unreal Engine **v4.25** and **v4.26.1+**
+### Updated March 17th, 2021: [v1.1.0](CHANGELOG.md)
+- Real time detection of UE4 project reset. Extension will run after detection.
 
 ### Updated March 2nd, 2021: [v1.0.0](CHANGELOG.md)
 #### 4.26.1+

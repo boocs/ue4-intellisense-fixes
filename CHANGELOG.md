@@ -1,7 +1,10 @@
 ### [TODO]
 - n/a
 
-## [1.0.0] 2020-3-2
+## [1.1.0] 2021-3-17
+- Added real time detection of a UE4 project reset. Extension will run after detection.
+
+## [1.0.0] 2021-3-2
 - Added 4.26.1 support and removed 4.26.0 support
 - 4.26.1+ now adds missing source/header files to compile commands.
 - Added fix for wrong cppStandard setting.
