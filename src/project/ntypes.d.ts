@@ -29,3 +29,16 @@ export type CCppPropertiesJson = {
 	configurations?: [ CCppConfigurationJson ];
 	version?: string;
 };
+
+
+export type LaunchJson = {
+	version?: string;
+	configurations?: [LaunchObjectJson];
+};
+
+
+// Unfinished but don't need all variables
+export type LaunchObjectJson = {
+	externalConsole?: boolean;
+	console?: string;
+};

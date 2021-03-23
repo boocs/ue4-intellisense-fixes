@@ -9,8 +9,9 @@ import * as consts from "./consts";
 import { delay } from "./shared";
 
 import * as console from "./console";
+import { fixMissingResponseCompileCommands } from "./extension/fixes/missingCompileCommands";
 
-
+let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
 let isExtensionRunning = false;
 
@@ -27,21 +28,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Don't add a command to run fixes. This must run on startup to run the fixes before Tag Parser starts adding unneeded symbols to cache.
 	const fixableProject = await runExtension();
 
-	resetEventFileWatcher = createResetEventFileWatcher(fixableProject?.project);
-
-	resetEventFileWatcher?.onDidChange( async e => {
-		if(isExtensionRunning){
-			return;
-		}
-		isExtensionRunning = true;
-		
-		console.log("Detected reset. About to run extension.\n");
-		await delay(consts.ON_RESET_WAIT_BEFORE_RUNNING_EXT);
-		
-		await runExtension();
-
-		isExtensionRunning = false;
-	});
+	if(fixableProject){
+		createWatchers(fixableProject);
+	}
+	
 
 	await endRun(statusItem);
 }
@@ -134,15 +124,47 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 	return;
 }
 
-function createResetEventFileWatcher(projectUE4: ProjectUE4 | undefined) : vscode.FileSystemWatcher | undefined {
-	const mainWorkspace = projectUE4?.mainWorkspaceFolder;
 
-	if(!mainWorkspace){
-		console.error("Project didn't have a main workspace folder. File watcher will not be created.");
-		return;
-	}
+function createWatchers(fixableProject: Fixable) {
 
-	const relPattern = new vscode.RelativePattern(mainWorkspace, consts.GLOB_PROJECT_RESET_FILE_CREATION);
+	const mainWorkspace = fixableProject?.project.mainWorkspaceFolder;
 
-	return vscode.workspace.createFileSystemWatcher(relPattern, true, false, true);
+	resetEventFileWatcher = createFileWatcher(mainWorkspace, consts.GLOB_PROJECT_RESET_FILE_CREATION, {create:true, change:false, delete:true});
+	newFileWatcher = createFileWatcher(mainWorkspace, consts.GLOB_ALL_HEADERS_AND_SOURCE_FILES, {create:false, change:true, delete:true});
+
+	resetEventFileWatcher?.onDidChange( async e => {
+		if(isExtensionRunning){
+			return;
+		}
+		isExtensionRunning = true;
+		
+		console.log("Detected reset. About to run extension.\n");
+		await delay(consts.FILE_WATCHER_EXEC_WAIT);
+		
+		await runExtension();
+
+		isExtensionRunning = false;
+	});
+
+	newFileWatcher?.onDidCreate ( async uri => {
+		console.log("Detected new file!\n");
+
+		const version = ProjectUE4.ue4VersionObject;
+
+		if(!version){
+			return;
+		}
+
+		if (version.minor > 25 && version.patch > 0) {
+			await delay(consts.FILE_WATCHER_EXEC_WAIT);
+			fixMissingResponseCompileCommands(fixableProject.project, uri);
+		}
+		
+	});
+}
+
+function createFileWatcher(workspaceFolder: vscode.WorkspaceFolder, glob: string, ignore:{create:boolean, change:boolean, delete:boolean}): vscode.FileSystemWatcher | undefined {
+	const relPattern = new vscode.RelativePattern(workspaceFolder, glob);
+
+	return vscode.workspace.createFileSystemWatcher(relPattern, ignore.create, ignore.change, ignore.delete);
 }

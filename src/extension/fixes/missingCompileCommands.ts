@@ -2,7 +2,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 
-import { GLOB_ALL_HEADERS_AND_SOURCE_FILES, MAIN_WORKSPACE_SOURCE_DIRECTORY_NAME} from "../../consts";
+import { GLOB_ALL_HEADERS_AND_SOURCE_FILES} from "../../consts";
 import { isEqualPaths } from "../../shared";
 
 import type { CompileCommands } from "../../project/compileCommands";
@@ -11,8 +11,13 @@ import type { ProjectUE4 } from "../../project/projectUE4";
 
 import * as console from "../../console";
 
-
-export async function fixMissingResponseCompileCommands(project: ProjectUE4): Promise<void | undefined> {
+/**
+ * 
+ * @param project 
+ * @param pathToCheck check one path or check all files found in Source directory
+ * @returns 
+ */
+export async function fixMissingResponseCompileCommands(project: ProjectUE4, uriToCheck?: vscode.Uri): Promise<void | undefined> {
     console.log("Fixing missing compile command files.");
     
     const mainCompileCommands = project.getMainFirstConfigCompileCommands();
@@ -33,13 +38,23 @@ export async function fixMissingResponseCompileCommands(project: ProjectUE4): Pr
         return;
     }
 
-    const mainWorkspace = project.mainWorkspaceFolder;
+    let potentialCompileCommandsFiles : vscode.Uri[];
+    if(!uriToCheck) { // Check every file since we don't specify a single uri to check
+        const mainWorkspace = project.mainWorkspaceFolder;
 
-    const mainSourcePath = path.join(mainWorkspace.uri.fsPath, MAIN_WORKSPACE_SOURCE_DIRECTORY_NAME);
-
-    const glob = new vscode.RelativePattern(mainSourcePath, GLOB_ALL_HEADERS_AND_SOURCE_FILES);
-    const potentialCompileCommandsFiles = await vscode.workspace.findFiles(glob);
-
+        const glob = new vscode.RelativePattern(mainWorkspace, GLOB_ALL_HEADERS_AND_SOURCE_FILES);
+        potentialCompileCommandsFiles = await vscode.workspace.findFiles(glob);        
+    }
+    else {
+        try{
+            potentialCompileCommandsFiles = [uriToCheck];
+        }
+        catch(e){
+            console.error("Error URI parsing newly created file path. It wont be added to Intellisense. Restart VSCode to fix!");
+            return;
+        }
+    }
+    
     const missingFilePaths = findMissingFilePaths(potentialCompileCommandsFiles, mainCompileCommands);
 
     if(!missingFilePaths.length){
@@ -93,7 +108,7 @@ function findMissingFilePaths(sourceFiles: vscode.Uri[], compileCommands: Compil
  */
 function duplicateFirstCommandObjectAndAddToCompileCommands(outCompileCommands: CompileCommands, paths: string[]) {
     if(!outCompileCommands.length){
-        console.log("Not compile commands we're found. Cannot duplicate.");
+        console.log("No compile commands we're found. Cannot duplicate.");
         return;
     }
 

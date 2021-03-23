@@ -1,6 +1,10 @@
 ### [TODO]
 - n/a
 
+## [1.2.0] 2021-3-22
+- Added real time detection of new source/header files. Will auto add to Compile Commands.
+- Added launch.json fix for deprecated externalConsole setting.
+
 ## [1.1.0] 2021-3-17
 - Added real time detection of a UE4 project reset. Extension will run after detection.
 
