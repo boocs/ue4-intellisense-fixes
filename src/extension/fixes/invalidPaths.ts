@@ -12,7 +12,7 @@ import type { ProjectUE4 } from '../../project/projectUE4';
 import * as console from "../../console";
 
 
-export function fixAllResponseFileKnownInvalidPaths(project: ProjectUE4) {
+export function fixResponse(project: ProjectUE4) {
     console.log("Fixing invalid paths in response files.");
 
     const mainCompileCommands = project.getMainFirstConfigCompileCommands();
@@ -23,11 +23,21 @@ export function fixAllResponseFileKnownInvalidPaths(project: ProjectUE4) {
         return;
     }
 
+
     for(let index in responsePaths) {
         const filePath = responsePaths[index];
-        const fixedFileString = fixKnownInvalidPathsInFile(filePath);
+
+        const originalResponseString = shared.readStringFromFileSync(filePath);
+        if(!originalResponseString){
+            console.error("Couldn't read response file.");
+            continue;
+        }
+
+        let fixedFileString = fixKnownInvalidPathsInFile(filePath, originalResponseString);
+
+        fixedFileString = fixIncorrectPreincludeFlags(project, fixedFileString);
         
-        if(!fixedFileString){
+        if(!fixedFileString || fixedFileString === originalResponseString){
             return;
         }
 
@@ -48,18 +58,16 @@ export function fixAllResponseFileKnownInvalidPaths(project: ProjectUE4) {
  * 
  * @logs all
  */
-export function fixKnownInvalidPathsInFile(responsePath: string): string | undefined {
+export function fixKnownInvalidPathsInFile(responsePath: string, originalResponseString: string): string | undefined {
 
-    const originalResponseString = shared.readStringFromFileSync(responsePath);
-    if(!originalResponseString){
-        console.error("Couldn't read response file.");
-        return;
+    const matches = originalResponseString.match(consts.RE_COMPILE_COMMAND_INCLUDE_PATHS);
+
+    const sharedPCHPath = originalResponseString.match(consts.RE_PREINCLUDE_SHAREDPCH_PATH);
+
+    if(sharedPCHPath?.length){
+        matches?.push(sharedPCHPath[0]);
     }
-
-    const regExpAllIncludes = shared.createRegExpFrom(consts.RE_COMPILE_COMMAND_INCLUDE_PATHS);
-
-    const matches = originalResponseString.match(regExpAllIncludes);
-
+    
     if (!matches) {
         console.log("No includes found in response file.");
         return;
@@ -68,12 +76,12 @@ export function fixKnownInvalidPathsInFile(responsePath: string): string | undef
     const invalidPaths = getInvalidWithValidPaths(matches);
 
     if (!invalidPaths.fixable.length) {
-        console.log("No invalid paths returned.");
-        return;
+        console.log("No invalid paths returned. No fixes needed.");
+        return originalResponseString;  // need to return orginal for additional fixes
     }
         
     let replacementString = originalResponseString;
-    for (const invalidPath of invalidPaths.fixable) {
+    for (const invalidPath of invalidPaths.fixable) {  // now we fix and replace
 
         replacementString = replacementString.replace(invalidPath.invalid, invalidPath.valid);
         continue;
@@ -121,8 +129,33 @@ function getInvalidWithValidPaths(outPaths: string[]): { unfixable: number, fixa
             continue;
         }
 
+        // Bad SharedPCH fix
+        if(currentPath.match(consts.RE_SHAREDPCH_SHORT_FILENAME)){
+            const replacementPath = currentPath.replace(consts.RE_SHAREDPCH_SHORT_FILENAME, consts.TEXT_SHAREDPCH_SHADOW_FILENAME);
+            if (existsSync(replacementPath)){
+                if (checkAndReplacePathSubstring(paths, key,
+                        { reMatch: consts.RE_SHAREDPCH_SHORT_FILENAME, replace: consts.TEXT_SHAREDPCH_SHADOW_FILENAME })) {
+                        invalidStringsObject.fixable.push({ invalid: currentPath, valid: paths[key] });
+                        continue;
+                    }
+            }
+        }
+        else if(currentPath.match(consts.RE_SHAREDPCH_SHADOW_FILENAME)) {
+            const replacementPath = currentPath.replace(consts.RE_SHAREDPCH_SHADOW_FILENAME, consts.TEXT_SHAREDPCH_SHORT_FILENAME);
+            if (existsSync(replacementPath)){
+                if (checkAndReplacePathSubstring(paths, key,
+                        { reMatch: consts.RE_SHAREDPCH_SHADOW_FILENAME, replace: consts.TEXT_SHAREDPCH_SHORT_FILENAME })) {
+                        invalidStringsObject.fixable.push({ invalid: currentPath, valid: paths[key] });
+                        continue;
+                    }
+            }
+        }
+        
+
         invalidStringsObject.unfixable++;
-        console.error(`Couldn't fix ${outPaths[key]} from compile commands.\n`);
+        console.error(`Couldn't fix ${outPaths[key]} from compile commands.`);
+        console.error("You may have to Build the version specified in the path before the path is fixed (e.g. The path contains Development and/or Win64)\n");
+        
     }
 
     return invalidStringsObject;
@@ -154,4 +187,32 @@ function checkAndReplacePathSubstring(outPaths: string[], key: any, ...fromTos: 
         return true;
     }
 
+}
+
+function fixIncorrectPreincludeFlags(project: ProjectUE4, fileString: string | undefined): string | undefined {
+
+    if (!fileString){
+        return;
+    }
+
+    const cCppProperties = project.getFirstCCppPropertiesConfiguration(project.mainWorkspaceKey);
+    const settings = project.getCCppSettingsConfig(project.mainWorkspaceKey);
+
+    let intelliSenseMode = cCppProperties?.intelliSenseMode;
+
+    if(!intelliSenseMode){
+        intelliSenseMode = settings?.get(consts.CONFIG_SETTING_DEFAULT_INTELLISENSE_MODE);
+    }
+
+    let fixedFileString = fileString;
+    if(intelliSenseMode?.includes(consts.TEXT_MSVC)){
+        // find and replace -include with -FI
+        fixedFileString = fileString.replace(consts.RE_NON_MSVC_PREINCLUDE_FLAG, consts.MSVC_PREINCLUDE_FLAG);
+    }
+    
+    if(fixedFileString !== fileString){
+        console.log("Fixed wrong preinclude flag for MSVC Intellisense.");
+    }
+    
+    return fixedFileString;
 }

@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE4 Intellisense Fixes",
 	"description": "Automatically fixes UE4 Intellisense on startup.",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {

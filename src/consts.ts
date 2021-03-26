@@ -15,6 +15,7 @@ export const CONFIG_SETTING_ENABLE_OPTIONAL_FIXES = "enableOptionalFixes";
 export const CONFIG_SETTING_DEFAULT_INCLUDE_PATH = "default.includePath";
 export const CONFIG_SETTING_DEFAULT_BROWSE_PATH = "default.browse.path";
 export const CONFIG_SETTING_DEFAULT_FORCED_INCLUDE = "default.forcedInclude";
+export const CONFIG_SETTING_DEFAULT_INTELLISENSE_MODE = "default.intelliSenseMode";
 
 export const CONFIG_SETTING_LIMIT_SYMBOLS_TO_INCLUDED_HEADERS = "default.browse.limitSymbolsToIncludedHeaders";
 
@@ -61,9 +62,14 @@ export const MAIN_STATUS_COMMAND = "UE4IntellisenseFixes.showLog";
 export const MAIN_STATUS_LIFE = 120000;
 
 export const RE_SEPARATOR = "/";
-export const RE_COMPILE_COMMAND_INCLUDE_PATHS = `(?<=-[IF]\")(.*?)(?=\")${RE_SEPARATOR}gm`;
-export const RE_COMPILE_COMMAND_FORCED_PATHS = `(?<=-include ")(.*?)(?=")${RE_SEPARATOR}gm`;
+export const RE_COMPILE_COMMAND_INCLUDE_PATHS = /(?<=-I\")(.*?)(?=\")/gm;
+export const RE_COMPILE_COMMAND_FORCED_PATHS = /(?<=-(include|FI)\s?")(.*?)(?=")/gm;
 
+export const RE_PREINCLUDE_SHAREDPCH_PATH = /(?<=-(include|FI)\s?")(.*?SharedPCH\.Engine.*?)(?=")/gm;
+export const RE_SHAREDPCH_SHORT_FILENAME = /SharedPCH.Engine.h/gm;
+export const RE_SHAREDPCH_SHADOW_FILENAME = /SharedPCH.Engine.ShadowErrors.h/gm;
+export const TEXT_SHAREDPCH_SHORT_FILENAME = "SharedPCH.Engine.h";
+export const TEXT_SHAREDPCH_SHADOW_FILENAME = "SharedPCH.Engine.ShadowErrors.h";
 
 export const RE_INCORRECT_FOLDER_INC = "Inc";
 export const RE_COMPILE_COMMAND_INC_BAD_PATH = "(?<=[\\\\|\\/])Inc(?=\\\\|\\/)";
@@ -84,3 +90,7 @@ export const GLOB_PROJECT_RESET_FILE_CREATION = "Intermediate/TargetInfo.json";
 export const FILE_WATCHER_EXEC_WAIT = 3000;
 
 export const LAUNCH_PATH_SUFFIX = ".vscode/launch.json";
+
+export const TEXT_MSVC = "msvc";
+export const RE_NON_MSVC_PREINCLUDE_FLAG = /-include/gm;
+export const MSVC_PREINCLUDE_FLAG = "-FI";

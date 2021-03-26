@@ -3,7 +3,7 @@ import { CCResponseProject } from "../project/CCResponseProject";
 
 import {Fixable} from "./fixable";
 import { fixMissingResponseCompileCommands } from "./fixes/missingCompileCommands";
-import { fixAllResponseFileKnownInvalidPaths } from "./fixes/invalidPaths";
+import { fixResponse } from "./fixes/invalidPaths";
 import { fixTagIncludes } from "./fixes/tagIncludes";
 import { fixUE4Optimization } from "./fixes/optimizeUE4";
 import { fixWrongCppStandard } from "./fixes/wrongCppStandard";
@@ -28,7 +28,7 @@ export class CCResponseFixable extends Fixable {
 
     protected async fixProject(): Promise<void> {
         
-        fixAllResponseFileKnownInvalidPaths(this.project);
+        fixResponse(this.project);
         console.log("End fixing invalid paths in response files.\n");
 
         await fixMissingResponseCompileCommands(this.project);

@@ -9,7 +9,7 @@ import type {WorkspaceConfiguration} from "vscode";
 import { ProjectUE4 } from "../../project/projectUE4";
 import type { CCppConfigurationJson } from "../../project/ntypes";
 import * as consts from "../../consts";
-import { createRegExpFrom, readStringFromFileSync } from "../../shared";
+import { readStringFromFileSync } from "../../shared";
 
 import * as console from "../../console";
 
@@ -89,8 +89,7 @@ function findPreincludeMatches(project: ProjectUE4): RegExpMatchArray | undefine
 
     const responseFileString = readStringFromFileSync(responsePaths[0]);
 
-    const re = createRegExpFrom(consts.RE_COMPILE_COMMAND_FORCED_PATHS);
-    return responseFileString?.match(re);
+    return responseFileString?.match(consts.RE_COMPILE_COMMAND_FORCED_PATHS);
 }
 
 

@@ -1,6 +1,11 @@
 ### [TODO]
 - n/a
 
+## [1.3.0] 2021-3-26
+- Fixed weird bug with invalid preinclude path with the sharedPCH.* header
+- Fixed incorrect preinclude flag for MSVC Intellisense
+- code: Fixed 4.26 Optimization fix regex to work with MSVC preinclude flag
+
 ## [1.2.0] 2021-3-22
 - Added real time detection of new source/header files. Will auto add to Compile Commands.
 - Added launch.json fix for deprecated externalConsole setting.
