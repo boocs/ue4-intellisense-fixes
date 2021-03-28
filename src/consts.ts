@@ -16,6 +16,8 @@ export const CONFIG_SETTING_DEFAULT_INCLUDE_PATH = "default.includePath";
 export const CONFIG_SETTING_DEFAULT_BROWSE_PATH = "default.browse.path";
 export const CONFIG_SETTING_DEFAULT_FORCED_INCLUDE = "default.forcedInclude";
 export const CONFIG_SETTING_DEFAULT_INTELLISENSE_MODE = "default.intelliSenseMode";
+export const CONFIG_SETTING_INTELLISENSE_ENGINE = "intelliSenseEngine";
+export const CONFIG_SETTING_INTELLISENSE_ENGINE_TAG_PARSER = "Tag Parser";
 
 export const CONFIG_SETTING_LIMIT_SYMBOLS_TO_INCLUDED_HEADERS = "default.browse.limitSymbolsToIncludedHeaders";
 
@@ -46,6 +48,7 @@ export const GLOB_C_CPP_PROPERTIES_FILENAME = "c_cpp_properties.json";
 export const GLOB_ANY_UPROJECT_IN_TOPLEVEL = "*.uproject";
 export const GLOB_DEFINITIONS_FILES = "Intermediate/Build/**/Definitions.*.h";
 export const GLOB_GENERATED_FILES = "Intermediate/Build/**/*.generated.h";
+export const GLOB_WORKSPACE_FILE = "*.code-workspace";
 
 export const QUICK_CHECKER_DEFINITIONS_FILE = "Definitions.";
 
@@ -88,6 +91,7 @@ export const GLOB_ALL_HEADERS_AND_SOURCE_FILES = "Source/**/*.{h,hpp,hh,HPP,c,cp
 
 export const GLOB_PROJECT_RESET_FILE_CREATION = "Intermediate/TargetInfo.json";
 export const FILE_WATCHER_EXEC_WAIT = 3000;
+export const INTELLISENSE_ENABLE_DISABLE_DELAY = 3000;
 
 export const LAUNCH_PATH_SUFFIX = ".vscode/launch.json";
 

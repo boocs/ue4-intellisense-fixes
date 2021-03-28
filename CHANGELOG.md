@@ -1,6 +1,13 @@
 ### [TODO]
 - n/a
 
+## [1.4.1] 2021-3-27
+- **BugFix**: Removed real time fix for missing Source/Header file
+    - This could compete with the Unreal Editor with undesirable results
+    - I now just give a message to restart VSCode. Restarting will fix the Intellisense errors for the new files.
+- Temporarily disable Intellisense while extension is running
+- Message window with progress bar while extension is running
+
 ## [1.3.0] 2021-3-26
 - Fixed weird bug with invalid preinclude path with the sharedPCH.* header
 - Fixed incorrect preinclude flag for MSVC Intellisense

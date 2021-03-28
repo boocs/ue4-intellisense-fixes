@@ -2,13 +2,21 @@
 
 VSCode Extension supports Unreal Engine **v4.25** and **v4.26.1+**
 
-### v1.3.0 ReadMe link:
+### v1.4.1 ReadMe link:
 
 ## [More Detailed Readme](https://gist.github.com/boocs/f63a4878156295b6e854cac68672f305)
 
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### v1.4.1
+- **BugFix**: Removed real time fix for missing Source/Header file
+    - This could compete with the Unreal Editor with undesirable results
+    - I now just give a message to restart VSCode. Restarting will fix the Intellisense errors for the new files.
+- Temporarily disable Intellisense while extension is running
+- Message window with progress bar while extension is running
+  
+
 ### v1.3.0
 - Fixed weird bug with invalid preinclude path with the sharedPCH.* header
 - Fixed incorrect preinclude flag for MSVC Intellisense
