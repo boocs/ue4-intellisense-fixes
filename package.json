@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE4 Intellisense Fixes",
 	"description": "Automatically fixes UE4 Intellisense on startup.",
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
@@ -40,12 +40,14 @@
 				},
 				"UE4IntellisenseFixes.cppStandard": {
 					"type": "string",
-					"default": "c++14",
-					"enum": ["c++14", "c++17", ""],
+					"default": "",
+					"enum": ["", "c++14", "c++17", "gnu++14", "gnu++17"],
 					"enumDescriptions": [
-						"Sets Intellisense to UE4's default C++ version.",
-						"The full UE4 source code has the ability to be compiled to c++17.",
-						"Extension doesn't set the cppStandard setting."
+						"Uses cpptools cppStandard setting.",
+						"Forces use of c++14",
+						"Forces use of c++17",
+						"Forces use of gnu++14",
+						"Forces use of gnu++17"
 					]
 				}
 			}

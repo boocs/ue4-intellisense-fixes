@@ -23,7 +23,6 @@ export function fixResponse(project: ProjectUE4) {
         return;
     }
 
-
     for(let index in responsePaths) {
         const filePath = responsePaths[index];
 
@@ -34,12 +33,6 @@ export function fixResponse(project: ProjectUE4) {
         }
 
         let fixedFileString = fixKnownInvalidPathsInFile(filePath, originalResponseString);
-
-        fixedFileString = fixIncorrectPreincludeFlags(project, fixedFileString);
-        
-        if(!fixedFileString || fixedFileString === originalResponseString){
-            return;
-        }
 
         try {
             writeFileSync(filePath, fixedFileString, consts.ENCODING_UTF_8);
@@ -187,32 +180,4 @@ function checkAndReplacePathSubstring(outPaths: string[], key: any, ...fromTos: 
         return true;
     }
 
-}
-
-function fixIncorrectPreincludeFlags(project: ProjectUE4, fileString: string | undefined): string | undefined {
-
-    if (!fileString){
-        return;
-    }
-
-    const cCppProperties = project.getFirstCCppPropertiesConfiguration(project.mainWorkspaceKey);
-    const settings = project.getCCppSettingsConfig(project.mainWorkspaceKey);
-
-    let intelliSenseMode = cCppProperties?.intelliSenseMode;
-
-    if(!intelliSenseMode){
-        intelliSenseMode = settings?.get(consts.CONFIG_SETTING_DEFAULT_INTELLISENSE_MODE);
-    }
-
-    let fixedFileString = fileString;
-    if(intelliSenseMode?.includes(consts.TEXT_MSVC)){
-        // find and replace -include with -FI
-        fixedFileString = fileString.replace(consts.RE_NON_MSVC_PREINCLUDE_FLAG, consts.MSVC_PREINCLUDE_FLAG);
-    }
-    
-    if(fixedFileString !== fileString){
-        console.log("Fixed wrong preinclude flag for MSVC Intellisense.");
-    }
-    
-    return fixedFileString;
 }

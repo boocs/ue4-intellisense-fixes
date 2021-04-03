@@ -1,6 +1,16 @@
 ### [TODO]
 - n/a
 
+## [1.4.2] 2021-4-2
+- **BugFix** Removed default forced cppStandard c++14
+  - You must set this extensions's cppStandard setting if you want to force a standard
+  - Reset your project to remove the old forced cppStandard
+
+- **BugFix** Removed unnecessary -include to -FI fix for MSVC Intellisense (Was only a bug in an old Insiders build)
+  - There was also a scenario where this bug fix could wrongly fix something if intelliSenseMode was set incorrectly
+- Added more cppStandard options gnu++14 and gnu++17
+
+
 ## [1.4.1] 2021-3-27
 - **BugFix**: Removed real time fix for missing Source/Header file
     - This could compete with the Unreal Editor with undesirable results

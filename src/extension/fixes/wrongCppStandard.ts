@@ -18,27 +18,29 @@ export function fixWrongCppStandard(project: ProjectUE4) {
 
     if(!extensionCppStandard){
         if(extensionCppStandard !== ''){
-            console.error(`Extensions cppStandard setting was set to ${extensionCppStandard}. Will not fix.`);
+            console.error("Error getting cppStandard setting.\nUE4 will use cpptool's cppStandard setting instead of this extension's setting.");
         }
         else{
-            console.log(`Extension's cppStandard setting was set to empty string. Doing nothing.`);
+            console.log("Extension's cppStandard setting was set to empty string.\nIntellisense will use cpptools cppStandard setting instead of this extension's setting.");
         }
         return;
     }
 
-    const workSpacesCppStandard: Record<string, CCppConfigurationJson> | undefined = getworkspacesCppStandard(project);
-
-    if (!workSpacesCppStandard) {
-        console.error("The cppStandard won't be changed.");
+    const workSpacesFirstCCppConfigs: Record<string, CCppConfigurationJson> | undefined = getWorkspacesFirstCCppConfigs(project);
+    if (!workSpacesFirstCCppConfigs) {
+        console.error("Error getting workspaces. The cppStandard won't be changed.");
         return;
     }
+    
 
-    for (const key in workSpacesCppStandard){
-        const workspaceCppStandard = workSpacesCppStandard[key];
+    for (const key in workSpacesFirstCCppConfigs){
+        const firstConfig = workSpacesFirstCCppConfigs[key];
 
-        workspaceCppStandard.cppStandard = extensionCppStandard;
-        console.log(`The ${key} workspace c_cpp_properties.json's cppStandard is set to ${extensionCppStandard}`);
+        firstConfig.cppStandard = extensionCppStandard;
+        console.log(`This extension set ${key} workspace c_cpp_properties.json's cppStandard to ${extensionCppStandard}`);
     }
+
+    // These configs automatically get checked for saving when extension is done. Don't need to save them  here.
 }
 
 
@@ -46,7 +48,7 @@ export function fixWrongCppStandard(project: ProjectUE4) {
  * @param project 
  * @logs error
  */
-function getworkspacesCppStandard(project: ProjectUE4): Record<string, CCppConfigurationJson> | undefined {
+function getWorkspacesFirstCCppConfigs(project: ProjectUE4): Record<string, CCppConfigurationJson> | undefined {
     const mainCCppPropertiesConfiguration = project.getFirstCCppPropertiesConfiguration(project.mainWorkspaceKey);
     if (!mainCCppPropertiesConfiguration) {
         console.error("Couldn't get Main c_cpp_properties.json's first configuration.");
@@ -59,9 +61,9 @@ function getworkspacesCppStandard(project: ProjectUE4): Record<string, CCppConfi
         return;
     }
 
-    const workspacesCppStandard: Record<string, CCppConfigurationJson> = {};
-    workspacesCppStandard[project.mainWorkspaceKey] = mainCCppPropertiesConfiguration;
-    workspacesCppStandard[project.ue4WorkspaceKey] = ue4CCppPropertiesConfiguration;
+    const workspaces: Record<string, CCppConfigurationJson> = {};
+    workspaces[project.mainWorkspaceKey] = mainCCppPropertiesConfiguration;
+    workspaces[project.ue4WorkspaceKey] = ue4CCppPropertiesConfiguration;
 
-    return workspacesCppStandard;
+    return workspaces;
 }
