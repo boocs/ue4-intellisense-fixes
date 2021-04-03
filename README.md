@@ -2,7 +2,7 @@
 
 VSCode Extension supports Unreal Engine **v4.25** and **v4.26.1+**
 
-### v1.4.3 ReadMe link:
+### v1.4.2 ReadMe link:
 
 ### [More Detailed Readme](https://gist.github.com/boocs/f63a4878156295b6e854cac68672f305)
 
