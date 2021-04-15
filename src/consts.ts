@@ -65,8 +65,8 @@ export const MAIN_STATUS_COMMAND = "UE4IntellisenseFixes.showLog";
 export const MAIN_STATUS_LIFE = 120000;
 
 export const RE_SEPARATOR = "/";
-export const RE_COMPILE_COMMAND_INCLUDE_PATHS = /(?<=-I\")(.*?)(?=\")/gm;
-export const RE_COMPILE_COMMAND_FORCED_PATHS = /(?<=-(include|FI)\s?")(.*?)(?=")/gm;
+export const RE_COMPILE_COMMAND_INCLUDE_PATHS = /(?<=[\-|/]I\")(.*?)(?=\")/gm;
+export const RE_COMPILE_COMMAND_FORCED_PATHS = /(?<=[\-|/](include|FI)\s?")(.*?)(?=")/gm;
 
 export const RE_PREINCLUDE_SHAREDPCH_PATH = /(?<=-(include|FI)\s?")(.*?SharedPCH\.Engine.*?)(?=")/gm;
 export const RE_SHAREDPCH_SHORT_FILENAME = /SharedPCH.Engine.h/gm;

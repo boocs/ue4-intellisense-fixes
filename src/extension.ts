@@ -7,10 +7,12 @@ import { V425Fixable } from "./extension/V425fixable";
 import { ProjectUE4 } from "./project/projectUE4";
 import * as consts from "./consts";
 import { delay } from "./shared";
+import * as path from "path";
 
 import * as console from "./console";
-import { fixMissingResponseCompileCommands } from "./extension/fixes/missingCompileCommands";
+
 import * as text from "./text";
+
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
@@ -182,21 +184,18 @@ function createWatchers(fixableProject: Fixable) {
 		isExtensionRunning = false;
 	});
 
-	newFileWatcher?.onDidCreate(async uri => {
-		console.log("Detected new file!\n");
+	newFileWatcher?.onDidCreate(uri => {
 
+		const filePath = path.parse(uri.fsPath);
+		const fileName = filePath.base;
+
+		console.log(`\nWARNING: Detected new file (${fileName}).`);
+		console.log("WARNING: Restart VSCode to fix new file Intellisense errors.\n");
+
+		console.outputChannel?.show(true);
+		
 		vscode.window.showInformationMessage("New Soure/Header files detected: Restart VSCode if you get Intellisense errors with these new files.  This extension will add them to the appropriate file on startup.", text.OK);
-		// const version = ProjectUE4.ue4VersionObject;
-
-		// if (!version) {
-		// 	return;
-		// }
-
-		// if (version.minor > 25 && version.patch > 0) {
-		// 	await delay(consts.FILE_WATCHER_EXEC_WAIT);
-		// 	fixMissingResponseCompileCommands(fixableProject.project, uri);
-		// }
-
+		
 	});
 }
 

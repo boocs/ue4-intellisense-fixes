@@ -4,6 +4,7 @@
  * To add preincludes, without polluting the UE4 workspace, we need to set them in the '.code-workspace' file.
  */
 
+
 import type {WorkspaceConfiguration} from "vscode";
 
 import { ProjectUE4 } from "../../project/projectUE4";
@@ -57,7 +58,7 @@ function addResponsePreIncludesToMainWorkspaceConfig(project: ProjectUE4) {
 
     const preincludeMatches = findPreincludeMatches(project);
 
-    if (!preincludeMatches) {
+    if (!preincludeMatches?.length) {
         console.error("Couldn't find preinclude matches in response file.");
         return;
     }
@@ -82,14 +83,35 @@ function findPreincludeMatches(project: ProjectUE4): RegExpMatchArray | undefine
 
     const responsePaths = mainCompileCommands?.getAllUsedResponsePaths();
 
-    if (!responsePaths || responsePaths.length > 1) {
-        console.error(`Response paths length was ${responsePaths?.length}. Can't add preincludes.`);
+    if (!responsePaths) {
+        console.error(`Response paths was ${responsePaths}. Can't add preincludes.`);
         return;
     }
 
-    const responseFileString = readStringFromFileSync(responsePaths[0]);
+    let matches : RegExpMatchArray | undefined | null = undefined;
 
-    return responseFileString?.match(consts.RE_COMPILE_COMMAND_FORCED_PATHS);
+    for (const responsePath of responsePaths){
+        const responseFileString = readStringFromFileSync(responsePath);
+        
+        if(!responseFileString){
+            continue;
+        }
+        
+        const match = responseFileString.match(consts.RE_COMPILE_COMMAND_FORCED_PATHS);
+        if(!match?.length){
+            continue;  // TODO warning message here???
+        }
+
+        if(!matches){ 
+            matches = match;
+        }
+        else{
+            matches = matches.concat(match);
+        }
+    }
+
+    return matches;
+    
 }
 
 

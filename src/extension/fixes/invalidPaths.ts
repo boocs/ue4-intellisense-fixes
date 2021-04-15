@@ -16,23 +16,26 @@ export function fixResponse(project: ProjectUE4) {
     console.log("Fixing invalid paths in response files.");
 
     const mainCompileCommands = project.getMainFirstConfigCompileCommands();
-    const responsePaths = mainCompileCommands?.getAllUsedResponsePaths();
+    const responsePaths : string[] | undefined = mainCompileCommands?.getAllUsedResponsePaths();
 
     if(!responsePaths?.length){
         console.error("Couldn't find any response file paths.");
         return;
     }
 
-    for(let index in responsePaths) {
-        const filePath = responsePaths[index];
-
+    for(const filePath of responsePaths) {
+        
         const originalResponseString = shared.readStringFromFileSync(filePath);
-        if(!originalResponseString){
-            console.error("Couldn't read response file.");
+        if(!originalResponseString || originalResponseString.startsWith('undefined')){
+            console.error("Couldn't read response file");
+
+            if(originalResponseString?.startsWith('undefined')){
+                console.error("A project reset should fix this.");
+            }
             continue;
         }
 
-        let fixedFileString = fixKnownInvalidPathsInFile(filePath, originalResponseString);
+        const fixedFileString = fixKnownInvalidPathsInFile(filePath, originalResponseString);
 
         try {
             writeFileSync(filePath, fixedFileString, consts.ENCODING_UTF_8);
@@ -53,14 +56,14 @@ export function fixResponse(project: ProjectUE4) {
  */
 export function fixKnownInvalidPathsInFile(responsePath: string, originalResponseString: string): string | undefined {
 
+    const preincludePaths = originalResponseString.match(consts.RE_PREINCLUDE_SHAREDPCH_PATH);
+
+    if(preincludePaths?.length){
+        warnInvalidPreIncludePaths(preincludePaths);
+    }
+
     const matches = originalResponseString.match(consts.RE_COMPILE_COMMAND_INCLUDE_PATHS);
 
-    const sharedPCHPath = originalResponseString.match(consts.RE_PREINCLUDE_SHAREDPCH_PATH);
-
-    if(sharedPCHPath?.length){
-        matches?.push(sharedPCHPath[0]);
-    }
-    
     if (!matches) {
         console.log("No includes found in response file.");
         return;
@@ -121,30 +124,7 @@ function getInvalidWithValidPaths(outPaths: string[]): { unfixable: number, fixa
             invalidStringsObject.fixable.push({ invalid: currentPath, valid: paths[key] });
             continue;
         }
-
-        // Bad SharedPCH fix
-        if(currentPath.match(consts.RE_SHAREDPCH_SHORT_FILENAME)){
-            const replacementPath = currentPath.replace(consts.RE_SHAREDPCH_SHORT_FILENAME, consts.TEXT_SHAREDPCH_SHADOW_FILENAME);
-            if (existsSync(replacementPath)){
-                if (checkAndReplacePathSubstring(paths, key,
-                        { reMatch: consts.RE_SHAREDPCH_SHORT_FILENAME, replace: consts.TEXT_SHAREDPCH_SHADOW_FILENAME })) {
-                        invalidStringsObject.fixable.push({ invalid: currentPath, valid: paths[key] });
-                        continue;
-                    }
-            }
-        }
-        else if(currentPath.match(consts.RE_SHAREDPCH_SHADOW_FILENAME)) {
-            const replacementPath = currentPath.replace(consts.RE_SHAREDPCH_SHADOW_FILENAME, consts.TEXT_SHAREDPCH_SHORT_FILENAME);
-            if (existsSync(replacementPath)){
-                if (checkAndReplacePathSubstring(paths, key,
-                        { reMatch: consts.RE_SHAREDPCH_SHADOW_FILENAME, replace: consts.TEXT_SHAREDPCH_SHORT_FILENAME })) {
-                        invalidStringsObject.fixable.push({ invalid: currentPath, valid: paths[key] });
-                        continue;
-                    }
-            }
-        }
-        
-
+      
         invalidStringsObject.unfixable++;
         console.error(`Couldn't fix ${outPaths[key]} from compile commands.`);
         console.error("You may have to Build the version specified in the path before the path is fixed (e.g. The path contains Development and/or Win64)\n");
@@ -180,4 +160,15 @@ function checkAndReplacePathSubstring(outPaths: string[], key: any, ...fromTos: 
         return true;
     }
 
+}
+
+function warnInvalidPreIncludePaths(paths: RegExpMatchArray) {
+
+    for(const path of paths){
+
+        if(!existsSync(path)){
+            console.log("WARNING: Intellisense preinclude path doesn't exist. Building the project should fix this.");
+            console.log("WARNING: If this message persists, then do a project reset.");
+        }
+    }
 }

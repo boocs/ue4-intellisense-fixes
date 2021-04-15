@@ -1,6 +1,17 @@
 ### [TODO]
-- n/a
+- Current and upcoming UE4/VSCode changes will force the compiler for Intellisense because of response file compiler flags.
+- I should be able to fix this by adding a setting to the extension to pick what compiler you want and also change the flags in the response file.
 
+## [1.5.0] 2021-4-15
+- **Fixed** Regex to read 4.26.2 cl.exe flags in response files was fixed. (In 4.26.2, cl flags use '/' instead of '-')
+- **Fixed** New Source/Header fix for projects that build multiple modules. You can now select the response file for new files.
+- **Fixed** UE4 workspace optimization now works with projects that build multiple modules.
+- Removed the invalid Intellisense preinclude path fix since it couldn't encompass every single scenario
+  - Added additional warning/info message for invalid Intellisense preinclude paths
+- Added additional warnings messaging when adding new header/source files
+- Added error message if response file contains only the word undefined
+
+ 
 ## [1.4.2] 2021-4-2
 - **BugFix** Removed default forced cppStandard c++14
   - You must set this extensions's cppStandard setting if you want to force a standard
