@@ -37,6 +37,11 @@ export function fixResponse(project: ProjectUE4) {
 
         const fixedFileString = fixKnownInvalidPathsInFile(filePath, originalResponseString);
 
+        if(!fixedFileString){
+            console.log("No invalid path fixes found.");
+            return;
+        }
+
         try {
             writeFileSync(filePath, fixedFileString, consts.ENCODING_UTF_8);
         } catch (error) {

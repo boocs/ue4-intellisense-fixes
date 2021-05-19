@@ -7,14 +7,17 @@ import { EXTENSION_NAME } from './consts';
 
 export const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME);
 
+// If debugging set this to true;
+const IS_DEBUG = false;
+
 export function log(message: string) {
-    console.log(message);
+    if(IS_DEBUG){  console.log(message); }
 
     outputChannel.appendLine(message);
 }
 
 export function error(message: string) {
-    console.error(message);
+    if(IS_DEBUG){  console.error(message); }
 
     outputChannel.appendLine("** Error **: ".concat(message));
     outputChannel.show();

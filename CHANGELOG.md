@@ -2,6 +2,11 @@
 - Current and upcoming UE4/VSCode changes will force the compiler for Intellisense because of response file compiler flags.
 - I should be able to fix this by adding a setting to the extension to pick what compiler you want and also change the flags in the response file.
 
+## [1.5.1] 2021-5-12
+- **Fixed** Updated dependencies
+- **Fixed** Added 'null' check for response file operation
+- Removed developer console log messages from release (doesn't affect user logs)
+
 ## [1.5.0] 2021-4-15
 - **Fixed** Regex to read 4.26.2 cl.exe flags in response files was fixed. (In 4.26.2, cl flags use '/' instead of '-')
 - **Fixed** New Source/Header fix for projects that build multiple modules. You can now select the response file for new files.
