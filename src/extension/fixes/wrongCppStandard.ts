@@ -26,7 +26,7 @@ export function fixWrongCppStandard(project: ProjectUE4) {
         return;
     }
 
-    const workSpacesFirstCCppConfigs: Record<string, CCppConfigurationJson> | undefined = getWorkspacesFirstCCppConfigs(project);
+    const workSpacesFirstCCppConfigs: Record<string, CCppConfigurationJson[]> | undefined = getWorkspacesCCppConfigs(project);
     if (!workSpacesFirstCCppConfigs) {
         console.error("Error getting workspaces. The cppStandard won't be changed.");
         return;
@@ -34,13 +34,14 @@ export function fixWrongCppStandard(project: ProjectUE4) {
     
 
     for (const key in workSpacesFirstCCppConfigs){
-        const firstConfig = workSpacesFirstCCppConfigs[key];
-
-        firstConfig.cppStandard = extensionCppStandard;
-        console.log(`This extension set ${key} workspace c_cpp_properties.json's cppStandard to ${extensionCppStandard}`);
+        for (const config of workSpacesFirstCCppConfigs[key]) {
+            config.cppStandard = extensionCppStandard;
+            console.log(`This extension set ${key} workspace c_cpp_properties.json's cppStandard to ${extensionCppStandard}`);
+        }
+        
     }
 
-    // These configs automatically get checked for saving when extension is done. Don't need to save them  here.
+    // NOTE: These configs automatically get checked for saving when extension is done. Don't need to save them  here.
 }
 
 
@@ -48,20 +49,20 @@ export function fixWrongCppStandard(project: ProjectUE4) {
  * @param project 
  * @logs error
  */
-function getWorkspacesFirstCCppConfigs(project: ProjectUE4): Record<string, CCppConfigurationJson> | undefined {
-    const mainCCppPropertiesConfiguration = project.getFirstCCppPropertiesConfiguration(project.mainWorkspaceKey);
+function getWorkspacesCCppConfigs(project: ProjectUE4): Record<string, CCppConfigurationJson[]> | undefined {
+    const mainCCppPropertiesConfiguration = project.getCCppConfigurationsFromWorkspace(project.mainWorkspaceKey);
     if (!mainCCppPropertiesConfiguration) {
         console.error("Couldn't get Main c_cpp_properties.json's first configuration.");
         return;
     }
 
-    const ue4CCppPropertiesConfiguration = project.getFirstCCppPropertiesConfiguration(project.ue4WorkspaceKey);
+    const ue4CCppPropertiesConfiguration = project.getCCppConfigurationsFromWorkspace(project.ue4WorkspaceKey);
     if (!ue4CCppPropertiesConfiguration) {
         console.error("Couldn't get UE4 c_cpp_properties.json's first configuration.");
         return;
     }
 
-    const workspaces: Record<string, CCppConfigurationJson> = {};
+    const workspaces: Record<string, CCppConfigurationJson[]> = {};
     workspaces[project.mainWorkspaceKey] = mainCCppPropertiesConfiguration;
     workspaces[project.ue4WorkspaceKey] = ue4CCppPropertiesConfiguration;
 

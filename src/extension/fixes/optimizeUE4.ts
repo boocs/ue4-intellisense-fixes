@@ -19,17 +19,18 @@ export function fixUE4Optimization(project: ProjectUE4) {
     console.log("Attempting to fix UE4 workspace optimization.");
 
     const ue4CCppPropertiesFirstConfig = project.getFirstCCppPropertiesConfiguration(project.ue4WorkspaceKey);
+    const allUE4CppPropertiesConfigs = project.getCCppConfigurationsFromWorkspace(project.ue4WorkspaceKey);
 
-    if (!ue4CCppPropertiesFirstConfig) {
-        console.error("Couldn't get UE4's first c_cpp_properties.json config.");
+    if (!ue4CCppPropertiesFirstConfig || !allUE4CppPropertiesConfigs) {
+        console.error("Couldn't get UE4's c_cpp_properties.json configs.");
         return;
     }
 
     renameUE4InConfig(ue4CCppPropertiesFirstConfig, ProjectUE4.ue4Version);
 
-    removeCompileCommandsFromConfig(ue4CCppPropertiesFirstConfig);
+    removeCompileCommandsFromConfig(allUE4CppPropertiesConfigs);
 
-    addBasicUE4IntellisenseToConfig(ue4CCppPropertiesFirstConfig);
+    addBasicUE4IntellisenseToConfig(allUE4CppPropertiesConfigs);
 
     addResponsePreIncludesToMainWorkspaceConfig(project);
 
@@ -43,14 +44,19 @@ function renameUE4InConfig(outConfig: CCppConfigurationJson, ue4Version: string)
 }
 
 
-function removeCompileCommandsFromConfig(outConfig: CCppConfigurationJson) {
-    outConfig.compileCommands = undefined;
+function removeCompileCommandsFromConfig(outConfigs: CCppConfigurationJson[]) {
+    for (const config of outConfigs) {
+        config.compileCommands = undefined;
+    }
+    
 }
 
 
-function addBasicUE4IntellisenseToConfig(outConfig: CCppConfigurationJson) {
-
-    outConfig.includePath = [consts.VSCODE_SPECIAL_VAR_DEFAULT].concat(consts.CONFIG_VALUES_GENERIC_UE4_INCLUDE_PATHS);
+function addBasicUE4IntellisenseToConfig(outConfigs: CCppConfigurationJson[]) {
+    for (const config of outConfigs) {
+        config.includePath = [consts.VSCODE_SPECIAL_VAR_DEFAULT].concat(consts.CONFIG_VALUES_GENERIC_UE4_INCLUDE_PATHS);
+    }
+    
 }
 
 

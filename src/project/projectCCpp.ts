@@ -29,14 +29,14 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
     private _compileCommands: Map<WorkspaceKey, Map<ConfigIndex, CompileCommands>> | undefined;
 
     protected constructor() {
-        super();        
+        super();
     }
 
-    protected async cCppPostConstructionSetup( setupVars: Record<WorkspaceKey, WorkspaceSetupVars>) : Promise<IsValid> {
+    protected async cCppPostConstructionSetup(setupVars: Record<WorkspaceKey, WorkspaceSetupVars>): Promise<IsValid> {
 
         let isValid = super.basePostConstructionSetup();
 
-        if (!isValid){
+        if (!isValid) {
             return false;
         }
 
@@ -55,26 +55,26 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
         const workspaceConfigurations = new Map<WorkspaceKey, vscode.WorkspaceConfiguration | undefined>();
 
         for (let [key, workspaceSetupVars] of Object.entries(setupVars)) {
-            
+
             const workspace = workspaceSetupVars.configurationsWorkspace;
 
-            if (workspace === undefined){
+            if (workspace === undefined) {
                 workspaceConfigurations.set(key, undefined);
                 continue;
             }
 
             const configuration = vscode.workspace.getConfiguration(CONFIG_SECTION_C_CPP, workspace);
-            
-            if(!configuration){
+
+            if (!configuration) {
                 console.error(`Couldn't create ${workspace} workspace settings ${CONFIG_SECTION_C_CPP} configuration;`);
                 return undefined;
             }
 
             workspaceConfigurations.set(key, configuration);
 
-          }
+        }
 
-        return workspaceConfigurations;  
+        return workspaceConfigurations;
     }
 
 
@@ -82,24 +82,24 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
         const workspaceProperties = new Map<WorkspaceKey, CCppProperties | undefined>();
 
         for (let [key, workspaceSetupVars] of Object.entries(setupVars)) {
-            
+
             const workspace = workspaceSetupVars.propertiesWorkspace;
 
-            if (workspace === undefined){
+            if (workspace === undefined) {
                 workspaceProperties.set(key, undefined);
                 continue;
             }
 
             const properties = new CCppProperties(workspace);
             await properties.initialize();
-            
-            if(!properties.isValid){
+
+            if (!properties.isValid) {
                 return undefined;
             }
 
             workspaceProperties.set(key, properties);
 
-          }
+        }
 
         return workspaceProperties;
     }
@@ -110,19 +110,19 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
      * @param key 
      */
     public getCCppSettingsConfig(workspaceKey: WorkspaceKey): vscode.WorkspaceConfiguration | undefined {
-        if(this._cCppSettings){
+        if (this._cCppSettings) {
             const isKeyValid = this._cCppSettings.has(workspaceKey);
-            if (!isKeyValid){
+            if (!isKeyValid) {
                 console.error(`${workspaceKey} in cCppSettings doesn't exits.`);
                 return;
             }
 
             const settings = this._cCppSettings.get(workspaceKey);
 
-            if(settings){
+            if (settings) {
                 return settings;
             }
-            else{
+            else {
                 console.error(`The ${workspaceKey} CCpp settings wasn't configured to be created at construction setup.`);
                 return;
             }
@@ -140,15 +140,15 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
      * @returns undefined on error
      */
     protected getCCppProperties(workspaceKey: string): CCppProperties | undefined {
-        if(this._cCppProperties){
+        if (this._cCppProperties) {
             const isKeyValid = this._cCppProperties.has(workspaceKey);
-            if (!isKeyValid){
+            if (!isKeyValid) {
                 console.error(`${workspaceKey} in cCppProperties doesn't exits.`);
                 return;
             }
 
             const properties = this._cCppProperties.get(workspaceKey);
-            if(properties){
+            if (properties) {
                 return properties;
             }
             else {
@@ -171,14 +171,14 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
     public getCCppConfiguration(workspaceKey: WorkspaceKey, index: number): CCppConfigurationJson | undefined {
         const configurations = this.getCCppProperties(workspaceKey)?.configurations;
 
-        if (!configurations){
+        if (!configurations) {
             console.log(`No ${workspaceKey} configurations found.`);
             return undefined;
         }
 
         const configuration = configurations?.[index];
 
-        if(!configuration){
+        if (!configuration) {
             console.error(`${workspaceKey} configuration at index ${index} does not exists.`);
             return undefined;
         }
@@ -186,29 +186,45 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
         return configuration;
     }
 
+    /**
+     * Configurations stored in the c_cpp_properties.json
+     * @param workspaceKey 
+     * @param index 
+     */
+     public getCCppConfigurationsFromWorkspace(workspaceKey: WorkspaceKey): CCppConfigurationJson[] | undefined {
+        const configurations = this.getCCppProperties(workspaceKey)?.configurations;
+
+        if (!configurations) {
+            console.log(`No ${workspaceKey} configurations found.`);
+            return undefined;
+        }
+
+        return configurations;
+    }
+
 
     /**
      * @param workspaceKey defaults to undefined to save all stored c_cpp_properties.json files.
      */
-    public saveCCppProperties(workspaceKey: WorkspaceKey | undefined = undefined){
-        if(!workspaceKey){
-            
+    public saveCCppProperties(workspaceKey: WorkspaceKey | undefined = undefined) {
+        if (!workspaceKey) {
+
             const allCCppProperties = this._cCppProperties;
-            if(!allCCppProperties){
+            if (!allCCppProperties) {
                 return;
             }
 
-            for (let [workspaceKey, cCppProperties] of allCCppProperties){
+            for (let [workspaceKey, cCppProperties] of allCCppProperties) {
                 cCppProperties?.writeConfigurationsIfNotEqual();
             }
             return;
         }
 
         const properties = this.getCCppProperties(workspaceKey);
-        if(properties){
+        if (properties) {
             properties.writeConfigurationsIfNotEqual();
         }
-        
+
     }
 
 
@@ -221,32 +237,32 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
      * @returns false on error
      */
     public loadCompileCommandsFromConfig(workspaceKey: WorkspaceKey, configIndex: number): boolean {
-        if(!this._compileCommands){
+        if (!this._compileCommands) {
             this._compileCommands = new Map<WorkspaceKey, Map<ConfigIndex, CompileCommands>>();
         }
 
         const cCppProperties = this.getCCppProperties(workspaceKey);
-        if(!cCppProperties){
+        if (!cCppProperties) {
             return false;
         }
-            
+
         const compileCommandsPath = cCppProperties.configurations?.[configIndex].compileCommands;
-        if (!compileCommandsPath){
+        if (!compileCommandsPath) {
             console.error(`Error getting compile commands path from ${workspaceKey} c_cpp_properties.json at config index ${configIndex}.`);
             return false;
         }
 
         const compileCommands = new CompileCommands(compileCommandsPath);
-        if (!compileCommands.isValid){
+        if (!compileCommands.isValid) {
             return false;
         }
 
-        if(!this._compileCommands.has(workspaceKey)){
+        if (!this._compileCommands.has(workspaceKey)) {
             this._compileCommands.set(workspaceKey, new Map<ConfigIndex, CompileCommands>());
         }
 
         const workspaceCompileCommands = this._compileCommands.get(workspaceKey);
-        if(!workspaceCompileCommands){
+        if (!workspaceCompileCommands) {
             console.error(`${workspaceKey} Compile Commands wasn't set.`);
             return false;
         }
@@ -258,6 +274,66 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
 
     public getCompileCommandsAtConfigIndex(workspaceKey: WorkspaceKey, configIndex: number): CompileCommands | undefined {
         return this._compileCommands?.get(workspaceKey)?.get(configIndex.toString());
+    }
+
+    /**
+     * Validated creation
+     * 
+     * @param workspaceKey 
+     * 
+     * @returns false on 0 compile commands being loaded
+     */
+    public loadCompileCommandsFromWorkspace(workspaceKey: WorkspaceKey): boolean {
+        if (!this._compileCommands) {
+            this._compileCommands = new Map<WorkspaceKey, Map<ConfigIndex, CompileCommands>>();
+        }
+
+        const cCppProperties = this.getCCppProperties(workspaceKey);
+        if (!cCppProperties) {
+            return false;
+        }
+
+        if (!cCppProperties.configurations) {
+            return false;
+        }
+
+
+        for (const configIndex in cCppProperties.configurations) {
+
+            const compileCommandsPath = cCppProperties.configurations?.[configIndex].compileCommands;
+            if (!compileCommandsPath) {
+                continue;
+            }
+
+            const compileCommands = new CompileCommands(compileCommandsPath);
+            if (!compileCommands.isValid) {
+                continue;
+            }
+
+            if (!this._compileCommands.has(workspaceKey)) {
+                this._compileCommands.set(workspaceKey, new Map<ConfigIndex, CompileCommands>());
+            }
+
+            const workspaceCompileCommands = this._compileCommands.get(workspaceKey);
+            if (!workspaceCompileCommands) {
+                console.error(`${workspaceKey} Compile Commands wasn't set.`);
+                continue;
+            }
+
+            workspaceCompileCommands.set(configIndex.toString(), compileCommands);
+
+        }
+
+        if(!this._compileCommands.get(workspaceKey)?.size) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    public getCompileCommandsFromWorkspace(workspaceKey: WorkspaceKey) : Map<string, CompileCommands> | undefined {
+    
+        return this._compileCommands?.get(workspaceKey);
     }
 
 }

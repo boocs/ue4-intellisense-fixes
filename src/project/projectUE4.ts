@@ -117,7 +117,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
         return super.getCCppConfiguration(workspaceKey, 0);
     }
 
-
+    
     public get mainWorkspaceKey(): WorkspaceKey {
         return MAIN_KEY;
     }
@@ -274,6 +274,10 @@ export abstract class ProjectUE4 extends ProjectCCpp {
     
     public getMainFirstConfigCompileCommands(){
         return this.getCompileCommandsAtConfigIndex(MAIN_KEY, 0);
+    }
+
+    public getMainCompileCommands() {
+        return this.getCompileCommandsFromWorkspace(MAIN_KEY);
     }
 
 }

@@ -20,49 +20,51 @@ import * as console from "../../console";
 export async function fixMissingResponseCompileCommands(project: ProjectUE4, uriToCheck?: vscode.Uri): Promise<void | undefined> {
     console.log("Fixing missing compile command files.");
 
-    const mainCompileCommands = project.getMainFirstConfigCompileCommands();
+    const mainCompileCommands = project.getMainCompileCommands();
 
-    if (!mainCompileCommands?.length) {
+    if (!mainCompileCommands) {
+        console.log("No compile commands found!");
         return;
     }
 
-    const allUsedResponsePaths = mainCompileCommands?.getAllUsedResponsePaths();
+    for (const [index, compileCommand] of mainCompileCommands) {
+        const allUsedResponsePaths = compileCommand?.getAllUsedResponsePaths();
 
-    if (!allUsedResponsePaths?.length) {
-        console.log("Can't fix compile commands. No response files found.");
-        return;
-    }
-
-    let potentialCompileCommandsFiles: vscode.Uri[];
-    if (!uriToCheck) { // Check every file since we don't specify a single uri to check
-        const mainWorkspace = project.mainWorkspaceFolder;
-
-        const glob = new vscode.RelativePattern(mainWorkspace, GLOB_ALL_HEADERS_AND_SOURCE_FILES);
-        potentialCompileCommandsFiles = await vscode.workspace.findFiles(glob);
-    }
-    else {
-        try {
-            potentialCompileCommandsFiles = [uriToCheck];
+        if (!allUsedResponsePaths?.length) {
+            console.log("Can't fix compile commands. No response files found.");
+            continue;
         }
-        catch (e) {
-            console.error("Error URI parsing newly created file path. It wont be added to Intellisense. Restart VSCode to fix!");
-            return;
+
+        let potentialCompileCommandsFiles: vscode.Uri[];
+        if (!uriToCheck) { // Check every file since we don't specify a single uri to check
+            const mainWorkspace = project.mainWorkspaceFolder;
+
+            const glob = new vscode.RelativePattern(mainWorkspace, GLOB_ALL_HEADERS_AND_SOURCE_FILES);
+            potentialCompileCommandsFiles = await vscode.workspace.findFiles(glob);
         }
+        else {
+            try {
+                potentialCompileCommandsFiles = [uriToCheck];
+            }
+            catch (e) {
+                console.error("Error URI parsing newly created file path. It wont be added to Intellisense. Restart VSCode to fix!");
+                continue;
+            }
+        }
+
+        const missingFilePaths = findMissingFilePaths(potentialCompileCommandsFiles, compileCommand);
+
+        if (!missingFilePaths.length) {
+            console.log("No missing file paths found. No fixes needed.");
+            continue;
+        }
+        console.log(`Found ${missingFilePaths.length} missing file paths.`);
+
+        await addFilesToCompileCommands(compileCommand, missingFilePaths, allUsedResponsePaths);
+
+        compileCommand.saveToFile();
+
     }
-
-    const missingFilePaths = findMissingFilePaths(potentialCompileCommandsFiles, mainCompileCommands);
-
-    if (!missingFilePaths.length) {
-        console.log("No missing file paths found. No fixes needed.");
-        return;
-    }
-    console.log(`Found ${missingFilePaths.length} missing file paths.`);
-
-    await addFilesToCompileCommands(mainCompileCommands, missingFilePaths, allUsedResponsePaths);
-
-    mainCompileCommands.saveToFile();
-
-    return;
 
 }
 
@@ -131,7 +133,7 @@ async function addFilesToCompileCommands(outCompileCommands: CompileCommands, pa
             newCommandObject = await getCommandObjectFromResponseChoice(newCommandObject, responsePaths, outCompileCommands, targetPath);
 
             if (!newCommandObject) {
-                continue; 
+                continue;
             }
 
         }
@@ -146,7 +148,7 @@ async function getCommandObjectFromResponseChoice(
     compileCommands: CompileCommands,
     targetPath: string): Promise<CommandObjectJson | undefined> {
 
-    const newCommandObject: CommandObjectJson = {file: commandObject.file, command: undefined, directory: commandObject.directory};
+    const newCommandObject: CommandObjectJson = { file: commandObject.file, command: undefined, directory: commandObject.directory };
 
     const targetFileName = path.parse(targetPath).base;
     const responseChoice = await vscode.window.showInformationMessage(
@@ -191,7 +193,7 @@ function findCommandFrom(compileCommands: CompileCommands, responseFileName: str
     let command: string = "";
 
     for (const commandObject of compileCommands) {
-        if(commandObject.command?.includes(responseFileName)){
+        if (commandObject.command?.includes(responseFileName)) {
             command = commandObject.command;
             break;
         }

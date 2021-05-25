@@ -1,8 +1,8 @@
 /**
- * Fixes invalid paths in the compile command's file
+ * Fixes invalid paths in the compile command's response files
  */
 
-import { existsSync, writeFileSync} from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import * as path from "path";
 
 import * as consts from '../../consts';
@@ -15,41 +15,50 @@ import * as console from "../../console";
 export function fixResponse(project: ProjectUE4) {
     console.log("Fixing invalid paths in response files.");
 
-    const mainCompileCommands = project.getMainFirstConfigCompileCommands();
-    const responsePaths : string[] | undefined = mainCompileCommands?.getAllUsedResponsePaths();
+    const mainCompileCommands = project.getMainCompileCommands();
 
-    if(!responsePaths?.length){
-        console.error("Couldn't find any response file paths.");
+    if (!mainCompileCommands) {
+        console.log("No compile commands found!");
         return;
     }
 
-    for(const filePath of responsePaths) {
+    for (const [index, compileCommand] of mainCompileCommands) {
         
-        const originalResponseString = shared.readStringFromFileSync(filePath);
-        if(!originalResponseString || originalResponseString.startsWith('undefined')){
-            console.error("Couldn't read response file");
+        const responsePaths: string[] | undefined = compileCommand.getAllUsedResponsePaths();
 
-            if(originalResponseString?.startsWith('undefined')){
-                console.error("A project reset should fix this.");
+        if (!responsePaths?.length) {
+            console.error("Couldn't find any response file paths.");
+            return;
+        }
+
+        for (const filePath of responsePaths) {
+
+            const originalResponseString = shared.readStringFromFileSync(filePath);
+            if (!originalResponseString || originalResponseString.startsWith('undefined')) {
+                console.error("Couldn't read response file");
+
+                if (originalResponseString?.startsWith('undefined')) {
+                    console.error("A project reset should fix this.");
+                }
+                continue;
             }
-            continue;
+
+            const fixedFileString = fixKnownInvalidPathsInFile(filePath, originalResponseString);
+
+            if (!fixedFileString) {
+                console.log("No invalid path fixes found.");
+                continue;
+            }
+
+            try {
+                writeFileSync(filePath, fixedFileString, consts.ENCODING_UTF_8);
+            } catch (error) {
+                console.error(`Problem writing fixed response file: ${error.message}.`);
+                continue;
+            }
         }
-
-        const fixedFileString = fixKnownInvalidPathsInFile(filePath, originalResponseString);
-
-        if(!fixedFileString){
-            console.log("No invalid path fixes found.");
-            return;
-        }
-
-        try {
-            writeFileSync(filePath, fixedFileString, consts.ENCODING_UTF_8);
-        } catch (error) {
-            console.error(`Problem writing fixed response file: ${error.message}.`);
-            return;
-        } 
     }
-    
+
 }
 
 
@@ -63,7 +72,7 @@ export function fixKnownInvalidPathsInFile(responsePath: string, originalRespons
 
     const preincludePaths = originalResponseString.match(consts.RE_PREINCLUDE_SHAREDPCH_PATH);
 
-    if(preincludePaths?.length){
+    if (preincludePaths?.length) {
         warnInvalidPreIncludePaths(preincludePaths);
     }
 
@@ -80,7 +89,7 @@ export function fixKnownInvalidPathsInFile(responsePath: string, originalRespons
         console.log("No invalid paths returned. No fixes needed.");
         return originalResponseString;  // need to return orginal for additional fixes
     }
-        
+
     let replacementString = originalResponseString;
     for (const invalidPath of invalidPaths.fixable) {  // now we fix and replace
 
@@ -90,7 +99,7 @@ export function fixKnownInvalidPathsInFile(responsePath: string, originalRespons
 
     const parsedPath = path.parse(responsePath);
     console.log(`${parsedPath.name}: Fixed paths count(${invalidPaths.fixable.length}), Unfixed paths count(${invalidPaths.unfixable})`);
-    
+
     return replacementString;
 }
 
@@ -129,11 +138,11 @@ function getInvalidWithValidPaths(outPaths: string[]): { unfixable: number, fixa
             invalidStringsObject.fixable.push({ invalid: currentPath, valid: paths[key] });
             continue;
         }
-      
+
         invalidStringsObject.unfixable++;
         console.error(`Couldn't fix ${outPaths[key]} from compile commands.`);
         console.error("You may have to Build the version specified in the path before the path is fixed (e.g. The path contains Development and/or Win64)\n");
-        
+
     }
 
     return invalidStringsObject;
@@ -169,9 +178,9 @@ function checkAndReplacePathSubstring(outPaths: string[], key: any, ...fromTos: 
 
 function warnInvalidPreIncludePaths(paths: RegExpMatchArray) {
 
-    for(const path of paths){
+    for (const path of paths) {
 
-        if(!existsSync(path)){
+        if (!existsSync(path)) {
             console.log("WARNING: Intellisense preinclude path doesn't exist. Building the project should fix this.");
             console.log("WARNING: If this message persists, then do a project reset.");
         }

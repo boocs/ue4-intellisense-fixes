@@ -29,7 +29,7 @@ export class CCResponseProject extends ProjectUE4 {
             return false;
         }
 
-        isValid = this.loadMainFirstConfigCompileCommands();
+        isValid = this.loadCompileCommandsFromWorkspace(this.mainWorkspaceKey);
         if(!isValid){
             return false;
         }

@@ -9,6 +9,9 @@ VSCode Extension supports Unreal Engine **v4.25** and **v4.26.1+**
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 1.6 May 25th, 2021
+- Update allows fixes to work on all configs instead of only the first one (c_cpp_properties.json). 
+
 ### 1.5.1 May 12th, 2021
 - **Fixed** Updated dependencies
 - **Fixed** Added 'null' check for response file operation

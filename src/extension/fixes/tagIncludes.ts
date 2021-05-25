@@ -17,15 +17,18 @@ import * as console from "../../console";
 export function fixTagIncludes(project: ProjectUE4) {
     console.log("Attempting to fix UE4 workspace(Add empty tag parser).");
 
-    const config = project.getFirstCCppPropertiesConfiguration(project.ue4WorkspaceKey);
+    const configs = project.getCCppConfigurationsFromWorkspace(project.ue4WorkspaceKey);
 
-    if (!config) {
-        console.error(`Error: UE4CCppProperties isn't valid`);
+    if (!configs) {
+        console.error(`Error: UE4CCppProperties[] isn't valid`);
         return;
     }
-    
-    config.browse = { path: [] };
-    console.log("UE4's tag parser includes is set to empty array for performance.");
+
+    for (const config of configs){
+        config.browse = { path: [] };
+    }
+    console.log("UE4's tag parser includes are set to empty array for performance.");
+
     checkAndAddLimitSymbolsSetting(project);
 }
 
@@ -45,13 +48,20 @@ function checkAndAddLimitSymbolsSetting(project: ProjectUE4){
         return;
     }
     else {
-        const firstMainCCppPropertiesConfig = project.getFirstCCppPropertiesConfiguration(project.mainWorkspaceKey);
+        const mainCCppPropertiesConfigs = project.getCCppConfigurationsFromWorkspace(project.mainWorkspaceKey);
 
-        if(!firstMainCCppPropertiesConfig){
+        if(!mainCCppPropertiesConfigs){
+            console.error("No main CCppProperty Configs found!");
             return;
         }
 
-        setLimitSymbolsInCCppConfig(firstMainCCppPropertiesConfig);
+        for ( const config of mainCCppPropertiesConfigs){
+            if(!config){
+                return;
+            }
+    
+            setLimitSymbolsInCCppConfig(config);
+        }
     }
 }
 
