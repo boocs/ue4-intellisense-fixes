@@ -2,6 +2,10 @@
 - Current and upcoming UE4/VSCode changes will force the compiler for Intellisense because of response file compiler flags.
 - I should be able to fix this by adding a setting to the extension to pick what compiler you want and also change the flags in the response file.
 
+## [2.0.0] 2021-5-26
+- Update for UE5 support
+- Updated setting names to be more general (will need to reenable fixes)
+
 ## [1.6.0] 2021-5-25
 - Update allows fixes to work on all configs instead of only the first one (c_cpp_properties.json). 
 

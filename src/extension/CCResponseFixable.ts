@@ -35,7 +35,7 @@ export class CCResponseFixable extends Fixable {
         console.log("End fix missing compile commands.\n");
 
         fixTagIncludes(this.project);
-        console.log("End fix UE4 workspace(Add empty tag parser).\n");
+        console.log("End fix UE workspace(Add empty tag parser).\n");
 
         fixWrongCppStandard(this.project);
         console.log("End fix wrong cppStandard.\n");
@@ -49,7 +49,7 @@ export class CCResponseFixable extends Fixable {
     protected async fixOptional(): Promise<void> {
 
         fixUE4Optimization(this.project);
-        console.log("End fix UE4 optimization.\n");
+        console.log("End fix UE optimization.\n");
     }
 
     protected async postFixProject(): Promise<void> {

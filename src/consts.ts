@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
 
-export const EXTENSION_NAME = "UE4 Intellisense Fixes";
+export const EXTENSION_NAME = "UE Intellisense Fixes";
 
 export const WORKSPACE_FOLDER_NAME_UE4 = "UE4";
+export const WORKSPACE_FOLDER_NAME_UE5 = "UE5";
 
 export const UE4_426_DIR_FOLDER_NAME = "UE_4.26";
 export const UE4_425_DIR_FOLDER_NAME = "UE_4.25";
 
-export const CONFIG_SECTION_EXTENSION = "UE4IntellisenseFixes";
+export const CONFIG_SECTION_EXTENSION = "UEIntellisenseFixes";
 
 export const CONFIG_SETTING_ENABLE_FIXES = "enableFixes";
 export const CONFIG_SETTING_ENABLE_OPTIONAL_FIXES = "enableOptionalFixes"; 
@@ -61,7 +62,7 @@ export const MAIN_STATUS_TEXT_FIXING = "IF $(symbol-property)";
 export const MAIN_STATUS_TEXT_DONE = "IF $(check)";
 export const MAIN_STATUS_ALIGN = vscode.StatusBarAlignment.Left;
 export const MAIN_STATUS_PRIORITY = -1500;
-export const MAIN_STATUS_COMMAND = "UE4IntellisenseFixes.showLog";
+export const MAIN_STATUS_COMMAND = "UEIntellisenseFixes.showLog";
 export const MAIN_STATUS_LIFE = 120000;
 
 export const RE_SEPARATOR = "/";

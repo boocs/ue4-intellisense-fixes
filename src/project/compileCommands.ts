@@ -97,7 +97,7 @@ export class CompileCommands {
     getUniqueMatchesFromAllCommandLines(regExp: RegExp): string[] | undefined {
 
         if (!this._compileCommands[0]?.command) {
-            console.error("No compile commands found in compile command's file. Try resetting UE4 project.");
+            console.error("No compile commands found in compile command's file. Try resetting UE project.");
             return;
         }
 

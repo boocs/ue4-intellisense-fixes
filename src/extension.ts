@@ -19,9 +19,9 @@ let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
 let isExtensionRunning = false;
 
 export async function activate(context: vscode.ExtensionContext) {
-	console.log('Extension "UE4 Intellisense Fixes" is now active!\n');
+	console.log('Extension "UE Intellisense Fixes" is now active!\n');
 
-	context.subscriptions.push(vscode.commands.registerCommand("UE4IntellisenseFixes.showLog", () => {
+	context.subscriptions.push(vscode.commands.registerCommand("UEIntellisenseFixes.showLog", () => {
 		console.outputChannel?.show(true);
 	}
 	));
@@ -141,24 +141,25 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 
 	console.log(`Found Unreal Engine v${version.major}.${version.minor}.${version.patch}\n`);
 
-	if (version.major !== 4) {
-		return;
-	}
-
-	if (version.minor === 25) {
-		return new V425Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
-	}
-	else if (version.minor === 26) {
-
-		if (version.patch > 0) {
-			return new CCResponseFixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
+	if (version.major === 4 ){
+		if (version.minor === 25) {
+			return new V425Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 		}
-		else { // We don't support 4.26.0
-			console.log("Unreal Engine version 4.26.0 is no longer supported.");
-			return;
+		else if (version.minor === 26) {
+	
+			if (version.patch > 0) {
+				return new CCResponseFixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
+			}
+			else { // We don't support 4.26.0
+				console.log("Unreal Engine version 4.26.0 is no longer supported.");
+				return;
+			}
 		}
 	}
-
+	else if(version.major === 5 ){
+		return new CCResponseFixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
+	}
+	
 	return;
 }
 

@@ -1,7 +1,7 @@
 /**
- * This fix optimizes the UE4 workspace by removing any project specific references and adding basic Intellisense
+ * This fix optimizes the UE workspace by removing any project specific references and adding basic Intellisense
  * 
- * To add preincludes, without polluting the UE4 workspace, we need to set them in the '.code-workspace' file.
+ * To add preincludes, without polluting the UE workspace, we need to set them in the '.code-workspace' file.
  */
 
 
@@ -16,13 +16,13 @@ import * as console from "../../console";
 
 
 export function fixUE4Optimization(project: ProjectUE4) {
-    console.log("Attempting to fix UE4 workspace optimization.");
+    console.log("Attempting to fix UE workspace optimization.");
 
     const ue4CCppPropertiesFirstConfig = project.getFirstCCppPropertiesConfiguration(project.ue4WorkspaceKey);
     const allUE4CppPropertiesConfigs = project.getCCppConfigurationsFromWorkspace(project.ue4WorkspaceKey);
 
     if (!ue4CCppPropertiesFirstConfig || !allUE4CppPropertiesConfigs) {
-        console.error("Couldn't get UE4's c_cpp_properties.json configs.");
+        console.error("Couldn't get UE's c_cpp_properties.json configs.");
         return;
     }
 

@@ -1,5 +1,5 @@
 /**
-    Compile Commands with response file UE4 project v4.26.1+ (most likely)
+    Compile Commands with response file project v4.26.1+ (most likely)
 */
 
 import { ProjectUE4 } from "./projectUE4";

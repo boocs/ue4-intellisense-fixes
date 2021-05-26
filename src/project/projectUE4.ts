@@ -88,7 +88,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
             return this._ue4WorkspaceFolder;
         }
         else {
-            throw Error("UE4 Workspace folder was not set properly."); // This shouldn't be reached if we have good valid checks
+            throw Error("UE Workspace folder was not set properly."); // This shouldn't be reached if we have good valid checks
         }
     }
 
@@ -151,11 +151,11 @@ export abstract class ProjectUE4 extends ProjectCCpp {
     protected static findUE4Workspace(): vscode.WorkspaceFolder | undefined {
 
         const ue4Workspace = vscode.workspace.workspaceFolders?.find(workspaceFolder => {
-            return workspaceFolder.name === consts.WORKSPACE_FOLDER_NAME_UE4;
+            return (workspaceFolder.name === consts.WORKSPACE_FOLDER_NAME_UE4 || workspaceFolder.name === consts.WORKSPACE_FOLDER_NAME_UE5);
         });
 
         if (!ue4Workspace) {
-            console.log("Couldn't find the UE4 workspace.");
+            console.log("Couldn't find the UE4/UE5 workspace.");
             return;
         }
 
@@ -187,7 +187,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
 
         if (excludeUE4) {
             if (!this.ue4WorkspaceFolder) {
-                console.error("UE4 Workspace Folder hasn't been set.");
+                console.error("UE Workspace Folder hasn't been set.");
                 return;
             }
 
@@ -240,14 +240,14 @@ export abstract class ProjectUE4 extends ProjectCCpp {
         const versionUri = await vscode.workspace.findFiles(relPattern, undefined, 1);
 
         if(!versionUri.length){
-            console.error("Couldn't find UE4 source file Version.h");
+            console.error("Couldn't find UE source file Version.h");
             return;
         }
 
         const versionStrings: RegExpMatchArray | null = await ProjectUE4.parseUnrealEngineVersionFrom(versionUri[0]);
 
         if(versionStrings?.length !== 3) {
-            console.error("UE4 version strings weren't found.");
+            console.error("UE version strings weren't found.");
             return;
         }
 

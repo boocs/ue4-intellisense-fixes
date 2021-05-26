@@ -1,5 +1,5 @@
 /**
- * The UE4 workspace doesn't specify a tag parser path list. This leads to parsing the whole UE4 source folder for symbols we don't need.
+ * The UE workspace doesn't specify a tag parser path list. This leads to parsing the whole UE source folder for symbols we don't need.
  * The tag parser combines all workspaces together and main workspace has everything the tag parser needs anyway.
  * Because of this, we just need to set tag parser includes to an empty array.
  * 
@@ -15,7 +15,7 @@ import * as console from "../../console";
 
 
 export function fixTagIncludes(project: ProjectUE4) {
-    console.log("Attempting to fix UE4 workspace(Add empty tag parser).");
+    console.log("Attempting to fix UE workspace(Add empty tag parser).");
 
     const configs = project.getCCppConfigurationsFromWorkspace(project.ue4WorkspaceKey);
 
@@ -27,7 +27,7 @@ export function fixTagIncludes(project: ProjectUE4) {
     for (const config of configs){
         config.browse = { path: [] };
     }
-    console.log("UE4's tag parser includes are set to empty array for performance.");
+    console.log("UE's tag parser includes are set to empty array for performance.");
 
     checkAndAddLimitSymbolsSetting(project);
 }

@@ -1,8 +1,8 @@
 {
 	"name": "ue4-intellisense-fixes",
-	"displayName": "UE4 Intellisense Fixes",
-	"description": "Automatically fixes UE4 Intellisense on startup.",
-	"version": "1.6.0",
+	"displayName": "UE Intellisense Fixes",
+	"description": "Automatically fixes Unreal Engine Intellisense on startup.",
+	"version": "2.0.0",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
@@ -24,21 +24,21 @@
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": {
-			"title": "UE4 Intellisense fixes",
+			"title": "UE Intellisense fixes",
 			"properties": {
-				"UE4IntellisenseFixes.enableFixes": {
+				"UEIntellisenseFixes.enableFixes": {
 					"type": "boolean",
-					"markdownDescription": "`(Fix)` Fixes 4.25.* and 4.26.1+ VSCode project's configuration.",
+					"markdownDescription": "`(Fix)` Fixes 4.25.*/4.26.1+/5.0.0+ VSCode project's configuration.",
 					"default": false,
 					"scope": "application"
 				},
-				"UE4IntellisenseFixes.enableOptionalFixes": {
+				"UEIntellisenseFixes.enableOptionalFixes": {
 					"type": "boolean",
-					"markdownDescription": "`(Optimization)` Removes project specific references from the UE4 workspace and adds general Intellisense to the UE4 source code.",
+					"markdownDescription": "`(Optimization)` Removes project specific references from the UE workspace and adds general Intellisense to the UE source code.",
 					"default": false,
 					"scope": "application"
 				},
-				"UE4IntellisenseFixes.cppStandard": {
+				"UEIntellisenseFixes.cppStandard": {
 					"type": "string",
 					"default": "",
 					"enum": [
