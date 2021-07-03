@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense on startup.",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
@@ -13,7 +13,7 @@
 		"url": "https://github.com/boocs/ue4-intellisense-fixes/issues"
 	},
 	"engines": {
-		"vscode": "^1.52.0"
+		"vscode": "^1.54.0"
 	},
 	"categories": [
 		"Other"

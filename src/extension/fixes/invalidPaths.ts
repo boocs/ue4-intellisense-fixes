@@ -15,7 +15,7 @@ import * as console from "../../console";
 export function fixResponse(project: ProjectUE4) {
     console.log("Fixing invalid paths in response files.");
 
-    const mainCompileCommands = project.getMainCompileCommands();
+    const mainCompileCommands = project.getMainWorkspaceCompileCommands();
 
     if (!mainCompileCommands) {
         console.log("No compile commands found!");

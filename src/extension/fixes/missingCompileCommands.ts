@@ -20,7 +20,7 @@ import * as console from "../../console";
 export async function fixMissingResponseCompileCommands(project: ProjectUE4, uriToCheck?: vscode.Uri): Promise<void | undefined> {
     console.log("Fixing missing compile command files.");
 
-    const mainCompileCommands = project.getMainCompileCommands();
+    const mainCompileCommands = project.getMainWorkspaceCompileCommands();
 
     if (!mainCompileCommands) {
         console.log("No compile commands found!");
