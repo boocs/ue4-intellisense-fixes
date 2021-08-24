@@ -1,6 +1,11 @@
 ### [TODO]
-- Current and upcoming UE4/VSCode changes will force the compiler for Intellisense because of response file compiler flags.
-- I should be able to fix this by adding a setting to the extension to pick what compiler you want and also change the flags in the response file.
+
+
+## [2.1.0] 2021-8-24
+- **Fixed** 4.27 New compiler path bug. It's using full path in compile command files when it shouldn't.
+- **Fixed** Regex for response file include paths for 4.27.0 compatibility
+- **Fixed** UE4 compile command weren't getting loaded for pontential fixing (needed if optional fixes were turned off)
+- Removed auto disable/enable of intellisense (could interfere with other extensions)
 
 ## [2.0.1] 2021-7-3
 - Security fix by updating dependencies

@@ -9,6 +9,12 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 2.1.0 August 24th, 2021
+- **Fixed** 4.27 New compiler path bug 
+- **Fixed** Regex for response file include paths for 4.27.0 compatibility
+- **Fixed** UE4 compile command weren't getting loaded for pontential fixing
+- Removed auto disable/enable of intellisense (could interfere with other extensions)
+
 ### 2.0.1 July 3rd, 2021
 - **Fixed** Security fix by updating dependencies
 - Small change to support Plugin development.

@@ -23,7 +23,7 @@ export class CCResponseFixable extends Fixable {
     }
 
     protected async initializeProject(): Promise<CCResponseProject | undefined> {        
-        return await CCResponseProject.create();
+        return await CCResponseProject.create(this.isOptionalFixesEnabled);
     }
 
     protected async fixProject(): Promise<void> {

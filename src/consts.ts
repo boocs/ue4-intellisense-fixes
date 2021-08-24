@@ -66,7 +66,11 @@ export const MAIN_STATUS_COMMAND = "UEIntellisenseFixes.showLog";
 export const MAIN_STATUS_LIFE = 120000;
 
 export const RE_SEPARATOR = "/";
-export const RE_COMPILE_COMMAND_INCLUDE_PATHS = /(?<=[\-|/]I\")(.*?)(?=\")/gm;
+
+// export const RE_COMPILE_COMMAND_INCLUDE_PATHS = /(?<=[\-|/]I\")(.*?)(?=\")/gm;
+// 8/24/2021 Changed for 427 formatting change
+export const RE_COMPILE_COMMAND_INCLUDE_PATHS = /(?<=[\/|\-]I\s?")(.*?)(?=")/gm;
+
 export const RE_COMPILE_COMMAND_FORCED_PATHS = /(?<=[\-|/](include|FI)\s?")(.*?)(?=")/gm;
 
 export const RE_PREINCLUDE_SHAREDPCH_PATH = /(?<=-(include|FI)\s?")(.*?SharedPCH\.Engine.*?)(?=")/gm;
@@ -77,6 +81,7 @@ export const TEXT_SHAREDPCH_SHADOW_FILENAME = "SharedPCH.Engine.ShadowErrors.h";
 
 export const RE_INCORRECT_FOLDER_INC = "Inc";
 export const RE_COMPILE_COMMAND_INC_BAD_PATH = "(?<=[\\\\|\\/])Inc(?=\\\\|\\/)";
+export const RE_COMPILE_COMMAND_COMPILER_EXE_AND_RSP_PATH = /([\w]+.exe)\s(@.*.rsp\")/gm;
 
 export const RE_COMPILE_COMMAND_RELIABILITY_BAD_PATH = "(?<=[\\\\|\\/])ReliabilityHandlerComponent";
 

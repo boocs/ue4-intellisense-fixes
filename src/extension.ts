@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { CCResponseFixable } from "./extension/CCResponseFixable";
 import type { Fixable } from "./extension/fixable";
 import { V425Fixable } from "./extension/V425fixable";
+import { V427Fixable } from "./extension/V427fixable";
 import { ProjectUE4 } from "./project/projectUE4";
 import * as consts from "./consts";
 import { delay } from "./shared";
@@ -57,14 +58,11 @@ async function runExtension(): Promise<Fixable | undefined> {
 
 			progress.report({ increment: 0, message: text.PLEASE_WAIT_INTELLISENSE_FIXES });
 
-			await disableDefaultIntellisense();
-
 			let fixableProject: Fixable | undefined;
 			try {
 				fixableProject = await getFixableProject();
 			}
 			catch {
-				await enableDefaultIntellisense();
 				return;
 			}
 			progress.report({ increment: 30, message: text.PLEASE_WAIT_INTELLISENSE_FIXES });
@@ -80,14 +78,13 @@ async function runExtension(): Promise<Fixable | undefined> {
 				}
 			}
 			catch {
-				// This should never hit but just in case we always want to remove the setting.
-				await enableDefaultIntellisense();
+				// This should never hit			
 				return undefined;
 			}
 			progress.report({ increment: 40, message: text.PLEASE_WAIT_INTELLISENSE_FIXES });
 
 
-			await enableDefaultIntellisense();
+			
 			progress.report({ increment: 30, message: text.PLEASE_WAIT_INTELLISENSE_FIXES });
 			return fixableProject;
 
@@ -154,6 +151,13 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 				console.log("Unreal Engine version 4.26.0 is no longer supported.");
 				return;
 			}
+		}
+		else if (version.minor >= 27) {
+
+			if (version.patch === 0) {
+				return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
+			}
+			
 		}
 	}
 	else if(version.major === 5 ){

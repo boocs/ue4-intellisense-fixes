@@ -280,4 +280,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
         return this.getCompileCommandsFromWorkspace(MAIN_KEY);
     }
 
+    public getUe4WorkspaceCompileCommands() {
+        return this.getCompileCommandsFromWorkspace(UE4_KEY);
+    }
 }
