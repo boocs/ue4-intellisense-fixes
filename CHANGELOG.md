@@ -1,11 +1,18 @@
 ### [TODO]
 
+## [2.1.1] 2021-10-12
+### Fixed
+- Fixed bug that didn't allow any version after 4.27.0 to be fixed
+- Fixed unknown type errors inside catch blocks
 
 ## [2.1.0] 2021-8-24
+### Fixed
 - **Fixed** 4.27 New compiler path bug. It's using full path in compile command files when it shouldn't.
 - **Fixed** Regex for response file include paths for 4.27.0 compatibility
 - **Fixed** UE4 compile command weren't getting loaded for pontential fixing (needed if optional fixes were turned off)
-- Removed auto disable/enable of intellisense (could interfere with other extensions)
+
+### Removed
+- auto disable/enable of intellisense (could interfere with other extensions)
 
 ## [2.0.1] 2021-7-3
 - Security fix by updating dependencies

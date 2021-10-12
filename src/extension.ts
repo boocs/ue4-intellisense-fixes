@@ -152,12 +152,9 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 				return;
 			}
 		}
-		else if (version.minor >= 27) {
+		else if (version.minor === 27) {
 
-			if (version.patch === 0) {
-				return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
-			}
-			
+			return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 		}
 	}
 	else if(version.major === 5 ){

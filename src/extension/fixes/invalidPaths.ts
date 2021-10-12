@@ -53,7 +53,11 @@ export function fixResponse(project: ProjectUE4) {
             try {
                 writeFileSync(filePath, fixedFileString, consts.ENCODING_UTF_8);
             } catch (error) {
-                console.error(`Problem writing fixed response file: ${error.message}.`);
+
+                if (error instanceof Error) {
+                    console.error(`Problem writing fixed response file: ${error.message}.`);
+                }
+                
                 continue;
             }
         }

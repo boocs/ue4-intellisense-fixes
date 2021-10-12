@@ -27,7 +27,9 @@ export async function readStringFromFile(path: string, encoding: string = consts
         return await fsAsync.readFile(path, encoding) as string;
     }
     catch (error) {
-        console.error(`Error reading ${path}. Message: ${error.message}; Reason: ${error.code}`);
+        if(error instanceof Error){ 
+            console.error(`Error reading ${path}. Message: ${error.message}`);
+        }
         return undefined;
     }
 }
@@ -48,7 +50,9 @@ export function readStringFromFileSync(path: string, encoding: string = consts.E
         return fsSync.readFileSync(path, encoding) as string;
     }
     catch (error) {
-        console.error(`Error reading ${path}. Message: ${error.message}; Reason: ${error.code}`);
+        if(error instanceof Error){ 
+            console.error(`Error reading ${path}. Message: ${error.message}`);
+        }
         return undefined;
     }
 }
@@ -70,7 +74,9 @@ export async function writeJsonToFile(path: string, data: any, encoding: string 
         return;
     }
     catch (error) {
-        console.error(`Error writing json file. Message: ${error.message}; Reason: ${error.code}`);
+        if(error instanceof Error){
+            console.error(`Error writing json file. Message: ${error.message}`);
+        }
         return;
     }
 
@@ -92,7 +98,10 @@ export function writeJsonToFileSync(path: string, data: any, encoding: string = 
         fsSync.writeFileSync(path, writeData, encoding);
     }
     catch (error) {
-        console.error(`Error writing json file. Message: ${error.message}; Reason: ${error.code}`);
+        if(error instanceof Error){
+            console.error(`Error writing json file. Message: ${error.message}`);
+        }
+
         return;
     }
 
@@ -109,7 +118,11 @@ export function jsonParseSafe(data: string): any | undefined {
     try {
         return JSON.parse(data);
     } catch (error) {
-        console.error(`JSON string was malformed and can't be parsed. Message: ${error.message}`);
+
+        if(error instanceof Error){
+            console.error(`JSON string was malformed and can't be parsed. Message: ${error.message}`);
+        }
+
         return undefined;
     }
 }

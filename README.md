@@ -2,13 +2,16 @@
 
 VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+**
 
-### v2.0.0 ReadMe link:
+### ReadMe link:
 
 ### [More Detailed Readme](https://gist.github.com/boocs/f63a4878156295b6e854cac68672f305)
 
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 2.1.1 October 12th, 2021
+- Fixed bug that didn't allow any version after 4.27.0 to be fixed
+
 ### 2.1.0 August 24th, 2021
 - **Fixed** 4.27 New compiler path bug 
 - **Fixed** Regex for response file include paths for 4.27.0 compatibility
@@ -25,17 +28,3 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 
 ### 1.6.0 May 25th, 2021
 - Update allows fixes to work on all configs instead of only the first one (c_cpp_properties.json). 
-
-### 1.5.1 May 12th, 2021
-- **Fixed** Updated dependencies
-- **Fixed** Added 'null' check for response file operation
-
-### v1.5.0 April 15th, 2021
-- **Fixed** Regex to read 4.26.2 cl.exe flags in response files was fixed. (In 4.26.2, cl flags use '/' instead of '-')
-- **Fixed** New Source/Header fix for projects that build multiple modules. You can now select the response file for new files.
-- **Fixed** UE4 workspace optimization now works with projects that build multiple modules.
-- Removed the invalid Intellisense preinclude path fix since it couldn't encompass every single scenario
-  - Added additional warning/info message for invalid Intellisense preinclude paths
-- Added additional warnings messaging when adding new header/source files
-- Added error message if response file contains only the word undefined
-
