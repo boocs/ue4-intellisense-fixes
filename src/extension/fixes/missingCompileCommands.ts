@@ -11,11 +11,13 @@ import type { ProjectUE4 } from "../../project/projectUE4";
 
 import * as console from "../../console";
 
+const CancelRemainingMissingFixesCommand = "Cancel Remaining";
+
 /**
- * 
- * @param project 
+ *
+ * @param project
  * @param pathToCheck check one path or check all files found in Source directory
- * @returns 
+ * @returns
  */
 export async function fixMissingResponseCompileCommands(project: ProjectUE4, uriToCheck?: vscode.Uri): Promise<void | undefined> {
     console.log("Fixing missing compile command files.");
@@ -72,9 +74,9 @@ export async function fixMissingResponseCompileCommands(project: ProjectUE4, uri
 /**
  * Iterate through every source/header file and check if they're in the compile commands file
  * Return all file paths that aren't
- * @param sourceFiles 
- * @param compileCommands 
- * @returns 
+ * @param sourceFiles
+ * @param compileCommands
+ * @returns
  */
 function findMissingFilePaths(sourceFiles: vscode.Uri[], compileCommands: CompileCommands): string[] {
 
@@ -136,6 +138,13 @@ async function addFilesToCompileCommands(outCompileCommands: CompileCommands, pa
                 continue;
             }
 
+            if (newCommandObject.command === CancelRemainingMissingFixesCommand) {
+                // If the user selects Cancel Remaining in the prompt for asking for a
+                // a missing path, we stop requesting for more missing paths by escaping
+                // this loop
+                break;
+            }
+
         }
 
         outCompileCommands.addCommandObject(newCommandObject);
@@ -154,11 +163,18 @@ async function getCommandObjectFromResponseChoice(
     const responseChoice = await vscode.window.showInformationMessage(
         `Intellisense Fix\nChoose response file for new Source/Header:\n${targetFileName}\n(Resetting project can also fix this or any incorrect choice)`,
         { modal: true },
-        ...convertPathsToFileNames(responsePaths)
+        ...convertPathsToFileNames(responsePaths),
+        CancelRemainingMissingFixesCommand
     );
 
     if (!responseChoice) {
         return undefined;
+    }
+
+    if (responseChoice === CancelRemainingMissingFixesCommand) {
+        return {
+            command: CancelRemainingMissingFixesCommand
+        };
     }
 
     const commandLine = findCommandFrom(compileCommands, responseChoice);
