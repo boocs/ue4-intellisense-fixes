@@ -1,5 +1,9 @@
 ### [TODO]
 
+## [2.1.2] 2021-10-18
+### Added
+-- Allow cancelling all response file choices of missing compile commands  by [seesemichaelj](https://github.com/seesemichaelj)
+
 ## [2.1.1] 2021-10-12
 ### Fixed
 - Fixed bug that didn't allow any version after 4.27.0 to be fixed

@@ -11,7 +11,7 @@ import type { ProjectUE4 } from "../../project/projectUE4";
 
 import * as console from "../../console";
 
-const CancelRemainingMissingFixesCommand = "Cancel Remaining";
+const cancelRemainingMissingFixesCommand = "Cancel Remaining";
 
 /**
  *
@@ -138,7 +138,7 @@ async function addFilesToCompileCommands(outCompileCommands: CompileCommands, pa
                 continue;
             }
 
-            if (newCommandObject.command === CancelRemainingMissingFixesCommand) {
+            if (newCommandObject.command === cancelRemainingMissingFixesCommand) {
                 // If the user selects Cancel Remaining in the prompt for asking for a
                 // a missing path, we stop requesting for more missing paths by escaping
                 // this loop
@@ -164,16 +164,16 @@ async function getCommandObjectFromResponseChoice(
         `Intellisense Fix\nChoose response file for new Source/Header:\n${targetFileName}\n(Resetting project can also fix this or any incorrect choice)`,
         { modal: true },
         ...convertPathsToFileNames(responsePaths),
-        CancelRemainingMissingFixesCommand
+        cancelRemainingMissingFixesCommand
     );
 
     if (!responseChoice) {
         return undefined;
     }
 
-    if (responseChoice === CancelRemainingMissingFixesCommand) {
+    if (responseChoice === cancelRemainingMissingFixesCommand) {
         return {
-            command: CancelRemainingMissingFixesCommand
+            command: cancelRemainingMissingFixesCommand
         };
     }
 
