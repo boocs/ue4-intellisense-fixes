@@ -9,8 +9,14 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 2.2.0 December 23rd, 2021
+- (4.27+/5.0+) Changed the way compiler path was getting fixed in compile command files.
+- (4.27+/5.0+) Added clang-cl.exe intellisense support to Windows. Add clang-cl.exe path to the cpptools extension User's compilerPath setting to use. 
+- Fixed an error message not getting logged
+- UE 5.0+ now uses compiler path fix that 4.27 uses
+
 ### 2.1.2 October 18th, 2021
--- Allow cancelling all response file choices of missing compile commands  by [seesemichaelj](https://github.com/seesemichaelj)
+- Allow cancelling all response file choices of missing compile commands  by [seesemichaelj](https://github.com/seesemichaelj)
 
 **Thanks!**
 

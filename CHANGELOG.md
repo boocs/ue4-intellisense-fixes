@@ -1,8 +1,17 @@
 ### [TODO]
 
+## [2.2.0] 2021-12-23
+### Fixed
+- Fixed an error message not getting logged
+### Changed
+- (4.27+/5.0+) Changed the way compiler path was getting fixed in compile command files.
+- UE 5.0+ now uses compiler path fix that 4.27 uses
+### Added
+- (4.27+/5.0+) Added clang-cl.exe intellisense support to Windows. Add clang-cl.exe path to the cpptools extension User's compilerPath setting to use. 
+
 ## [2.1.2] 2021-10-18
 ### Added
--- Allow cancelling all response file choices of missing compile commands  by [seesemichaelj](https://github.com/seesemichaelj)
+- Allow cancelling all response file choices of missing compile commands  by [seesemichaelj](https://github.com/seesemichaelj)
 
 ## [2.1.1] 2021-10-12
 ### Fixed

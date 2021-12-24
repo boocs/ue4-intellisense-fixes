@@ -13,9 +13,11 @@ export const CONFIG_SECTION_EXTENSION = "UEIntellisenseFixes";
 export const CONFIG_SETTING_ENABLE_FIXES = "enableFixes";
 export const CONFIG_SETTING_ENABLE_OPTIONAL_FIXES = "enableOptionalFixes"; 
 
+export const CONFIGURATION_C_CPP = "C_Cpp";
 export const CONFIG_SETTING_DEFAULT_INCLUDE_PATH = "default.includePath";
 export const CONFIG_SETTING_DEFAULT_BROWSE_PATH = "default.browse.path";
 export const CONFIG_SETTING_DEFAULT_FORCED_INCLUDE = "default.forcedInclude";
+export const CONFIG_SETTING_DEFAULT_COMPILER_PATH = "default.compilerPath";
 export const CONFIG_SETTING_DEFAULT_INTELLISENSE_MODE = "default.intelliSenseMode";
 export const CONFIG_SETTING_INTELLISENSE_ENGINE = "intelliSenseEngine";
 export const CONFIG_SETTING_INTELLISENSE_ENGINE_TAG_PARSER = "Tag Parser";
@@ -81,7 +83,7 @@ export const TEXT_SHAREDPCH_SHADOW_FILENAME = "SharedPCH.Engine.ShadowErrors.h";
 
 export const RE_INCORRECT_FOLDER_INC = "Inc";
 export const RE_COMPILE_COMMAND_INC_BAD_PATH = "(?<=[\\\\|\\/])Inc(?=\\\\|\\/)";
-export const RE_COMPILE_COMMAND_COMPILER_EXE_AND_RSP_PATH = /([\w]+.exe)\s(@.*.rsp\")/gm;
+export const RE_COMPILE_COMMAND_COMPILER_EXE_AND_RSP_PATH = /(?:.*?(?= @)|@.*)/gm;
 
 export const RE_COMPILE_COMMAND_RELIABILITY_BAD_PATH = "(?<=[\\\\|\\/])ReliabilityHandlerComponent";
 
@@ -102,5 +104,27 @@ export const INTELLISENSE_ENABLE_DISABLE_DELAY = 3000;
 export const LAUNCH_PATH_SUFFIX = ".vscode/launch.json";
 
 export const TEXT_MSVC = "msvc";
-export const RE_NON_MSVC_PREINCLUDE_FLAG = /-include/gm;
-export const MSVC_PREINCLUDE_FLAG = "-FI";
+export const RE_CLANG_PREINCLUDE_FLAG = /^-include/gm; //
+export const RE_MSVC_PREINCLUDE_FLAG = /^\/FI/gm;
+
+export const RE_MSVC_INCLUDE_FLAG = /^\/I/gm;
+export const RE_CLANG_INCLUDE_FLAG = /^--include-directory/gm;
+
+export const CLANG_PREINCLUDE_FLAG = "-include"; //
+export const MSVC_PREINCLUDE_FLAG = `/FI`;
+
+export const CLANG_INCLUDE_FLAG = "--include-directory";
+export const MSVC_INCLUDE_FLAG = `/I`;
+
+
+
+export const COMPILER_MSVC = "cl.exe";
+export const COMPILER_CLANG = "clang++.exe";
+export const COMPILER_CLANG_CL_NO_EXT = "clang-cl";
+
+export const INTELLISENSE_MODE_CLANG_X64 = "windows-clang-x64";
+export const INTELLISENSE_MODE_CLANG_X86 = "windows-clang-x86";
+export const INTELLISENSE_MODE_MSVC_X64 = "windows-msvc-x64";
+export const INTELLISENSE_MODE_MSVC_X86 = "windows-msvc-x86";
+
+export const PLATFORM_WINDOWS = "win32";

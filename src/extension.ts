@@ -10,9 +10,9 @@ import * as consts from "./consts";
 import { delay } from "./shared";
 import * as path from "path";
 
-import * as console from "./console";
-
 import * as text from "./text";
+
+import * as console from "./console";
 
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
@@ -37,6 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	await endRun(statusItem);
+	
 }
 
 
@@ -153,16 +154,16 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 			}
 		}
 		else if (version.minor === 27) {
-
 			return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 		}
 	}
 	else if(version.major === 5 ){
-		return new CCResponseFixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
+		return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 	}
 	
 	return;
 }
+
 
 
 function createWatchers(fixableProject: Fixable) {

@@ -5,6 +5,7 @@
 import { ProjectUE4 } from "./projectUE4";
 import type { IsValid } from "./builderBase";
 
+import * as console from "../console";
 
 export class CCResponseProject extends ProjectUE4 {
     // Use create to construct
