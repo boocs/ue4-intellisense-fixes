@@ -6,6 +6,7 @@ import { fixTagIncludes } from "./fixes/tagIncludes";
 import { fixWrongCppStandard } from "./fixes/wrongCppStandard";
 
 import * as console from "../console";
+import { fixWrongIntellisenseMode } from "./fixes/wrongIntellisenseMode";
 
 
 export class V425Fixable extends Fixable {
@@ -32,6 +33,9 @@ export class V425Fixable extends Fixable {
 
         fixWrongCppStandard(this.project);
         console.log("End fix wrong cppStandard.\n");
+
+        fixWrongIntellisenseMode(this.project);
+        console.log("End fix wrong intellisense mode.\n");
         
         return;
     }

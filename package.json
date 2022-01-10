@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense on startup.",
-	"version": "2.2.0",
+	"version": "2.3.0",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
@@ -44,16 +44,12 @@
 					"enum": [
 						"",
 						"c++14",
-						"c++17",
-						"gnu++14",
-						"gnu++17"
+						"c++17"
 					],
 					"enumDescriptions": [
 						"Uses cpptools cppStandard setting.",
 						"Forces use of c++14",
-						"Forces use of c++17",
-						"Forces use of gnu++14",
-						"Forces use of gnu++17"
+						"Forces use of c++17"
 					]
 				}
 			}

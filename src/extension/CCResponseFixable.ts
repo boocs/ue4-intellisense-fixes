@@ -10,6 +10,7 @@ import { fixWrongCppStandard } from "./fixes/wrongCppStandard";
 
 import * as console from "../console";
 import { fixLaunchFile } from "./fixes/launch";
+import { fixWrongIntellisenseMode } from "./fixes/wrongIntellisenseMode";
 
 
 
@@ -42,6 +43,9 @@ export class CCResponseFixable extends Fixable {
 
         fixLaunchFile(this.project);
         console.log("End fix launch.json.\n");
+
+        fixWrongIntellisenseMode(this.project);
+        console.log("End fix wrong intellisense mode.\n");
 
         return;
     }

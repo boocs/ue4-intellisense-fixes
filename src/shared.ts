@@ -9,6 +9,8 @@ import * as consts from './consts';
 import * as text from './text';
 
 import * as console from './console';
+import { ProjectUE4 } from './project/projectUE4';
+import { CCppConfigurationJson } from './project/ntypes';
 
 
 /**
@@ -206,4 +208,48 @@ export function createRegExpFrom(regExpString: string): RegExp {
         vscode.window.showErrorMessage(text.INVALID_REGEX, text.OK);
         throw error;
     }
+}
+
+
+// These next two functions get stuck here. Didn't like anywhere else.
+export function setIntellisenseMode(project: ProjectUE4, mode: string) {
+    const workSpacesCCppConfigs = getWorkspacesCCppConfigs(project);
+    
+    if (!workSpacesCCppConfigs) {
+        console.error("Error getting workspaces. The intellisenseMode won't be changed.");
+        return;
+    }
+    
+    for (const key in workSpacesCCppConfigs){
+        for (const config of workSpacesCCppConfigs[key]) {
+            config.intelliSenseMode = mode;
+            console.log(`This extension set ${key} workspace c_cpp_properties.json's intellisenseMode to ${mode}`);
+        }
+                
+    }
+}
+
+// Copied from another fix... Should put this in a single file...
+/**
+ * @param project 
+ * @logs error
+ */
+ export function getWorkspacesCCppConfigs(project: ProjectUE4): Record<string, CCppConfigurationJson[]> | undefined {
+    const mainCCppPropertiesConfiguration = project.getCCppConfigurationsFromWorkspace(project.mainWorkspaceKey);
+    if (!mainCCppPropertiesConfiguration) {
+        console.error("Couldn't get Main c_cpp_properties.json's first configuration.");
+        return;
+    }
+
+    const ue4CCppPropertiesConfiguration = project.getCCppConfigurationsFromWorkspace(project.ue4WorkspaceKey);
+    if (!ue4CCppPropertiesConfiguration) {
+        console.error("Couldn't get UE4 c_cpp_properties.json's first configuration.");
+        return;
+    }
+
+    const workspaces: Record<string, CCppConfigurationJson[]> = {};
+    workspaces[project.mainWorkspaceKey] = mainCCppPropertiesConfiguration;
+    workspaces[project.ue4WorkspaceKey] = ue4CCppPropertiesConfiguration;
+
+    return workspaces;
 }

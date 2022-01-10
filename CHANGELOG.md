@@ -1,5 +1,11 @@
 ### [TODO]
 
+## [2.3.0] 2022-01-10
+### Added
+- Fix for Mac M1 users to change Intellisense Mode automatically (untested)
+### Removed
+- Options for c++ standard not supported by UE
+
 ## [2.2.0] 2021-12-23
 ### Fixed
 - Fixed an error message not getting logged

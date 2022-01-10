@@ -9,6 +9,10 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 2.3.0 January 10th, 2022
+- Fix for Mac M1 users to change Intellisense Mode automatically (untested)
+- Removed options for c++ standard not supported by UE
+
 ### 2.2.0 December 23rd, 2021
 - (4.27+/5.0+) Changed the way compiler path was getting fixed in compile command files.
 - (4.27+/5.0+) Added clang-cl.exe intellisense support to Windows. Add clang-cl.exe path to the cpptools extension User's compilerPath setting to use. 
