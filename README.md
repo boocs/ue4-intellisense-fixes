@@ -9,6 +9,10 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+
+### 2.3.1 January 17th, 2022
+- Fix for startup bug not finding *.uproject file thus not starting the extension
+
 ### 2.3.0 January 10th, 2022
 - Fix for Mac M1 users to change Intellisense Mode automatically (untested)
 - Removed options for c++ standard not supported by UE

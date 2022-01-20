@@ -20,6 +20,12 @@ let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
 let isExtensionRunning = false;
 
 export async function activate(context: vscode.ExtensionContext) {
+	
+	if(!await workspaceHasUprojectFile()) {
+		console.log('No *.uproject file found!');
+		return;
+	}
+
 	console.log('Extension "UE Intellisense Fixes" is now active!\n');
 
 	context.subscriptions.push(vscode.commands.registerCommand("UEIntellisenseFixes.showLog", () => {
@@ -45,6 +51,19 @@ export function deactivate() {
 
 	console.outputChannel?.dispose();
 	resetEventFileWatcher?.dispose();
+}
+
+// Check if any workspace has a uproject file
+async function workspaceHasUprojectFile() : Promise<boolean> {
+	console.log('Searching for *.uproject file...');
+
+	const foundFile = await vscode.workspace.findFiles("*.uproject", null, 1, undefined);
+
+	if(!foundFile.length) {
+		return false;
+	}
+	
+	return true;
 }
 
 async function runExtension(): Promise<Fixable | undefined> {

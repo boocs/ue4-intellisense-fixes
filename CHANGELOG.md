@@ -1,5 +1,9 @@
 ### [TODO]
 
+## [2.3.1] 2022-01-17
+### Fix
+- Fix for startup bug not finding *.uproject file thus not starting the extension
+
 ## [2.3.0] 2022-01-10
 ### Added
 - Fix for Mac M1 users to change Intellisense Mode automatically (untested)
