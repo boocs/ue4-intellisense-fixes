@@ -13,11 +13,19 @@ const IS_DEBUG = false;
 export function log(message: string) {
     if(IS_DEBUG){  console.log(message); }
 
+    if(!outputChannel){
+        return;
+    }
+    
     outputChannel.appendLine(message);
 }
 
 export function error(message: string) {
     if(IS_DEBUG){  console.error(message); }
+
+    if(!outputChannel){
+        return;
+    }
 
     outputChannel.appendLine("** Error **: ".concat(message));
     outputChannel.show();

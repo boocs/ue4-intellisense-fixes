@@ -4,13 +4,15 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { promises as fsAsync } from 'fs';
 import * as fsSync from "fs";
+import * as os from "os";
 
 import * as consts from './consts';
 import * as text from './text';
 
-import * as console from './console';
 import { ProjectUE4 } from './project/projectUE4';
 import { CCppConfigurationJson } from './project/ntypes';
+
+import * as console from './console';
 
 
 /**
@@ -23,7 +25,7 @@ import { CCppConfigurationJson } from './project/ntypes';
  * 
  * @logs console.error Error.code
  */
-export async function readStringFromFile(path: string, encoding: string = consts.ENCODING_UTF_8): Promise<string | undefined> {
+export async function readStringFromFile(path: string, encoding: BufferEncoding = consts.ENCODING_UTF_8): Promise<string | undefined> {
 
     try {
         return await fsAsync.readFile(path, encoding) as string;
@@ -46,10 +48,12 @@ export async function readStringFromFile(path: string, encoding: string = consts
  * 
  * @logs console.error Error.code
  */
-export function readStringFromFileSync(path: string, encoding: string = consts.ENCODING_UTF_8): string | undefined {
+export function readStringFromFileSync(path: string, encoding: BufferEncoding = consts.ENCODING_UTF_8): string | undefined {
 
     try {
-        return fsSync.readFileSync(path, encoding) as string;
+        
+        return fsSync.readFileSync(path, encoding ) as string;
+        
     }
     catch (error) {
         if(error instanceof Error){ 
@@ -68,7 +72,7 @@ export function readStringFromFileSync(path: string, encoding: string = consts.E
  * @param encoding Default 'utf-8'
  * @logs console.error Error.code
  */
-export async function writeJsonToFile(path: string, data: any, encoding: string = consts.ENCODING_UTF_8,
+export async function writeJsonToFile(path: string, data: any, encoding: BufferEncoding = consts.ENCODING_UTF_8,
     spacing: number = consts.JSON_SPACING) {
     try {
         const writeData = typeof data === "string" ? data : JSON.stringify(data, undefined, spacing);
@@ -93,7 +97,7 @@ export async function writeJsonToFile(path: string, data: any, encoding: string 
  * @param encoding Default 'utf-8' 
  * @logs console.error Error.code
  */
-export function writeJsonToFileSync(path: string, data: any, encoding: string = consts.ENCODING_UTF_8,
+export function writeJsonToFileSync(path: string, data: any, encoding: BufferEncoding = consts.ENCODING_UTF_8,
     spacing: number = consts.JSON_SPACING) {
     try {
         const writeData = typeof data === "string" ? data : JSON.stringify(data, undefined, spacing);
@@ -253,3 +257,14 @@ export function setIntellisenseMode(project: ProjectUE4, mode: string) {
 
     return workspaces;
 }
+
+// ref: https://stackoverflow.com/questions/65146751/detecting-apple-silicon-mac-in-javascript
+export function isMacM1(isLog = true) : boolean {
+
+    if(isLog) {
+        console.log(`Cpu: ${os.cpus()[0].model}`);
+    }
+
+    return os.cpus()[0].model.includes(consts.CPUID_MACM1);
+}
+

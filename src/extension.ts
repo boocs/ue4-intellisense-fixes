@@ -165,7 +165,7 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 		else if (version.minor === 26) {
 	
 			if (version.patch > 0) {
-				return new CCResponseFixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
+				return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 			}
 			else { // We don't support 4.26.0
 				console.log("Unreal Engine version 4.26.0 is no longer supported.");

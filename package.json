@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense on startup.",
-	"version": "2.3.1",
+	"version": "2.4.0",
 	"publisher": "boocs",
 	"license": "SEE LICENSE IN THE FILE: LICENSE",
 	"repository": {
@@ -13,7 +13,7 @@
 		"url": "https://github.com/boocs/ue4-intellisense-fixes/issues"
 	},
 	"engines": {
-		"vscode": "^1.54.0"
+		"vscode": "^1.63.1"
 	},
 	"categories": [
 		"Other"
@@ -41,6 +41,7 @@
 				"UEIntellisenseFixes.cppStandard": {
 					"type": "string",
 					"default": "",
+					"description": "Force cppStandard in c_cpp_properties.json",
 					"enum": [
 						"",
 						"c++14",
@@ -51,6 +52,18 @@
 						"Forces use of c++14",
 						"Forces use of c++17"
 					]
+				},
+				"UEIntellisenseFixes.compiler.path": {
+					"type": "string",
+					"default": "",
+					"description": "Force this compiler path to be set in c_cpp_properties.json",
+					"scope": "application"
+				},
+				"UEIntellisenseFixes.compiler.strictPath": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Force compiler path to be set in compile commands. `Use only` if UEIntellisenseFixes.compiler.path setting doesn't work. Reset project after `unchecking` this.",
+					"scope": "application"
 				}
 			}
 		}
@@ -64,16 +77,16 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.52.0",
-		"@typescript-eslint/eslint-plugin": "^4.9.0",
-		"@typescript-eslint/parser": "^4.9.0",
-		"eslint": "^7.15.0",
-		"glob": "^7.1.6",
-		"mocha": "^8.1.3",
-		"typescript": "^4.1.2",
-		"vscode-test": "^1.4.1"
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.0",
+		"@types/node": "^17.0.12",
+		"@types/vscode": "^1.63.1",
+		"@typescript-eslint/eslint-plugin": "^5.10.1",
+		"@typescript-eslint/parser": "^5.10.1",
+		"eslint": "^8.7.0",
+		"glob": "^7.2.0",
+		"mocha": "^9.2.0",
+		"typescript": "^4.5.5",
+		"vscode-test": "^1.6.1"
 	}
 }

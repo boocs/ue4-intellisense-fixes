@@ -22,6 +22,7 @@ export type CCppConfigurationJson = {
 	}
 	defines?: string[];
 	cppStandard?: string;
+	compilerPath?: string;
 };
 
 

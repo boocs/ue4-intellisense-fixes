@@ -1,17 +1,13 @@
 /*
     4.27 started adding a non escaped full compiler path in the compile commands file which VSCode doesn't like
-    Will use override compiler path if on Windows and using clang-cl.exe
+    Will use override compiler path if extension setting compiler path strict is set to true and a extension compiler path is set
 */
 
 import * as vscode from "vscode";
 
-import * as fs from "fs";
-import * as os from "os";
-
 import type { ProjectUE4 } from '../../project/projectUE4';
 import type { CompileCommands } from "../../project/compileCommands";
 import * as consts from '../../consts';
-import { CCppConfigurationJson } from "../../project/ntypes";
 
 import * as console from '../../console';
 
@@ -20,6 +16,7 @@ enum CompilerType {
     clang = 1
 }
 
+
 export function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: boolean) {
 
     console.log("Fixing compiler paths in compile commands.");
@@ -27,7 +24,7 @@ export function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: bo
     const mainCompileCommands = project.getMainWorkspaceCompileCommands();
 
     const compileCommands = [mainCompileCommands];
-
+    
 
     if(!isOptionalFixesEnabled){
         const ue4CompileCommands = project.getUe4WorkspaceCompileCommands();
@@ -38,23 +35,13 @@ export function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: bo
         
     }
 
-    const windowsCompilerPathOverride = getWindowsCompilerPathOverride();
+    const compilerPathOverride = getCompilerPathOverride();
 
     for (const compileCommand of compileCommands) {
         if (!compileCommand) { continue; }
 
-        fixCompileCommandFile(compileCommand, windowsCompilerPathOverride);
+        fixCompileCommandFile(compileCommand, compilerPathOverride);
 
-    }
-
-    if (windowsCompilerPathOverride) {
-    
-        // This didn't work in supressing auto intellisense mode changing. Once changed to clang it changes to the msvc mode
-        // Leaving this for now in case this small bug is fixable later
-
-        //setIntellisenseMode(project, getNewIntellisenseMode(CompilerType.clang));
-
-        console.log("*** Overrode settings for Windows clang-cl ***");
     }
 
     console.log("Done fixing compiler paths.\n");
@@ -62,11 +49,15 @@ export function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: bo
 
 function fixCompileCommandFile(compileCommands: Map<string, CompileCommands>, compilerPathOverride: string) {
 
+    let hasLogged = false;
+
     for (const [index, compileCommand] of compileCommands) {
         
         for( const entry of compileCommand) {
 
             if(!entry.command) { continue;};
+
+            
 
             const correctedCommand = getCorrectedEntryCommand(entry.command, compilerPathOverride);
 
@@ -74,8 +65,15 @@ function fixCompileCommandFile(compileCommands: Map<string, CompileCommands>, co
                 compileCommand.isDirty = true;
                 entry.command = correctedCommand;
             }
-        }
 
+            if(!hasLogged) {
+                hasLogged = true;
+                console.log("Below is the compile commands first entry command. (WARNING) If getting errors and the compiler path is unexpected reset your UE project.");
+                console.log(`command: ${entry.command}`);
+            }
+
+        }
+        hasLogged = false; // log first compiler path for each file;
         compileCommand.saveToFile();
         
     }
@@ -91,18 +89,12 @@ function getCorrectedEntryCommand(command: string, compilerPathOverride: string)
         return "";
     }
 
-    if(compilerPathOverride) {  // Windows users using clang-cl
+    if(compilerPathOverride) {  
         const newCommand =  getFixedCompilerPath(compilerPathOverride, match[2]);
 
         return newCommand === command ? "" : newCommand;
         
-    }
-    else if(os.platform() === consts.PLATFORM_WINDOWS && match[0].includes(consts.COMPILER_CLANG_CL_NO_EXT)){
-        // Reset windows compiler path if they no longer want to use clang-cl.exe
-        // This isn't the best fix since it's not the full path but VSCode should always be able to find the correct cl.exe path
-        return consts.COMPILER_MSVC + " " + match[2];  
-    }
-    
+    }  
 
     if(match[0].startsWith(`"`)){
         return "";  // compiler path is already fixed
@@ -112,30 +104,20 @@ function getCorrectedEntryCommand(command: string, compilerPathOverride: string)
 
 }
 
-function getWindowsCompilerPathOverride() {
+function getCompilerPathOverride() {
 
-    const platform = os.platform();
-	if(platform !== consts.PLATFORM_WINDOWS) {  // Windows only
-        return "";
-    }
-
-    const config = vscode.workspace.getConfiguration(consts.CONFIGURATION_C_CPP);
-
-    let compilerPath = config.get<string>(consts.CONFIG_SETTING_DEFAULT_COMPILER_PATH);
-
-    if(compilerPath?.includes(consts.COMPILER_CLANG_CL_NO_EXT)){
-        if(fs.existsSync(compilerPath)) {
-            return compilerPath;
-        }
-        else{
-            console.error("Override compiler path for clang-cl doesn't exist!");
-            return "";
-        }
-    }
-    else {
-        return "";
-    }
     
+    const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
+    const currentExtStrictSetting = config.get<boolean>(consts.CONFIG_SETTING_STRICT_PATH);
+    const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
+
+    if(!currentExtStrictSetting || !currentExtCompilerPath){
+        console.log("Will not override compiler path in compile commands file. (Not an error)");
+        return "";
+    }
+
+    console.log(`Will override compile commands' compiler paths with ${currentExtCompilerPath}`);
+    return currentExtCompilerPath;  
 }
 
 function getFixedCompilerPath(compilerPath: string, responsePath: string): string {

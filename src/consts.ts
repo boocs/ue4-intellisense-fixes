@@ -21,6 +21,10 @@ export const CONFIG_SETTING_DEFAULT_COMPILER_PATH = "default.compilerPath";
 export const CONFIG_SETTING_DEFAULT_INTELLISENSE_MODE = "default.intelliSenseMode";
 export const CONFIG_SETTING_INTELLISENSE_ENGINE = "intelliSenseEngine";
 export const CONFIG_SETTING_INTELLISENSE_ENGINE_TAG_PARSER = "Tag Parser";
+export const CONFIG_SETTING_STRICT_PATH = "strictPath";
+
+export const CONFIG_SECTION_EXTENSION_COMPILER = "UEIntellisenseFixes.compiler";
+export const CONFIG_SETTINGS_PATH = "path";
 
 export const CONFIG_SETTING_LIMIT_SYMBOLS_TO_INCLUDED_HEADERS = "default.browse.limitSymbolsToIncludedHeaders";
 
@@ -116,8 +120,6 @@ export const MSVC_PREINCLUDE_FLAG = `/FI`;
 export const CLANG_INCLUDE_FLAG = "--include-directory";
 export const MSVC_INCLUDE_FLAG = `/I`;
 
-
-
 export const COMPILER_MSVC = "cl.exe";
 export const COMPILER_CLANG = "clang++.exe";
 export const COMPILER_CLANG_CL_NO_EXT = "clang-cl";
@@ -130,3 +132,5 @@ export const INTELLISENSE_MODE_MACOS_CLANG_ARM64 = "macos-clang-arm64";
 
 export const PLATFORM_WINDOWS = "win32";
 export const CPUID_MACM1 = "Apple M1";
+
+export const MACM1_DEFAULT_COMPILER_PATH = "/usr/bin/clang";

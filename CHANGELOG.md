@@ -1,5 +1,20 @@
 ### [TODO]
 
+## [2.4.0] 2022-1-25
+### Fix
+- Mac M1 fix will auto set compiler path in c_cpp_properties (Can also change the path in new extension settings)
+### Added
+- New compiler.path setting to force compiler path in c_cpp_properties.
+- New compiler.strictPath setting to force compiler.path setting in compile commands file.
+### Changed
+- 4.26 now uses 4.27 code path. It shouldn't matter... and adds some of the new functionality to 4.26.
+- Read/Write functions to work with newer lib 
+### Removed
+- Removed singular clang support for Windows. It can now be done with the newer general path settings.
+### Security
+- Updated dependencies
+- Changed VSCode version compatibility version to 1.63.1+
+
 ## [2.3.1] 2022-01-17
 ### Fix
 - Fix for startup bug not finding *.uproject file thus not starting the extension

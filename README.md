@@ -9,6 +9,14 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 2.4.0 January 25th, 2022
+
+- Mac M1 fix will auto set compiler path in c_cpp_properties (Can also change the path in new extension settings)
+- New compiler.path setting to force compiler path in c_cpp_properties.
+- New compiler.strictPath setting to force compiler.path setting in compile commands file.
+- 4.26 now uses 4.27 code path. It shouldn't matter... and adds some of the new functionality to 4.26.
+- Updated dependencies (security)
+- Changed VSCode version compatibility version to 1.63.1+ (security)
 
 ### 2.3.1 January 17th, 2022
 - Fix for startup bug not finding *.uproject file thus not starting the extension
@@ -27,23 +35,3 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 - Allow cancelling all response file choices of missing compile commands  by [seesemichaelj](https://github.com/seesemichaelj)
 
 **Thanks!**
-
-### 2.1.1 October 12th, 2021
-- Fixed bug that didn't allow any version after 4.27.0 to be fixed
-
-### 2.1.0 August 24th, 2021
-- **Fixed** 4.27 New compiler path bug 
-- **Fixed** Regex for response file include paths for 4.27.0 compatibility
-- **Fixed** UE4 compile command weren't getting loaded for pontential fixing
-- Removed auto disable/enable of intellisense (could interfere with other extensions)
-
-### 2.0.1 July 3rd, 2021
-- **Fixed** Security fix by updating dependencies
-- Small change to support Plugin development.
-
-### 2.0.0 May 26th, 2021
-- Update for UE5 support
-- Updated setting names to be more general (will need to reenable fixes)
-
-### 1.6.0 May 25th, 2021
-- Update allows fixes to work on all configs instead of only the first one (c_cpp_properties.json). 
