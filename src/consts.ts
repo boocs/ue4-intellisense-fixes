@@ -114,7 +114,9 @@ export const RE_MSVC_PREINCLUDE_FLAG = /^\/FI/gm;
 export const RE_MSVC_INCLUDE_FLAG = /^\/I/gm;
 export const RE_CLANG_INCLUDE_FLAG = /^--include-directory/gm;
 
-export const CLANG_PREINCLUDE_FLAG = "-include"; //
+export const RE_LAUNCH_SOURCE_FILE_MAP = /D:\\build\\\+\+UE5\\Sync/gm;
+
+export const CLANG_PREINCLUDE_FLAG = "-include"; 
 export const MSVC_PREINCLUDE_FLAG = `/FI`;
 
 export const CLANG_INCLUDE_FLAG = "--include-directory";

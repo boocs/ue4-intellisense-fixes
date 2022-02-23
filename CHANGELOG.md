@@ -1,5 +1,9 @@
 ### [TODO]
 
+## [2.5.0] 2022-1-25
+### Added
+- Fix for UE5 Preview 1's malformed json in launch.json
+
 ## [2.4.0] 2022-1-25
 ### Fix
 - Mac M1 fix will auto set compiler path in c_cpp_properties (Can also change the path in new extension settings)

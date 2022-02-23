@@ -9,6 +9,9 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 2.5.0 Febuary 22th, 2022
+- Fix for UE5 Preview 1's malformed json in launch.json
+
 ### 2.4.0 January 25th, 2022
 
 - Mac M1 fix will auto set compiler path in c_cpp_properties (Can also change the path in new extension settings)
