@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as consts from '../../consts';
 import * as text from '../../text';
 import type { ProjectUE4 } from '../../project/projectUE4';
+import * as shared from '../../shared';
 
 import * as console from '../../console';
 
@@ -91,7 +92,7 @@ async function findDefintionUris(mainWorkspace: vscode.WorkspaceFolder): Promise
     let definesUris: vscode.Uri[] | undefined = undefined;
     
     try {
-        definesUris = await vscode.workspace.findFiles(relPatternMainWorkspaceDefineFiles);
+        definesUris = await shared.findFiles(relPatternMainWorkspaceDefineFiles, null);
     }
     catch (error) {
         console.error("Error occurred while finding defines files.");

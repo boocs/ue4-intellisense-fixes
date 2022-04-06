@@ -15,7 +15,7 @@ export abstract class ValidatedBuilderBase
         return this._isValid;
     }
 
-    set isValid(value: boolean) {
+    protected set isValid(value: boolean) {
         this._isValid = value;
     }
 

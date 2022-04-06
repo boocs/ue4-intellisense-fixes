@@ -17,27 +17,27 @@ export class CCResponseProject extends ProjectUE4 {
 
         const project = new CCResponseProject();
 
-        const isValid: IsValid = await project.cCResponsePostConstructionSetup(isOptionalFixesEnabled);
+        project.isValid = await project.cCResponsePostConstructionSetup(isOptionalFixesEnabled);
 
-        return isValid? project : undefined;
+        return project.isValid? project : undefined;
     }
 
     protected async cCResponsePostConstructionSetup(isOptionalFixesEnabled: boolean){
 
         let isValid = await super.ue4PostConstructionSetup(true, true, true, true);  
-
+        
         if (!isValid ){
             return false;
         }
 
-        isValid = this.loadCompileCommandsFromWorkspace(this.mainWorkspaceKey);
+        isValid = await this.loadCompileCommandsFromWorkspace(this.mainWorkspaceKey);
         if(!isValid){
             return false;
         }
 
         // Optional fixes aren't enabled so we load the ue4 compile commands for any fixes that maybe needed
         if (!isOptionalFixesEnabled) {
-            const isSuccess = this.loadCompileCommandsFromWorkspace(this.ue4WorkspaceKey);
+            const isSuccess = await this.loadCompileCommandsFromWorkspace(this.ue4WorkspaceKey);
 
             if (!isSuccess) {
                 console.error("Optional fixes are disabled but can't find any UE4 workspace compile commands. Resetting the project should fix this.");

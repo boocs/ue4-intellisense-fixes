@@ -20,13 +20,19 @@ export class CompileCommands {
      * @param path to compile commands file
      * @throws Error
      */
-    constructor(path: string) {
+    private constructor(path: string, compileCommands: CommandObjectJson[]) {
         this._path = path;
-        this._compileCommands = this.createCompileCommands(path);
-        if(this.length){
+        this._compileCommands = compileCommands;
+        if(this.length){  // This class is an iterator so it checks _compileCommands length
             this._isValid = true;
         }
                 
+    }
+
+    public static async create(path: string) {
+        const compileCommands = await CompileCommands.createCompileCommands(path);
+
+        return new CompileCommands(path, compileCommands);
     }
 
     get compileCommands(): CommandObjectJson[] {
@@ -74,8 +80,8 @@ export class CompileCommands {
     /**
      * @returns empty array on error
      */
-    protected createCompileCommands(path: string): CommandObjectJson[] {
-        const jsonString = shared.readStringFromFileSync(path);
+    protected static async createCompileCommands(path: string): Promise<CommandObjectJson[]> {
+        const jsonString = await shared.readStringFromFile(path);
 
         if(!jsonString){
             console.error(`Couldn't read compile commands file: ${path}`);
@@ -135,7 +141,7 @@ export class CompileCommands {
     }
 
 
-    public saveToFile(){
+    public async saveToFile(){
         if(!this.isValid || !this.isDirty) {
             if(!this.isDirty){
                 console.log("Compile Command Object wasn't modifed. Will not write file.");
@@ -144,7 +150,7 @@ export class CompileCommands {
         }
 
         const compileCommandsString = JSON.stringify(this.compileCommands, undefined, JSON_SPACING);
-        shared.writeJsonToFileSync(this.path, compileCommandsString);
+        await shared.writeJsonOrStringToFile(this.path, compileCommandsString);
 
         console.log(`File write: ${this.path}`);
     }

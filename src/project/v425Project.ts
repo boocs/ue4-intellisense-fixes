@@ -3,8 +3,6 @@
 */
 
 import { ProjectUE4 } from "./projectUE4";
-import type { IsValid } from "./builderBase";
-
 
 export class V425Project extends ProjectUE4 {
     // Use create to contruct
@@ -16,9 +14,9 @@ export class V425Project extends ProjectUE4 {
 
         const project: V425Project = new V425Project();
 
-        const isValid: IsValid = await project.v425PostConstructionSetup();
-
-        return isValid? project : undefined;
+        project.isValid = await project.v425PostConstructionSetup();
+    
+        return project.isValid? project : undefined;
     }
 
     protected async v425PostConstructionSetup(){      

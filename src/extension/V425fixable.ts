@@ -49,8 +49,8 @@ export class V425Fixable extends Fixable {
 
     protected async postFixProject(): Promise<void> {
         
-        this.project.saveCCppProperties(this.project.mainWorkspaceKey);  // In case we need to set LimitSymbols settings
-        this.project.saveCCppProperties(this.project.ue4WorkspaceKey);
+        await this.project.saveCCppProperties(this.project.mainWorkspaceKey);  // In case we need to set LimitSymbols settings
+        await this.project.saveCCppProperties(this.project.ue4WorkspaceKey);
         return;
     }
 

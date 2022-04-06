@@ -2,7 +2,7 @@
  * Fixes invalid paths in the compile command's response files
  */
 
-import { existsSync, writeFileSync } from 'fs';
+import { existsSync } from 'fs';
 import * as path from "path";
 
 import * as consts from '../../consts';
@@ -12,7 +12,7 @@ import type { ProjectUE4 } from '../../project/projectUE4';
 import * as console from "../../console";
 
 
-export function fixResponse(project: ProjectUE4) {
+export async function fixResponse(project: ProjectUE4) {
     console.log("Fixing invalid paths in response files.");
 
     const mainCompileCommands = project.getMainWorkspaceCompileCommands();
@@ -33,7 +33,7 @@ export function fixResponse(project: ProjectUE4) {
 
         for (const filePath of responsePaths) {
 
-            const originalResponseString = shared.readStringFromFileSync(filePath);
+            const originalResponseString = await shared.readStringFromFile(filePath);
             if (!originalResponseString || originalResponseString.startsWith('undefined')) {
                 console.error("Couldn't read response file");
 
@@ -51,7 +51,7 @@ export function fixResponse(project: ProjectUE4) {
             }
 
             try {
-                writeFileSync(filePath, fixedFileString, consts.ENCODING_UTF_8);
+                await shared.writeJsonOrStringToFile(filePath, fixedFileString);  // This isn't json but should work since 
             } catch (error) {
 
                 if (error instanceof Error) {

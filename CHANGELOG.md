@@ -1,11 +1,26 @@
 ### [TODO]
 
+## [3.0.1] 2022-4-6
+### Fixed
+- Changed to a different way of checking for UE's Version.h (away from findFiles)
+- Changed all findFiles(api) to use fast-glob(node). findFiles was failing sometimes for unknown reasons.
+
+  Thanks to @heptaspirit for helping test this!
+- isValid project code so file watchers will work
+### Changed
+- Converted from node read/write file to vscode api read/write file
+- Reset detection - Now just warns to restart VSCode
+### Removed
+- Convoluted progress bar code
+### Security
+- npm audit
+
 ## [2.5.0] 2022-1-25
 ### Added
 - Fix for UE5 Preview 1's malformed json in launch.json
 
 ## [2.4.0] 2022-1-25
-### Fix
+### Fixed
 - Mac M1 fix will auto set compiler path in c_cpp_properties (Can also change the path in new extension settings)
 ### Added
 - New compiler.path setting to force compiler path in c_cpp_properties.

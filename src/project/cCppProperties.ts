@@ -1,6 +1,7 @@
 
 import * as vscode from 'vscode';
-import * as fs from 'fs';
+
+import { existsSync } from 'fs';
 
 import * as shared from '../shared';
 import * as consts from '../consts';
@@ -66,7 +67,7 @@ export class CCppProperties
         }
         
         this._cCppPropertiesPath = foundCCppFiles[0].fsPath;
-        this._cCppPropertiesJson = this.getCurrentCCppProperties(this.path);
+        this._cCppPropertiesJson = await this.getCurrentCCppProperties(this.path);
 
         if(!this._cCppPropertiesJson) {
             return;
@@ -79,7 +80,7 @@ export class CCppProperties
     /**
      * Compares file to orginal but only copies/writes configurations var if not equal
      */
-    writeConfigurationsIfNotEqual() {
+    public async writeConfigurationsIfNotEqual() {
         if(!this._isValid){
             console.error("This c_cpp_properties.json isn't validated. Can't write.");
             return;
@@ -91,7 +92,7 @@ export class CCppProperties
         }
         
         const modifiedCCppProperties = this._cCppPropertiesJson;
-        const currentCCppProperties = this.getCurrentCCppProperties(this.path);
+        const currentCCppProperties = await this.getCurrentCCppProperties(this.path);
 
         if(!currentCCppProperties){
             console.error(`Couldn't get currrent ${this.workspace} c_cpp_properties.json for comparison. Try resetting your project.`);
@@ -106,7 +107,7 @@ export class CCppProperties
             return;
         }
 
-        if(!(this.path && fs.existsSync(this.path))){
+        if(!(this.path && existsSync(this.path))){
             console.error(`${this.workspace?.name} CCppProperties path is invalid. Will not write.`);
             return;
         }
@@ -115,11 +116,11 @@ export class CCppProperties
         currentCCppProperties.configurations = modifiedCCppProperties.configurations;
         currentCCppPropertiesString = JSON.stringify(currentCCppProperties, undefined, consts.JSON_SPACING);
 
-        shared.writeJsonToFileSync(this.path, currentCCppPropertiesString);
+        await shared.writeJsonOrStringToFile(this.path, currentCCppPropertiesString);
     }
 
 
-    protected getCurrentCCppProperties(path: string | undefined) : CCppPropertiesJson | undefined {
+    protected async getCurrentCCppProperties(path: string | undefined) : Promise<CCppPropertiesJson | undefined> {
         
         if(!path){
             console.error(`No path for ${this.workspace?.name} CCppProperties file found.`);
@@ -127,7 +128,7 @@ export class CCppProperties
         }
 
         // Needs to be synchronous for when we read and then write in our write function
-        const currentFileString = shared.readStringFromFileSync(path);
+        const currentFileString = await shared.readStringFromFile(path);
 
         if (!currentFileString) {
             console.error(`Error while reading ${this.workspace?.name} CCppProperties file.`);

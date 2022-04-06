@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 
 import { CONFIG_SETTING_DEFAULT_INTELLISENSE_MODE, GLOB_ALL_HEADERS_AND_SOURCE_FILES } from "../../consts";
-import { isEqualPaths } from "../../shared";
+import * as shared from "../../shared";
 
 import type { CompileCommands } from "../../project/compileCommands";
 import type { CommandObjectJson } from "../../project/ntypes";
@@ -41,8 +41,8 @@ export async function fixMissingResponseCompileCommands(project: ProjectUE4, uri
         if (!uriToCheck) { // Check every file since we don't specify a single uri to check
             const mainWorkspace = project.mainWorkspaceFolder;
 
-            const glob = new vscode.RelativePattern(mainWorkspace, GLOB_ALL_HEADERS_AND_SOURCE_FILES);
-            potentialCompileCommandsFiles = await vscode.workspace.findFiles(glob);
+            const relGlob = new vscode.RelativePattern(mainWorkspace, GLOB_ALL_HEADERS_AND_SOURCE_FILES);
+            potentialCompileCommandsFiles = await shared.findFiles(relGlob, null);
         }
         else {
             try {
@@ -64,7 +64,7 @@ export async function fixMissingResponseCompileCommands(project: ProjectUE4, uri
 
         await addFilesToCompileCommands(compileCommand, missingFilePaths, allUsedResponsePaths);
 
-        compileCommand.saveToFile();
+        await compileCommand.saveToFile();
 
     }
 
@@ -93,7 +93,7 @@ function findMissingFilePaths(sourceFiles: vscode.Uri[], compileCommands: Compil
             const commandObjectPath = path.normalize(commandObject.file);
 
 
-            if (isEqualPaths(normalizedSourcePath, commandObjectPath)) {
+            if (shared.isEqualPaths(normalizedSourcePath, commandObjectPath)) {
                 wasFound = true;
                 break;
             }

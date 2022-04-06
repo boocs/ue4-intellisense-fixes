@@ -14,7 +14,7 @@ export class V427Fixable extends CCResponseFixable {
         // Made the function check if it's already run.
         fixPropCompilerPath(this.project);  
         
-        fixCompilerPaths(this.project, this.isOptionalFixesEnabled);
+        await fixCompilerPaths(this.project, this.isOptionalFixesEnabled);
 
         await super.fixProject();
 

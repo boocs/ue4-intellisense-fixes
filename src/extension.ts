@@ -1,13 +1,12 @@
 
 import * as vscode from "vscode";
 
-import { CCResponseFixable } from "./extension/CCResponseFixable";
 import type { Fixable } from "./extension/fixable";
 import { V425Fixable } from "./extension/V425fixable";
 import { V427Fixable } from "./extension/V427fixable";
 import { ProjectUE4 } from "./project/projectUE4";
 import * as consts from "./consts";
-import { delay } from "./shared";
+import * as shared from "./shared";
 import * as path from "path";
 
 import * as text from "./text";
@@ -17,16 +16,26 @@ import * as console from "./console";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
-let isExtensionRunning = false;
+
 
 export async function activate(context: vscode.ExtensionContext) {
-	
-	if(!await workspaceHasUprojectFile()) {
+
+	// This is a workaround because the glob activation event sometimes didn't work
+	// For some people it was really bad
+	const hasUProjectFile: boolean = await workspaceHasUprojectFile();
+	if(hasUProjectFile === false) {
 		console.log('No *.uproject file found!');
 		return;
 	}
+	else if(hasUProjectFile === true) {
+		console.log('*.uproject file was found!');
+	}
+	else {
+		console.log("Bad return from workspaceHasUprojectFile()");
+		return;
+	}
 
-	console.log('Extension "UE Intellisense Fixes" is now active!\n');
+	console.log('\nExtension "UE Intellisense Fixes" 3.0.1 is now active!\n');
 
 	context.subscriptions.push(vscode.commands.registerCommand("UEIntellisenseFixes.showLog", () => {
 		console.outputChannel?.show(true);
@@ -36,12 +45,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	const statusItem: vscode.StatusBarItem = createAndShowMainStatusItem();
 
 	// Don't add a command to run fixes. This must run on startup to run the fixes before Tag Parser starts adding unneeded symbols to cache.
-	const fixableProject = await runExtension();
+	//const fixableProject = await runExtensionWithProgress();
+	const fixableProject = await runExtensionNoProgress();
 
-	if (fixableProject) {
+	if (fixableProject?.project?.isValid) {
 		createWatchers(fixableProject);
 	}
-
+	
 	await endRun(statusItem);
 	
 }
@@ -57,16 +67,29 @@ export function deactivate() {
 async function workspaceHasUprojectFile() : Promise<boolean> {
 	console.log('Searching for *.uproject file...');
 
-	const foundFile = await vscode.workspace.findFiles("*.uproject", null, 1, undefined);
+	const foundFile = await shared.findFiles(consts.GLOB_ANY_UPROJECT_IN_TOPLEVEL, null, 1);
 
-	if(!foundFile.length) {
+	if(!foundFile?.length) {
 		return false;
 	}
 	
 	return true;
 }
 
-async function runExtension(): Promise<Fixable | undefined> {
+async function runExtensionNoProgress(): Promise<Fixable | undefined> {
+	const fixableProject = await getFixableProject();
+
+	if (!fixableProject) {
+		console.error("No fixable project could be created.\n");
+		return;
+	}
+	
+	await fixableProject.execFixes();
+	
+	return fixableProject;
+}
+
+async function runExtensionWithProgress(): Promise<Fixable | undefined> {
 
 	return await vscode.window.withProgress(
 		{
@@ -136,7 +159,7 @@ async function endRun(statusItem: vscode.StatusBarItem): Promise<void> {
 	console.log("\nExtension is done.");
 
 	statusItem.text = consts.MAIN_STATUS_TEXT_DONE;
-	await delay(consts.MAIN_STATUS_LIFE);
+	await shared.delay(consts.MAIN_STATUS_LIFE);
 
 	statusItem.dispose();
 
@@ -146,7 +169,7 @@ async function endRun(statusItem: vscode.StatusBarItem): Promise<void> {
 
 async function getFixableProject(): Promise<Fixable | undefined> {
 
-	await ProjectUE4.loadUE4Version();
+	await ProjectUE4.loadNodeUE4Version();
 	const version = ProjectUE4.ue4VersionObject;
 
 	const fixesEnabledSettings = getFixesEnabledSettings();
@@ -184,7 +207,7 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 }
 
 
-
+// TODO testing making this async to try to fix buggy startup
 function createWatchers(fixableProject: Fixable) {
 
 	const mainWorkspace = fixableProject?.project.mainWorkspaceFolder;
@@ -192,18 +215,14 @@ function createWatchers(fixableProject: Fixable) {
 	resetEventFileWatcher = createFileWatcher(mainWorkspace, consts.GLOB_PROJECT_RESET_FILE_CREATION, { create: true, change: false, delete: true });
 	newFileWatcher = createFileWatcher(mainWorkspace, consts.GLOB_ALL_HEADERS_AND_SOURCE_FILES, { create: false, change: true, delete: true });
 
-	resetEventFileWatcher?.onDidChange(async e => {
-		if (isExtensionRunning) {
-			return;
-		}
-		isExtensionRunning = true;
+	resetEventFileWatcher?.onDidChange(e => {	
 
-		console.log("Detected reset. About to run extension.\n");
-		await delay(consts.FILE_WATCHER_EXEC_WAIT);
+		console.log("Detected reset!");
+		console.log("WARNING: Restart VSCode to fix Intellisense errors.\n");
 
-		await runExtension();
+		console.outputChannel?.show(true);
 
-		isExtensionRunning = false;
+		vscode.window.showInformationMessage("Detected project reset. Restart VSCode to fix Intellisense errors!", text.OK);
 	});
 
 	newFileWatcher?.onDidCreate(uri => {
@@ -227,7 +246,7 @@ function createFileWatcher(workspaceFolder: vscode.WorkspaceFolder, glob: string
 	return vscode.workspace.createFileSystemWatcher(relPattern, ignore.create, ignore.change, ignore.delete);
 }
 
-
+/*
 async function disableDefaultIntellisense(): Promise<void> {
 
 
@@ -313,3 +332,4 @@ async function getworkspacesWithWorkspaceFile(): Promise<vscode.WorkspaceFolder[
 
 	return workspacesWithWorkspaceFile;
 }
+*/

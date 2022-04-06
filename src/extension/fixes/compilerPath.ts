@@ -17,7 +17,7 @@ enum CompilerType {
 }
 
 
-export function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: boolean) {
+export async function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: boolean) {
 
     console.log("Fixing compiler paths in compile commands.");
 
@@ -40,14 +40,14 @@ export function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: bo
     for (const compileCommand of compileCommands) {
         if (!compileCommand) { continue; }
 
-        fixCompileCommandFile(compileCommand, compilerPathOverride);
+        await fixCompileCommandFile(compileCommand, compilerPathOverride);
 
     }
 
     console.log("Done fixing compiler paths.\n");
 }
 
-function fixCompileCommandFile(compileCommands: Map<string, CompileCommands>, compilerPathOverride: string) {
+async function fixCompileCommandFile(compileCommands: Map<string, CompileCommands>, compilerPathOverride: string) {
 
     let hasLogged = false;
 
@@ -74,7 +74,7 @@ function fixCompileCommandFile(compileCommands: Map<string, CompileCommands>, co
 
         }
         hasLogged = false; // log first compiler path for each file;
-        compileCommand.saveToFile();
+        await compileCommand.saveToFile();
         
     }
     

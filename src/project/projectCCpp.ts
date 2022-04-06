@@ -35,11 +35,11 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
     protected async cCppPostConstructionSetup(setupVars: Record<WorkspaceKey, WorkspaceSetupVars>): Promise<IsValid> {
 
         let isValid = super.basePostConstructionSetup();
-
+        
         if (!isValid) {
             return false;
         }
-
+        
         const cCppSettings = this.createConfigurations(setupVars);
         const cCppProperties = await this.createProperties(setupVars);
 
@@ -206,7 +206,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
     /**
      * @param workspaceKey defaults to undefined to save all stored c_cpp_properties.json files.
      */
-    public saveCCppProperties(workspaceKey: WorkspaceKey | undefined = undefined) {
+    public async saveCCppProperties(workspaceKey: WorkspaceKey | undefined = undefined) {
         if (!workspaceKey) {
 
             const allCCppProperties = this._cCppProperties;
@@ -215,14 +215,14 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
             }
 
             for (let [workspaceKey, cCppProperties] of allCCppProperties) {
-                cCppProperties?.writeConfigurationsIfNotEqual();
+                await cCppProperties?.writeConfigurationsIfNotEqual();
             }
             return;
         }
 
         const properties = this.getCCppProperties(workspaceKey);
         if (properties) {
-            properties.writeConfigurationsIfNotEqual();
+            await properties.writeConfigurationsIfNotEqual();
         }
 
     }
@@ -236,7 +236,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
      * 
      * @returns false on error
      */
-    public loadCompileCommandsFromConfig(workspaceKey: WorkspaceKey, configIndex: number): boolean {
+    public async loadCompileCommandsFromConfig(workspaceKey: WorkspaceKey, configIndex: number): Promise<boolean> {
         if (!this._compileCommands) {
             this._compileCommands = new Map<WorkspaceKey, Map<ConfigIndex, CompileCommands>>();
         }
@@ -252,7 +252,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
             return false;
         }
 
-        const compileCommands = new CompileCommands(compileCommandsPath);
+        const compileCommands = await CompileCommands.create(compileCommandsPath);
         if (!compileCommands.isValid) {
             return false;
         }
@@ -283,7 +283,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
      * 
      * @returns false on 0 compile commands being loaded
      */
-    public loadCompileCommandsFromWorkspace(workspaceKey: WorkspaceKey): boolean {
+    public async loadCompileCommandsFromWorkspace(workspaceKey: WorkspaceKey): Promise<boolean> {
         if (!this._compileCommands) {
             this._compileCommands = new Map<WorkspaceKey, Map<ConfigIndex, CompileCommands>>();
         }
@@ -305,7 +305,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
                 continue;
             }
 
-            const compileCommands = new CompileCommands(compileCommandsPath);
+            const compileCommands = await CompileCommands.create(compileCommandsPath);
             if (!compileCommands.isValid) {
                 continue;
             }

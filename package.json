@@ -1,10 +1,10 @@
 {
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
-	"description": "Automatically fixes Unreal Engine Intellisense on startup.",
-	"version": "2.5.0",
+	"description": "Automatically fixes Unreal Engine Intellisense configuration on startup.",
+	"version": "3.0.1",
 	"publisher": "boocs",
-	"license": "SEE LICENSE IN THE FILE: LICENSE",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/boocs/ue4-intellisense-fixes.git"
@@ -88,5 +88,8 @@
 		"mocha": "^9.2.0",
 		"typescript": "^4.5.5",
 		"vscode-test": "^1.6.1"
+	},
+	"dependencies": {
+		"fast-glob": "^3.2.11"
 	}
 }

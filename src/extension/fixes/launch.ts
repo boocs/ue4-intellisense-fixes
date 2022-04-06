@@ -10,7 +10,7 @@ import * as path from "path";
 import * as consts from "../../consts";
 import type { ProjectUE4 } from '../../project/projectUE4';
 import { LaunchJson } from '../../project/ntypes';
-import { jsonParseSafe, readStringFromFileSync, writeJsonToFileSync } from '../../shared';
+import { jsonParseSafe, readStringFromFile, writeJsonOrStringToFile } from '../../shared';
 
 import * as console from "../../console";
 
@@ -18,10 +18,10 @@ import * as console from "../../console";
 const CONSOLE_SETTING = "newExternalWindow";
 
 
-export function fixLaunchFile(project: ProjectUE4) {
+export async function fixLaunchFile(project: ProjectUE4) {
     console.log("Fixing launch.json.");
 
-    const launchJsonReturn = getLaunchFile(project.mainWorkspaceFolder);
+    const launchJsonReturn = await getLaunchFile(project.mainWorkspaceFolder);
 
     if (!launchJsonReturn.launchJson) {
         console.error("Launch Json was undefined. Unable to fix.");
@@ -29,7 +29,7 @@ export function fixLaunchFile(project: ProjectUE4) {
     }
 
     if (fixDeprecatedExternalConsole(launchJsonReturn.launchJson) || launchJsonReturn.isDirty){
-        saveLaunchFile(project.mainWorkspaceFolder, launchJsonReturn.launchJson);
+        await saveLaunchFile(project.mainWorkspaceFolder, launchJsonReturn.launchJson);
     }
     else {
         console.log("launch.json didn't need to be changed.");
@@ -62,12 +62,12 @@ function fixDeprecatedExternalConsole(launchJson: LaunchJson): boolean {
 }
 
 
-function getLaunchFile(workspaceFolder: vscode.WorkspaceFolder): { launchJson:LaunchJson | undefined, isDirty:boolean} {
+async function getLaunchFile(workspaceFolder: vscode.WorkspaceFolder): Promise< { launchJson:LaunchJson | undefined, isDirty:boolean} >{
     const workspacePath = workspaceFolder.uri.fsPath;
 
     const launchPath = path.join(workspacePath, consts.LAUNCH_PATH_SUFFIX);
 
-    const launchFile: string | undefined = readStringFromFileSync(launchPath);
+    const launchFile: string | undefined = await readStringFromFile(launchPath);
 
     if(!launchFile){
         return {launchJson:undefined, isDirty:false};
@@ -82,13 +82,13 @@ function getLaunchFile(workspaceFolder: vscode.WorkspaceFolder): { launchJson:La
     return {launchJson:launchJson, isDirty:false};
 }
 
-function saveLaunchFile(workspaceFolder: vscode.WorkspaceFolder, launchJson: LaunchJson) {
+async function saveLaunchFile(workspaceFolder: vscode.WorkspaceFolder, launchJson: LaunchJson) {
 
     const workspacePath = workspaceFolder.uri.fsPath;
     const launchPath = path.join(workspacePath, consts.LAUNCH_PATH_SUFFIX);
 
     console.log(`Writing ${launchPath} to file.`);
-    writeJsonToFileSync(launchPath, launchJson);
+    await writeJsonOrStringToFile(launchPath, launchJson);
 }
 
 function repairAndGetLaunchFile(launchFileStr: string) : { launchJson:LaunchJson | undefined, isDirty:boolean} {

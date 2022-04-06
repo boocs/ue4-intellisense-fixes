@@ -2,9 +2,9 @@
 import * as vscode from 'vscode';
 
 import * as path from 'path';
-import { promises as fsAsync } from 'fs';
-import * as fsSync from "fs";
 import * as os from "os";
+
+import * as fglob from "fast-glob";
 
 import * as consts from './consts';
 import * as text from './text';
@@ -13,6 +13,8 @@ import { ProjectUE4 } from './project/projectUE4';
 import { CCppConfigurationJson } from './project/ntypes';
 
 import * as console from './console';
+import { TextEncoder } from 'util';
+import { relative } from 'path';
 
 
 /**
@@ -28,7 +30,11 @@ import * as console from './console';
 export async function readStringFromFile(path: string, encoding: BufferEncoding = consts.ENCODING_UTF_8): Promise<string | undefined> {
 
     try {
-        return await fsAsync.readFile(path, encoding) as string;
+        // return await fsAsync.readFile(path, encoding) as string;
+        const fileUri = vscode.Uri.file(path);
+        const fileArray =  await vscode.workspace.fs.readFile(fileUri);
+
+        return fileArray.toString();
     }
     catch (error) {
         if(error instanceof Error){ 
@@ -48,7 +54,7 @@ export async function readStringFromFile(path: string, encoding: BufferEncoding 
  * 
  * @logs console.error Error.code
  */
-export function readStringFromFileSync(path: string, encoding: BufferEncoding = consts.ENCODING_UTF_8): string | undefined {
+/* export function readStringFromFileSync(path: string, encoding: BufferEncoding = consts.ENCODING_UTF_8): string | undefined {
 
     try {
         
@@ -61,7 +67,7 @@ export function readStringFromFileSync(path: string, encoding: BufferEncoding = 
         }
         return undefined;
     }
-}
+} */
 
 
 /**
@@ -72,11 +78,14 @@ export function readStringFromFileSync(path: string, encoding: BufferEncoding = 
  * @param encoding Default 'utf-8'
  * @logs console.error Error.code
  */
-export async function writeJsonToFile(path: string, data: any, encoding: BufferEncoding = consts.ENCODING_UTF_8,
+export async function writeJsonOrStringToFile(path: string, data: any, encoding: BufferEncoding = consts.ENCODING_UTF_8,
     spacing: number = consts.JSON_SPACING) {
     try {
         const writeData = typeof data === "string" ? data : JSON.stringify(data, undefined, spacing);
-        await fsAsync.writeFile(path, writeData, encoding);
+        //await fsAsync.writeFile(path, writeData, encoding);
+        const textEnc = new TextEncoder();
+        const fileBuffer = Uint8Array.from(textEnc.encode(writeData));
+        await vscode.workspace.fs.writeFile(vscode.Uri.file(path), fileBuffer);
         return;
     }
     catch (error) {
@@ -97,7 +106,7 @@ export async function writeJsonToFile(path: string, data: any, encoding: BufferE
  * @param encoding Default 'utf-8' 
  * @logs console.error Error.code
  */
-export function writeJsonToFileSync(path: string, data: any, encoding: BufferEncoding = consts.ENCODING_UTF_8,
+/* export function writeJsonToFileSync(path: string, data: any, encoding: BufferEncoding = consts.ENCODING_UTF_8,
     spacing: number = consts.JSON_SPACING) {
     try {
         const writeData = typeof data === "string" ? data : JSON.stringify(data, undefined, spacing);
@@ -111,7 +120,7 @@ export function writeJsonToFileSync(path: string, data: any, encoding: BufferEnc
         return;
     }
 
-}
+} */
 
 
 /**
@@ -152,17 +161,17 @@ export function createGlobCompileCommandFileName(nameSuffix: string = "*"): stri
  */
 export async function findVSCodeFolderFiles(workspaceFolder: vscode.WorkspaceFolder | undefined | null,
     globFilename: string): Promise<vscode.Uri[] | undefined> {
-    if (workspaceFolder === undefined) {
+    if (!workspaceFolder) {
         console.log("Workspace undefined. Won't find files in .vscode folder.");
         return;
     }
 
     const glob = `.vscode/${globFilename}`;
     const include = !workspaceFolder ? glob : new vscode.RelativePattern(workspaceFolder, glob);
-
-    let foundFiles;
+    
+    let foundFiles: vscode.Uri[] = [];
     try {
-        foundFiles = await vscode.workspace.findFiles(include);
+        foundFiles = await findFiles(include, null);
     }
     catch (error) {
         console.error(`Error finding ${globFilename}, ${workspaceFolder?.name} workspace, with findVSCodeFolderFiles()`);
@@ -268,3 +277,62 @@ export function isMacM1(isLog = true) : boolean {
     return os.cpus()[0].model.includes(consts.CPUID_MACM1);
 }
 
+
+// This is a workaround because the vscode api findFiles function sometimes doesn't work
+// For some people it almost never works.
+export async function findFiles(include: vscode.GlobPattern, exclude: vscode.GlobPattern | null | undefined = null, maxResults?: number | undefined) : Promise<vscode.Uri[]> {
+
+    const searchPaths: string[] = [];
+    let pattern: string = "";
+
+    if(typeof include === "string"){
+        if(!vscode.workspace.workspaceFolders){
+            console.error("No workspaceFolders found while trying to findFiles(shared).");
+            return []
+        }
+
+        pattern = include;
+
+        for(const workspaceFolder of vscode.workspace.workspaceFolders){
+            const convertedPath = workspaceFolder.uri.fsPath.split(path.sep).join(path.posix.sep);
+            searchPaths.push(convertedPath);
+        }
+    }
+    else{
+        const relPattern: vscode.RelativePattern = include;
+        
+        pattern = relPattern.pattern;
+        // ref: https://stackoverflow.com/questions/53799385/how-can-i-convert-a-windows-path-to-posix-path-using-node-path
+        const convertedPath = relPattern.base.split(path.sep).join(path.posix.sep);
+        searchPaths.push(convertedPath);
+    }
+
+    const fileUris: vscode.Uri[] = [];
+    for(const searchPath of searchPaths){
+        //console.log(`Searching... pattern:(${pattern})  search path:(${searchPath})`)
+        const pathSuffixes: string[] = await fglob(pattern, {cwd: searchPath});
+
+        if(!pathSuffixes.length){
+            console.log("Searching with fast-glob found nothing. (Sometimes isn't bug)");
+            continue;
+        }
+        fileUris.push(...getUrisFromBasePathAndSuffixes(searchPath, pathSuffixes));
+    }
+    
+    return fileUris;
+}
+
+function getUrisFromBasePathAndSuffixes(base: string, pathSuffixes: string[]): vscode.Uri[]{
+
+    const uris: vscode.Uri[] = [];
+    for(const pathSuffix of pathSuffixes){
+        const fullPath = path.join(base, pathSuffix);
+        //console.log(`Created path from search: ${fullPath}`)
+        const newUri = vscode.Uri.file(fullPath)
+        //console.log(`Uri created. Has path: ${newUri.fsPath}`)
+        uris.push(newUri);
+        
+    }
+
+    return uris;
+}

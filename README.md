@@ -9,6 +9,16 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 3.0.1 April 6th, 2022 
+- Changed to a different way of checking for UE's Version.h
+- Changed all findFiles to fast-glob. findFiles(api function) was failing sometimes for unknown reasons.
+
+  Thanks to @heptaspirit for helping test this!
+- Converted from node read/write file to vscode api read/write file.
+- Removed convoluted progress bar code (The info bar already has a 'extension is done' indicator)
+- Changed reset detection - Now just warns to restart VSCode.
+- Fixed isValid project code so file watchers will now run
+
 ### 2.5.0 Febuary 22th, 2022
 - Fix for UE5 Preview 1's malformed json in launch.json
 

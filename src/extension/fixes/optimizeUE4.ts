@@ -10,12 +10,12 @@ import type {WorkspaceConfiguration} from "vscode";
 import { ProjectUE4 } from "../../project/projectUE4";
 import type { CCppConfigurationJson } from "../../project/ntypes";
 import * as consts from "../../consts";
-import { readStringFromFileSync } from "../../shared";
+import { readStringFromFile } from "../../shared";
 
 import * as console from "../../console";
 
 
-export function fixUE4Optimization(project: ProjectUE4) {
+export async function fixUE4Optimization(project: ProjectUE4) {
     console.log("Attempting to fix UE workspace optimization.");
 
     const ue4CCppPropertiesFirstConfig = project.getFirstCCppPropertiesConfiguration(project.ue4WorkspaceKey);
@@ -32,7 +32,7 @@ export function fixUE4Optimization(project: ProjectUE4) {
 
     addBasicUE4IntellisenseToConfig(allUE4CppPropertiesConfigs);
 
-    addResponsePreIncludesToMainWorkspaceConfig(project);
+    await addResponsePreIncludesToMainWorkspaceConfig(project);
 
     return;
 }
@@ -60,9 +60,9 @@ function addBasicUE4IntellisenseToConfig(outConfigs: CCppConfigurationJson[]) {
 }
 
 
-function addResponsePreIncludesToMainWorkspaceConfig(project: ProjectUE4) {
+async function addResponsePreIncludesToMainWorkspaceConfig(project: ProjectUE4) {
 
-    const preincludeMatches = findPreincludeMatches(project);
+    const preincludeMatches = await findPreincludeMatches(project);
 
     if (!preincludeMatches?.length) {
         console.error("Couldn't find preinclude matches in response file.");
@@ -84,7 +84,7 @@ function addResponsePreIncludesToMainWorkspaceConfig(project: ProjectUE4) {
 }
 
 
-function findPreincludeMatches(project: ProjectUE4): RegExpMatchArray | undefined | null {
+async function findPreincludeMatches(project: ProjectUE4): Promise< RegExpMatchArray | undefined | null > {
     const mainCompileCommands = project.getMainFirstConfigCompileCommands();
 
     const responsePaths = mainCompileCommands?.getAllUsedResponsePaths();
@@ -97,7 +97,7 @@ function findPreincludeMatches(project: ProjectUE4): RegExpMatchArray | undefine
     let matches : RegExpMatchArray | undefined | null = undefined;
 
     for (const responsePath of responsePaths){
-        const responseFileString = readStringFromFileSync(responsePath);
+        const responseFileString = await readStringFromFile(responsePath);
         
         if(!responseFileString){
             continue;

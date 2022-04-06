@@ -30,7 +30,7 @@ export class CCResponseFixable extends Fixable {
 
     protected async fixProject(): Promise<void> {
         
-        fixResponse(this.project);
+        await fixResponse(this.project);
         console.log("End fixing invalid paths in response files.\n");
 
         await fixMissingResponseCompileCommands(this.project);
@@ -42,7 +42,7 @@ export class CCResponseFixable extends Fixable {
         fixWrongCppStandard(this.project);
         console.log("End fix wrong cppStandard.\n");
         
-        fixLaunchFile(this.project);
+        await fixLaunchFile(this.project);
         console.log("End fix launch.json.\n");
 
         fixWrongIntellisenseMode(this.project);
@@ -53,12 +53,12 @@ export class CCResponseFixable extends Fixable {
 
     protected async fixOptional(): Promise<void> {
 
-        fixUE4Optimization(this.project);
+        await fixUE4Optimization(this.project);
         console.log("End fix UE optimization.\n");
     }
 
     protected async postFixProject(): Promise<void> {
-        this.project.saveCCppProperties();
+        await this.project.saveCCppProperties();
         
         return;
     }
