@@ -6,8 +6,7 @@ import { JSON_SPACING } from '../consts';
 import * as console from "../console";
 
 
-export const RE_RESPONSE_FILE_PATH = "(?<= @\\\").*.rsp";
-
+export const RE_RESPONSE_FILE_PATH = `(?<=@\\"|@').*.rsp`
 
 export class CompileCommands {
 
@@ -137,7 +136,8 @@ export class CompileCommands {
      * @returns undefined if it doesn't use response files.
      */
     public getAllUsedResponsePaths() : string[] | undefined {
-        return this.getUniqueMatchesFromAllCommandLines(new RegExp(RE_RESPONSE_FILE_PATH, "gm"));
+        const re = new RegExp(RE_RESPONSE_FILE_PATH,"gm");
+        return this.getUniqueMatchesFromAllCommandLines(re);
     }
 
 

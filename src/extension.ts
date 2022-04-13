@@ -47,7 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Don't add a command to run fixes. This must run on startup to run the fixes before Tag Parser starts adding unneeded symbols to cache.
 	//const fixableProject = await runExtensionWithProgress();
 	const fixableProject = await runExtensionNoProgress();
-
+	
 	if (fixableProject?.project?.isValid) {
 		createWatchers(fixableProject);
 	}

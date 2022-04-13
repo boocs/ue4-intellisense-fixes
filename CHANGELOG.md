@@ -1,5 +1,9 @@
 ### [TODO]
 
+## [3.0.2] 2022-4-12
+### Fixed
+- Response file path regex for linux (and probably Mac)
+
 ## [3.0.1] 2022-4-6
 ### Fixed
 - Changed to a different way of checking for UE's Version.h (away from findFiles)

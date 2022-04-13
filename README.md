@@ -9,6 +9,9 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 3.0.2 April 12th, 2022
+- Response file path regex for linux (and probably Mac)
+
 ### 3.0.1 April 6th, 2022 
 - Changed to a different way of checking for UE's Version.h
 - Changed all findFiles to fast-glob. findFiles(api function) was failing sometimes for unknown reasons.
