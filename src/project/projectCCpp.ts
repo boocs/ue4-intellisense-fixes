@@ -1,7 +1,6 @@
 
 
 import * as vscode from "vscode";
-import * as path from "path";
 
 import { CCppProperties } from "./cCppProperties";
 import { ValidatedBuilderBase, IsValid } from "./builderBase";
@@ -107,7 +106,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
 
     /**
      * VSCode workspace configuration settings (non c_cpp_properties.json)
-     * @param key 
+     * @param workspaceKey 
      */
     public getCCppSettingsConfig(workspaceKey: WorkspaceKey): vscode.WorkspaceConfiguration | undefined {
         if (this._cCppSettings) {
@@ -189,7 +188,6 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
     /**
      * Configurations stored in the c_cpp_properties.json
      * @param workspaceKey 
-     * @param index 
      */
      public getCCppConfigurationsFromWorkspace(workspaceKey: WorkspaceKey): CCppConfigurationJson[] | undefined {
         const configurations = this.getCCppProperties(workspaceKey)?.configurations;

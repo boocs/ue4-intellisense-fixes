@@ -1,5 +1,22 @@
 ### [TODO]
 
+## [3.1.0] 2022-5-18
+
+### Changed
+- Simpler way for the extension's 'enableOptionalFixes' optimization setting. Now just uses Tag Parser for UE source.
+### Fixed
+- Launch json fix of this extension's previous launch json fix version to match console setting of UE5 to UE4
+### Added
+- Added error if *.generated.h files aren't Built yet
+- Added error if *.generated.h path isn't in rsp files
+- Add error if using UE5 and using the wrong cppStandard
+- Added info message about default cppStandard for UE4/UE5
+- Better warning if UE path isn't in *.code-workspace file
+- Show total # of errors/warnings messages at end of log
+- Warn if using the extension's path setting without strict enabled
+- Warning if project is using Source/(ProjectName)/(Public/Private) directory structure
+- Launch json fix refactor.
+
 ## [3.0.2] 2022-4-12
 ### Fixed
 - Response file path regex for linux (and probably Mac)

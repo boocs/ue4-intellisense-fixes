@@ -1,110 +1,105 @@
-
-
 /**
- * Fixes deprecated externalConsole setting in launch.json
+ * Fixes malformed launch.json and deprecated externalConsole setting in launch.json
+ * 
+ * Note: This can't use the vscode api because update doesn't work on malformed json
  */
 
-import * as vscode from "vscode";
 import * as path from "path";
 
 import * as consts from "../../consts";
 import type { ProjectUE4 } from '../../project/projectUE4';
-import { LaunchJson } from '../../project/ntypes';
+import { LaunchJson, LaunchObjectJson} from '../../project/ntypes';
 import { jsonParseSafe, readStringFromFile, writeJsonOrStringToFile } from '../../shared';
 
 import * as console from "../../console";
 
+type hasFixed = boolean;
 
-const CONSOLE_SETTING = "newExternalWindow";
+const REPLACEMENT_CONSOLE_SETTING = "externalTerminal";
+
+const OLD_REPLACEMENT_CONSOLE_SETTING = "newExternalWindow";
 
 
 export async function fixLaunchFile(project: ProjectUE4) {
     console.log("Fixing launch.json.");
 
-    const launchJsonReturn = await getLaunchFile(project.mainWorkspaceFolder);
+    const launchFilePath = path.join(project.mainWorkspaceFolder.uri.fsPath, consts.LAUNCH_PATH_SUFFIX);
+    const launchFile = await readStringFromFile(launchFilePath);
 
-    if (!launchJsonReturn.launchJson) {
-        console.error("Launch Json was undefined. Unable to fix.");
+    if(!launchFile){
+        console.error(`Could not read launch.json, path: ${launchFilePath}`)
         return;
     }
 
-    if (fixDeprecatedExternalConsole(launchJsonReturn.launchJson) || launchJsonReturn.isDirty){
-        await saveLaunchFile(project.mainWorkspaceFolder, launchJsonReturn.launchJson);
+    const fixedLaunchFile = repairLaunchFile(launchFile);
+
+    let isRepairedJson = false;
+    if(fixedLaunchFile !== launchFile){
+        console.log("Malformed json in launch.json was repaired!");
+        isRepairedJson = true;
     }
-    else {
-        console.log("launch.json didn't need to be changed.");
+
+    const unModifiedLaunchFileJson = jsonParseSafe(fixedLaunchFile) as LaunchJson;
+    const launchFileJson = jsonParseSafe(fixedLaunchFile) as LaunchJson;
+
+    if(!unModifiedLaunchFileJson || !launchFileJson){
+        console.error("Couldn't parse json from launch.json!"
+            + "\n*** Try resetting your project(Generate Project Files).");
+        
+        return;
     }
 
-    return;
-}
+    const configs = launchFileJson.configurations;
 
-
-function fixDeprecatedExternalConsole(launchJson: LaunchJson): boolean {
-
-    const configurations = launchJson.configurations;
-    let isDirty = false;
-
-    if (!configurations){
-        console.error("No launch configurations to fix!");
-        return isDirty;
+    if(!configs?.length){
+        console.error("Could not get launch configs!");
+        return;
     }
-    
-    for( const launchOject of configurations) {
-        if(launchOject.externalConsole) {
-            isDirty = true;
 
-            launchOject.externalConsole = undefined;
-            launchOject.console = CONSOLE_SETTING;
+    let errors = 0;
+    for(const config of configs){
+        errors = fixExternalConsole(config) ? errors +=1 : errors += 0;
+
+        if(config.console === OLD_REPLACEMENT_CONSOLE_SETTING){  // Match UE4 with default UE5 settings(previous fix was wrong setting)
+            config.console = REPLACEMENT_CONSOLE_SETTING;
+            errors += 1;
         }
     }
 
-    return isDirty;
-}
-
-
-async function getLaunchFile(workspaceFolder: vscode.WorkspaceFolder): Promise< { launchJson:LaunchJson | undefined, isDirty:boolean} >{
-    const workspacePath = workspaceFolder.uri.fsPath;
-
-    const launchPath = path.join(workspacePath, consts.LAUNCH_PATH_SUFFIX);
-
-    const launchFile: string | undefined = await readStringFromFile(launchPath);
-
-    if(!launchFile){
-        return {launchJson:undefined, isDirty:false};
+    if(errors){
+        console.log(`Errors fixed: ${errors}`)
     }
 
-    let launchJson = jsonParseSafe(launchFile) as LaunchJson;
-
-    if(!launchJson){
-        return repairAndGetLaunchFile(launchFile);
+    if(errors || isRepairedJson){
+        
+        writeJsonOrStringToFile(launchFilePath, launchFileJson); 
     }
-
-    return {launchJson:launchJson, isDirty:false};
+    else{
+        console.log("There was nothing to fix!");
+    }
+        
+    return;
+    
 }
 
-async function saveLaunchFile(workspaceFolder: vscode.WorkspaceFolder, launchJson: LaunchJson) {
 
-    const workspacePath = workspaceFolder.uri.fsPath;
-    const launchPath = path.join(workspacePath, consts.LAUNCH_PATH_SUFFIX);
+function fixExternalConsole(launchObject: LaunchObjectJson): hasFixed {
+    
+    if(!launchObject.externalConsole){
+        return false;
+    }
+    
+    delete launchObject.externalConsole;
+    launchObject.console = REPLACEMENT_CONSOLE_SETTING;
 
-    console.log(`Writing ${launchPath} to file.`);
-    await writeJsonOrStringToFile(launchPath, launchJson);
+    return true;
 }
 
-function repairAndGetLaunchFile(launchFileStr: string) : { launchJson:LaunchJson | undefined, isDirty:boolean} {
+
+function repairLaunchFile(launchFileStr: string) : string {
 
     console.log("\nAttempting to fix the json of launch.json...");
 
-    const fixedLaunchFileStr = launchFileStr.replaceAll(consts.RE_LAUNCH_SOURCE_FILE_MAP, `D:\\\\build\\\\++UE5\\\\Sync`);
-
-    const  launchJson = jsonParseSafe(fixedLaunchFileStr) as LaunchJson;
-
-
-    if(!!fixedLaunchFileStr && fixedLaunchFileStr !== launchFileStr && !!launchJson){
-        return { launchJson:launchJson, isDirty:true};
-    }
-    else{
-        return { launchJson:launchJson, isDirty:false};
-    }
-
+    return launchFileStr.replaceAll(consts.RE_LAUNCH_SOURCE_FILE_MAP, `D:\\\\build\\\\++UE5\\\\Sync`);
+ 
 }

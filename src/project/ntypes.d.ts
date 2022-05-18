@@ -37,9 +37,14 @@ export type LaunchJson = {
 	configurations?: [LaunchObjectJson];
 };
 
+interface IDictionary {
+    [index:string]: string;
+}
+
 
 // Unfinished but don't need all variables
 export type LaunchObjectJson = {
 	externalConsole?: boolean;
 	console?: string;
+	sourceFileMap?: IDictionary;
 };

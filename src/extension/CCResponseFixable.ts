@@ -5,14 +5,14 @@ import {Fixable} from "./fixable";
 import { fixMissingResponseCompileCommands } from "./fixes/missingCompileCommands";
 import { fixResponse } from "./fixes/invalidPaths";
 import { fixTagIncludes } from "./fixes/tagIncludes";
-import { fixUE4Optimization } from "./fixes/optimizeUE4";
+import { fixUEOptimization } from "./fixes/optimizeUE4";
 import { fixWrongCppStandard } from "./fixes/wrongCppStandard";
 
 import * as console from "../console";
 import { fixLaunchFile } from "./fixes/launch";
 import { fixWrongIntellisenseMode } from "./fixes/wrongIntellisenseMode";
-import { fixPropCompilerPath } from "./fixes/propCompilerPath";
-
+import { fixGenerated } from "./fixes/generated";
+import { warnPubPrivDir } from "./fixes/pubPrivDir";
 
 
 export class CCResponseFixable extends Fixable {
@@ -33,8 +33,14 @@ export class CCResponseFixable extends Fixable {
         await fixResponse(this.project);
         console.log("End fixing invalid paths in response files.\n");
 
+        await fixGenerated(this.project);
+        console.log("End fixing *.generated.h\n")
+
         await fixMissingResponseCompileCommands(this.project);
         console.log("End fix missing compile commands.\n");
+
+        await warnPubPrivDir(this.project);
+        console.log("End warn Public/Private Directory\n")
 
         fixTagIncludes(this.project);
         console.log("End fix UE workspace(Add empty tag parser).\n");
@@ -51,9 +57,9 @@ export class CCResponseFixable extends Fixable {
         return;
     }
 
-    protected async fixOptional(): Promise<void> {
+    protected async fixOptional(isEnabled: boolean): Promise<void> {
 
-        await fixUE4Optimization(this.project);
+        await fixUEOptimization(this.project, isEnabled);
         console.log("End fix UE optimization.\n");
     }
 

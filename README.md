@@ -6,9 +6,32 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 
 ### [More Detailed Readme](https://gist.github.com/boocs/f63a4878156295b6e854cac68672f305)
 
+---
+**WARNING:**
+  3.1.0+ changes the way this extension's 'enableOptionalFixes' optimization setting works.
+  Enabling UE optimization disables red squiggle compiling for the Unreal Engine source code.
+  This does not affect your project's source code (it still can have red squiggles).
+  Navigation is unaffected.
+  You can disable this in this extension's settings.
+- File Changed: Unreal Source's .vscode/settings.json
+
+---
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 3.1.0 May 18th, 2022
+- Simpler way for the extension's 'enableOptionalFixes' optimization setting. Now just uses Tag Parser for UE source. **SEE WARNING ABOVE**
+- Added error if *.generated.h files aren't Built yet
+- Added error if *.generated.h path isn't in rsp files
+- Add error if using UE5 and using the wrong cppStandard
+- Added info message about default cppStandard for UE4/UE5
+- Better warning if UE path isn't in *.code-workspace file
+- Show total # of errors/warnings messages at end of log
+- Warn if using the extension's path setting without strict enabled
+- Warning if project is using Source/(ProjectName)/(Public/Private) directory structure
+- Launch json fix refactor.
+- Launch json fix of this extension's previous launch json fix version to match console setting of UE5 to UE4
+
 ### 3.0.2 April 12th, 2022
 - Response file path regex for linux (and probably Mac)
 

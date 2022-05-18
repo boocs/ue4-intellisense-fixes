@@ -38,12 +38,12 @@ export class V425Fixable extends Fixable {
         fixWrongIntellisenseMode(this.project);
         console.log("End fix wrong intellisense mode.\n");
         
-        fixPropCompilerPath(this.project);
+        await fixPropCompilerPath(this.project);
         
         return;
     }
 
-    protected async fixOptional(): Promise<void> {
+    protected async fixOptional(isEnabled: boolean): Promise<void> {
         return;
     }
 

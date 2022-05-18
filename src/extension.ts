@@ -19,6 +19,7 @@ let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
 
 
 export async function activate(context: vscode.ExtensionContext) {
+	console.resetCounts(); // just to be sure
 
 	// This is a workaround because the glob activation event sometimes didn't work
 	// For some people it was really bad
@@ -35,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 
-	console.log('\nExtension "UE Intellisense Fixes" 3.0.1 is now active!\n');
+	console.log('\nExtension "UE Intellisense Fixes" 3.1.0 is now active!\n');
 
 	context.subscriptions.push(vscode.commands.registerCommand("UEIntellisenseFixes.showLog", () => {
 		console.outputChannel?.show(true);
@@ -51,8 +52,20 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (fixableProject?.project?.isValid) {
 		createWatchers(fixableProject);
 	}
+	else {
+		console.error("Couldn't create file watchers!")
+	}
 	
+	
+	
+	console.log(`\n*** Number of error messages: ${console.getErrorCount()}`);
+	console.log(`*** Number of warning messages: ${console.getWarningCount()}`)
+	console.log("If you get any errors you can try restarting VSCode to check if they've been fixed.")
+	console.outputChannel.show(true);
+	
+
 	await endRun(statusItem);
+	
 	
 }
 

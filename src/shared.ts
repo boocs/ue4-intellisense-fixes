@@ -29,19 +29,25 @@ import { relative } from 'path';
  */
 export async function readStringFromFile(path: string, encoding: BufferEncoding = consts.ENCODING_UTF_8): Promise<string | undefined> {
 
-    try {
-        // return await fsAsync.readFile(path, encoding) as string;
-        const fileUri = vscode.Uri.file(path);
-        const fileArray =  await vscode.workspace.fs.readFile(fileUri);
+    const fileUri = vscode.Uri.file(path);
+    if(!fileUri?.fsPath){
+        console.error(`Error trying to read invalid file path: ${path}`)
+        return;
+    }
 
-        return fileArray.toString();
+    let fileArray;
+    try {
+                
+        fileArray = await vscode.workspace.fs.readFile(fileUri);
     }
     catch (error) {
-        if(error instanceof Error){ 
+        if (error instanceof Error) {
             console.error(`Error reading ${path}. Message: ${error.message}`);
         }
         return undefined;
     }
+
+    return fileArray.toString();
 }
 
 /**
@@ -89,7 +95,7 @@ export async function writeJsonOrStringToFile(path: string, data: any, encoding:
         return;
     }
     catch (error) {
-        if(error instanceof Error){
+        if (error instanceof Error) {
             console.error(`Error writing json file. Message: ${error.message}`);
         }
         return;
@@ -134,7 +140,7 @@ export function jsonParseSafe(data: string): any | undefined {
         return JSON.parse(data);
     } catch (error) {
 
-        if(error instanceof Error){
+        if (error instanceof Error) {
             console.error(`JSON string was malformed and can't be parsed. Message: ${error.message}`);
         }
 
@@ -159,8 +165,10 @@ export function createGlobCompileCommandFileName(nameSuffix: string = "*"): stri
  * @log console.log Can't find files or workspace undefined
  * 
  */
-export async function findVSCodeFolderFiles(workspaceFolder: vscode.WorkspaceFolder | undefined | null,
+export async function findVSCodeFolderFiles(
+    workspaceFolder: vscode.WorkspaceFolder | undefined | null,
     globFilename: string): Promise<vscode.Uri[] | undefined> {
+
     if (!workspaceFolder) {
         console.log("Workspace undefined. Won't find files in .vscode folder.");
         return;
@@ -168,7 +176,7 @@ export async function findVSCodeFolderFiles(workspaceFolder: vscode.WorkspaceFol
 
     const glob = `.vscode/${globFilename}`;
     const include = !workspaceFolder ? glob : new vscode.RelativePattern(workspaceFolder, glob);
-    
+
     let foundFiles: vscode.Uri[] = [];
     try {
         foundFiles = await findFiles(include, null);
@@ -227,18 +235,18 @@ export function createRegExpFrom(regExpString: string): RegExp {
 // These next two functions get stuck here. Didn't like anywhere else.
 export function setIntellisenseMode(project: ProjectUE4, mode: string) {
     const workSpacesCCppConfigs = getWorkspacesCCppConfigs(project);
-    
+
     if (!workSpacesCCppConfigs) {
         console.error("Error getting workspaces. The intellisenseMode won't be changed.");
         return;
     }
-    
-    for (const key in workSpacesCCppConfigs){
+
+    for (const key in workSpacesCCppConfigs) {
         for (const config of workSpacesCCppConfigs[key]) {
             config.intelliSenseMode = mode;
             console.log(`This extension set ${key} workspace c_cpp_properties.json's intellisenseMode to ${mode}`);
         }
-                
+
     }
 }
 
@@ -247,7 +255,7 @@ export function setIntellisenseMode(project: ProjectUE4, mode: string) {
  * @param project 
  * @logs error
  */
- export function getWorkspacesCCppConfigs(project: ProjectUE4): Record<string, CCppConfigurationJson[]> | undefined {
+export function getWorkspacesCCppConfigs(project: ProjectUE4): Record<string, CCppConfigurationJson[]> | undefined {
     const mainCCppPropertiesConfiguration = project.getCCppConfigurationsFromWorkspace(project.mainWorkspaceKey);
     if (!mainCCppPropertiesConfiguration) {
         console.error("Couldn't get Main c_cpp_properties.json's first configuration.");
@@ -268,9 +276,9 @@ export function setIntellisenseMode(project: ProjectUE4, mode: string) {
 }
 
 // ref: https://stackoverflow.com/questions/65146751/detecting-apple-silicon-mac-in-javascript
-export function isMacM1(isLog = true) : boolean {
+export function isMacM1(isLog = true): boolean {
 
-    if(isLog) {
+    if (isLog) {
         console.log(`Cpu: ${os.cpus()[0].model}`);
     }
 
@@ -280,27 +288,27 @@ export function isMacM1(isLog = true) : boolean {
 
 // This is a workaround because the vscode api findFiles function sometimes doesn't work
 // For some people it almost never works.
-export async function findFiles(include: vscode.GlobPattern, exclude: vscode.GlobPattern | null | undefined = null, maxResults?: number | undefined) : Promise<vscode.Uri[]> {
+export async function findFiles(include: vscode.GlobPattern, exclude: vscode.GlobPattern | null | undefined = null, maxResults?: number | undefined): Promise<vscode.Uri[]> {
 
     const searchPaths: string[] = [];
     let pattern: string = "";
 
-    if(typeof include === "string"){
-        if(!vscode.workspace.workspaceFolders){
+    if (typeof include === "string") {
+        if (!vscode.workspace.workspaceFolders) {
             console.error("No workspaceFolders found while trying to findFiles(shared).");
             return []
         }
 
         pattern = include;
 
-        for(const workspaceFolder of vscode.workspace.workspaceFolders){
+        for (const workspaceFolder of vscode.workspace.workspaceFolders) {
             const convertedPath = workspaceFolder.uri.fsPath.split(path.sep).join(path.posix.sep);
             searchPaths.push(convertedPath);
         }
     }
-    else{
+    else {
         const relPattern: vscode.RelativePattern = include;
-        
+
         pattern = relPattern.pattern;
         // ref: https://stackoverflow.com/questions/53799385/how-can-i-convert-a-windows-path-to-posix-path-using-node-path
         const convertedPath = relPattern.base.split(path.sep).join(path.posix.sep);
@@ -308,30 +316,30 @@ export async function findFiles(include: vscode.GlobPattern, exclude: vscode.Glo
     }
 
     const fileUris: vscode.Uri[] = [];
-    for(const searchPath of searchPaths){
+    for (const searchPath of searchPaths) {
         //console.log(`Searching... pattern:(${pattern})  search path:(${searchPath})`)
-        const pathSuffixes: string[] = await fglob(pattern, {cwd: searchPath});
+        const pathSuffixes: string[] = await fglob(pattern, { cwd: searchPath });
 
-        if(!pathSuffixes.length){
+        if (!pathSuffixes.length) {
             console.log("Searching with fast-glob found nothing. (Sometimes isn't bug)");
             continue;
         }
         fileUris.push(...getUrisFromBasePathAndSuffixes(searchPath, pathSuffixes));
     }
-    
+
     return fileUris;
 }
 
-function getUrisFromBasePathAndSuffixes(base: string, pathSuffixes: string[]): vscode.Uri[]{
+function getUrisFromBasePathAndSuffixes(base: string, pathSuffixes: string[]): vscode.Uri[] {
 
     const uris: vscode.Uri[] = [];
-    for(const pathSuffix of pathSuffixes){
+    for (const pathSuffix of pathSuffixes) {
         const fullPath = path.join(base, pathSuffix);
         //console.log(`Created path from search: ${fullPath}`)
         const newUri = vscode.Uri.file(fullPath)
         //console.log(`Uri created. Has path: ${newUri.fsPath}`)
         uris.push(newUri);
-        
+
     }
 
     return uris;

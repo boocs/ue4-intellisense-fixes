@@ -9,6 +9,8 @@ export const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME);
 
 // If debugging set this to true;
 const IS_DEBUG = false;
+let errorCount = 0;
+let warningCount = 0;
 
 export function log(message: string) {
     if(IS_DEBUG){  console.log(message); }
@@ -21,12 +23,41 @@ export function log(message: string) {
 }
 
 export function error(message: string) {
+    errorCount += 1;
+
     if(IS_DEBUG){  console.error(message); }
 
     if(!outputChannel){
         return;
     }
 
-    outputChannel.appendLine("** Error **: ".concat(message));
+    outputChannel.appendLine("\n** Error **: ".concat(message));
     outputChannel.show();
+}
+
+// TODO This kind of looks like error...
+export function warning(message: string) {
+    warningCount += 1;
+
+    if(IS_DEBUG){  console.error(message); }
+
+    if(!outputChannel){
+        return;
+    }
+
+    outputChannel.appendLine("\n** Warning **: ".concat(message));
+    outputChannel.show();
+}
+
+export function resetCounts() {
+    errorCount = 0;
+    warningCount = 0;
+}
+
+export function getErrorCount() {
+    return errorCount;
+}
+
+export function getWarningCount() {
+    return warningCount;
 }

@@ -106,10 +106,15 @@ function getCorrectedEntryCommand(command: string, compilerPathOverride: string)
 
 function getCompilerPathOverride() {
 
-    
     const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
     const currentExtStrictSetting = config.get<boolean>(consts.CONFIG_SETTING_STRICT_PATH);
     const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
+
+    if(!currentExtStrictSetting && currentExtCompilerPath){
+        console.warning("You're using this extension's compiler path setting without using the 'strict' path setting.\n"
+                         + "** Although this can work, it's better to enable both.");
+        
+    }
 
     if(!currentExtStrictSetting || !currentExtCompilerPath){
         console.log("Will not override compiler path in compile commands file. (Not an error)");
@@ -120,11 +125,14 @@ function getCompilerPathOverride() {
     return currentExtCompilerPath;  
 }
 
+
 function getFixedCompilerPath(compilerPath: string, responsePath: string): string {
 
     return `"` + compilerPath + `"` + " " + responsePath;
 }
 
+
+/*
 // ref: https://coderwall.com/p/0eds7q/detecting-64-bit-windows-in-node-js
 function isOSWin64() {
     return process.arch === 'x64' || process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
@@ -145,3 +153,4 @@ function getNewIntellisenseMode(compilerType: CompilerType) {
 
     return intellisenseMode;
 }
+*/

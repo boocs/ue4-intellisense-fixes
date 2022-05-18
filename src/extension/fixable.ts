@@ -36,12 +36,9 @@ export abstract class Fixable{
             console.log("Fixes aren't enabled in settings.");
         }
         
-        if(this._isOptionalFixesEnabled){
-            await this.fixOptional();
-        }
-        else {
-            console.log("Optional Fixes aren't enabled in the settings.");
-        }
+        
+        await this.fixOptional(this._isOptionalFixesEnabled);
+        
         
         if(this._isFixesEnabled || this._isOptionalFixesEnabled){
             await this.postFixProject();
@@ -52,7 +49,7 @@ export abstract class Fixable{
 
     protected abstract initializeProject() : Promise<ProjectUE4|undefined>;
     protected abstract fixProject() : Promise<void>;
-    protected abstract fixOptional() : Promise<void>;
+    protected abstract fixOptional(isEnabled: boolean) : Promise<void>;
     protected abstract postFixProject(): Promise<void>;
     
 }

@@ -40,7 +40,7 @@ export class CCResponseProject extends ProjectUE4 {
             const isSuccess = await this.loadCompileCommandsFromWorkspace(this.ue4WorkspaceKey);
 
             if (!isSuccess) {
-                console.error("Optional fixes are disabled but can't find any UE4 workspace compile commands. Resetting the project should fix this.");
+                console.error("Optional fixes are disabled but can't find any UE4 workspace compile commands. Resetting the project should fix this.\n");
             }
         }
 

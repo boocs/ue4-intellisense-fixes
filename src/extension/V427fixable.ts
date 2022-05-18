@@ -12,7 +12,7 @@ export class V427Fixable extends CCResponseFixable {
         // This needs to happen before fixCompilerPaths
         // This means this will get called twice since it gets called for the 4.26 base class...
         // Made the function check if it's already run.
-        fixPropCompilerPath(this.project);  
+        await fixPropCompilerPath(this.project);  
         
         await fixCompilerPaths(this.project, this.isOptionalFixesEnabled);
 

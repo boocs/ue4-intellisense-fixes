@@ -12,8 +12,8 @@ import * as shared from "../shared";
 import * as console from "../console";
 
 
-const MAIN_KEY = "main";
-const UE4_KEY = "ue4";
+const MAIN_KEY = "MAIN";
+const UE4_KEY = "UE";
 
 
 export abstract class ProjectUE4 extends ProjectCCpp {
@@ -151,16 +151,17 @@ export abstract class ProjectUE4 extends ProjectCCpp {
     */
     protected static findUE4Workspace(): vscode.WorkspaceFolder | undefined {
 
-        const ue4Workspace = vscode.workspace.workspaceFolders?.find(workspaceFolder => {
+        const ueWorkspace = vscode.workspace.workspaceFolders?.find(workspaceFolder => {
             return (workspaceFolder.name === consts.WORKSPACE_FOLDER_NAME_UE4 || workspaceFolder.name === consts.WORKSPACE_FOLDER_NAME_UE5);
         });
 
-        if (!ue4Workspace) {
-            console.log("Couldn't find the UE4/UE5 workspace.");
+        if (!ueWorkspace) {
+            console.error("Couldn't find the UE4/UE5 workspace.");
+            console.error("Try right-clicking your project's *.uproject file and choose Switch Engine Version. Select the same version as your project and hit ok.")
             return;
         }
 
-        return ue4Workspace;
+        return ueWorkspace;
     }
 
 
@@ -316,6 +317,10 @@ export abstract class ProjectUE4 extends ProjectCCpp {
             versionFileStat = await vscode.workspace.fs.stat(versionUri);
         } catch (error) {
             console.error("Exception: Couldn't find UE source file Version.h");
+            if(error instanceof Error){
+                console.error(`Exception message: ${error.message}`);
+            }
+            
             return;
         }
         
