@@ -6,7 +6,7 @@ import { JSON_SPACING } from '../consts';
 import * as console from "../console";
 
 
-export const RE_RESPONSE_FILE_PATH = `(?<=@\\"|@').*.rsp`
+export const RE_RESPONSE_FILE_PATH = `(?<=@\\"|@'|@).*.rsp`;
 
 export class CompileCommands {
 
