@@ -40,7 +40,7 @@ export async function fixLaunchFile(project: ProjectUE4) {
     }
 
     const unModifiedLaunchFileJson = jsonParseSafe(fixedLaunchFile) as LaunchJson;
-    const launchFileJson = jsonParseSafe(fixedLaunchFile) as LaunchJson;
+    const launchFileJson = jsonParseSafe(fixedLaunchFile) as LaunchJson;  // Need to be two different objects
 
     if(!unModifiedLaunchFileJson || !launchFileJson){
         console.error("Couldn't parse json from launch.json!"

@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense configuration on startup.",
-	"version": "3.1.0",
+	"version": "3.1.1",
 	"publisher": "boocs",
 	"license": "MIT",
 	"repository": {
@@ -34,7 +34,7 @@
 				},
 				"UEIntellisenseFixes.enableOptionalFixes": {
 					"type": "boolean",
-					"markdownDescription": "`(Optimization)` Removes project specific references from the UE workspace and adds general Intellisense to the UE source code.",
+					"markdownDescription": "`(Optimization)` Unreal Source uses Tag Parser Intellisense instead of the Default Intellisense (modifies UnrealPath/.vscode/settings.json)",
 					"default": false,
 					"scope": "application"
 				},

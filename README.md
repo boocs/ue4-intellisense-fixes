@@ -19,6 +19,11 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 3.1.1 June 14th. 2022
+- Added fix for non-quoted response file paths [yggie](https://github.com/yggie) (Thanks!)
+- Added some error messages for invalid projects
+- Fixed the wording for the optional optimization fix
+
 ### 3.1.0 May 18th, 2022
 - Simpler way for the extension's 'enableOptionalFixes' optimization setting. Now just uses Tag Parser for UE source. **SEE WARNING ABOVE**
 - Added error if *.generated.h files aren't Built yet

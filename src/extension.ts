@@ -13,6 +13,7 @@ import * as text from "./text";
 
 import * as console from "./console";
 
+const EXTENSION_VERSION = "3.1.1";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
@@ -36,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 
-	console.log('\nExtension "UE Intellisense Fixes" 3.1.0 is now active!\n');
+	console.log(`\nExtension "UE Intellisense Fixes" ${EXTENSION_VERSION} is now active!\n`);
 
 	context.subscriptions.push(vscode.commands.registerCommand("UEIntellisenseFixes.showLog", () => {
 		console.outputChannel?.show(true);

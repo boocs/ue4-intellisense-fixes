@@ -1,7 +1,14 @@
 ### [TODO]
 
-## [3.1.0] 2022-5-18
+## [3.1.1] 2022-6-14
+### Fixed
+- Non quoted Response file paths regex
+### Changed
+- Wording of Optional fixes
+### Added
+- Error messages for invalid projects
 
+## [3.1.0] 2022-5-18
 ### Changed
 - Simpler way for the extension's 'enableOptionalFixes' optimization setting. Now just uses Tag Parser for UE source.
 ### Fixed

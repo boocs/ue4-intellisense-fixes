@@ -76,6 +76,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
         isValid = await super.cCppPostConstructionSetup({ [MAIN_KEY]: mainSetupVars, [UE4_KEY]: ue4SetupVars });
 
         if (!isValid) {
+            console.error("Error in cCppPostConstructionSetup!")
             return false;
         }
 
