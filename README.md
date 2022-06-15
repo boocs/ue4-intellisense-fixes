@@ -19,7 +19,10 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
-### 3.1.1 June 14th. 2022
+### 3.1.2 June 15, 2022
+- Added error messages when creating compile command objects
+
+### 3.1.1 June 14th, 2022
 - Added fix for non-quoted response file paths [yggie](https://github.com/yggie) (Thanks!)
 - Added some error messages for invalid projects
 - Fixed the wording for the optional optimization fix

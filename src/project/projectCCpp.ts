@@ -288,10 +288,12 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
 
         const cCppProperties = this.getCCppProperties(workspaceKey);
         if (!cCppProperties) {
+            console.error(`Error, no getCCppProperties with key:${workspaceKey}!`)
             return false;
         }
 
         if (!cCppProperties.configurations) {
+            console.error(`Error, no cCppProperties.configurations with key:${workspaceKey}!`)
             return false;
         }
 
@@ -300,11 +302,13 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
 
             const compileCommandsPath = cCppProperties.configurations?.[configIndex].compileCommands;
             if (!compileCommandsPath) {
+                console.error(`${configIndex}: No compileCommandsPath found in cCppProperties with key:${workspaceKey}! (not an error with UE 4.25.#)`)  // Does 4.25 even use this function?
                 continue;
             }
 
             const compileCommands = await CompileCommands.create(compileCommandsPath);
             if (!compileCommands.isValid) {
+                console.error(`${configIndex}: Couldn't create compileCommands from ${compileCommandsPath} with key:${workspaceKey}! (not an error with UE 4.25.#)`)
                 continue;
             }
 
@@ -314,7 +318,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
 
             const workspaceCompileCommands = this._compileCommands.get(workspaceKey);
             if (!workspaceCompileCommands) {
-                console.error(`${workspaceKey} Compile Commands wasn't set.`);
+                console.error(`${configIndex}: ${workspaceKey} Compile Commands wasn't set.`);
                 continue;
             }
 
@@ -323,6 +327,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
         }
 
         if(!this._compileCommands.get(workspaceKey)?.size) {
+            console.error(`Did not create any compile commands with key${workspaceKey}! (not an error with UE 4.25.#)`);
             return false;
         }
         

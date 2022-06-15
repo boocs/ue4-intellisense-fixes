@@ -1,5 +1,9 @@
 ### [TODO]
 
+# [3.1.2] 2022-6-15
+### Added
+- Error messages when creating compile command object
+
 ## [3.1.1] 2022-6-14
 ### Fixed
 - Non quoted Response file paths regex
