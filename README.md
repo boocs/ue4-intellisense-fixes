@@ -19,6 +19,9 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+### 3.1.3 June 20, 2022
+- Added c++20 option for future or experimental projects
+
 ### 3.1.2 June 15, 2022
 - Added error messages when creating compile command objects
 

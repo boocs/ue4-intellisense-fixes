@@ -1,5 +1,9 @@
 ### [TODO]
 
+# [3.1.3] 2022-6-20
+### Added
+- c++20 option for future or experimental projects
+
 # [3.1.2] 2022-6-15
 ### Added
 - Error messages when creating compile command object
