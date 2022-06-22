@@ -14,7 +14,7 @@ import * as console from "../../console";
 const GLOB_UE_EDITOR_GENERATED = "Intermediate/Build/**/UnrealEditor/Inc/**/*.generated.h"
 const GLOB_UE4_EDITOR_GENERATED = "Intermediate/Build/**/UE4Editor/Inc/**/*.generated.h"
 
-const REGEX_UE_EDITOR_GENERATED = /(?<!Engine)[\/|\\]Intermediate[\/|\\]Build[\/|\\]\w+[\/|\\](?:Unreal|UE4)Editor[\/|\\]Inc/gm
+const REGEX_UE_EDITOR_GENERATED = /(?<!Engine)[\/|\\]Intermediate[\/|\\]Build[\/|\\](?:\w+[\/|\\])+(?:Unreal|UE4)Editor[\/|\\]Inc/gm
 
 
 export async function fixGenerated(project: ProjectUE4) : Promise<void> {

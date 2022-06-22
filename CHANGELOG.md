@@ -1,5 +1,9 @@
 ### [TODO]
 
+# [3.1.4] 2022-6-22
+### Fixed
+- Mac M1 generated.h regex path tester (Not sure if it's M1 only fix or a general Mac fix)
+
 # [3.1.3] 2022-6-20
 ### Added
 - c++20 option for future or experimental projects
