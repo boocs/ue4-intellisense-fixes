@@ -19,6 +19,9 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+# 3.1.5 Aug 14, 2022
+- Retrying Mac M1 generated.h regex path tester (Not sure if it's M1 only fix or a general Mac fix)
+
 ### 3.1.4 June 22, 2022
 - Fixed Mac M1 generated.h regex path tester (Not sure if it's M1 only fix or a general Mac fix)
 

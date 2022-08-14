@@ -1,5 +1,8 @@
 ### [TODO]
 
+# [3.1.5] 2022-8-14
+- Retrying Mac M1 generated.h regex path tester (Not sure if it's M1 only fix or a general Mac fix)
+
 # [3.1.4] 2022-6-22
 ### Fixed
 - Mac M1 generated.h regex path tester (Not sure if it's M1 only fix or a general Mac fix)
