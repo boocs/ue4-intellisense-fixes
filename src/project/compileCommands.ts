@@ -6,7 +6,7 @@ import { JSON_SPACING } from '../consts';
 import * as console from "../console";
 
 // Response Path = Escaped forward slash, escaped backslash, escaped word char, colon, period, space
-export const RE_RESPONSE_FILE_PATH = `[\\\/\\\\\\\w:. ]+.rsp`;
+export const RE_RESPONSE_FILE_PATH = `[\\\/\\\\\\\w:. -]+.rsp`;
 
 export class CompileCommands {
 

@@ -1,5 +1,11 @@
 ### [TODO]
 
+# [3.1.6] 2022-8-15
+### Fixed
+- Fixed response file path regex to support dashes
+### Added
+- Better error message for response file regex being unable to read path
+
 # [3.1.5] 2022-8-14
 - Retrying Mac M1 generated.h regex path tester (Not sure if it's M1 only fix or a general Mac fix)
 

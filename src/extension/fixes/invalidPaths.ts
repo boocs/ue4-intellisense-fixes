@@ -33,6 +33,11 @@ export async function fixResponse(project: ProjectUE4) {
 
         for (const filePath of responsePaths) {
 
+            if(!existsSync(filePath)){
+                console.error(`Regex didn't parse correctly or path doesn't exist! (${filePath})`);
+                continue;
+            }
+
             const originalResponseString = await shared.readStringFromFile(filePath);
             if (!originalResponseString || originalResponseString.startsWith('undefined')) {
                 console.error("Couldn't read response file");
