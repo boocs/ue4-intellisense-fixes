@@ -126,13 +126,13 @@ export const COMPILER_MSVC = "cl.exe";
 export const COMPILER_CLANG = "clang++.exe";
 export const COMPILER_CLANG_CL_NO_EXT = "clang-cl";
 
-export const INTELLISENSE_MODE_CLANG_X64 = "windows-clang-x64";
-export const INTELLISENSE_MODE_CLANG_X86 = "windows-clang-x86";
-export const INTELLISENSE_MODE_MSVC_X64 = "windows-msvc-x64";
-export const INTELLISENSE_MODE_MSVC_X86 = "windows-msvc-x86";
-export const INTELLISENSE_MODE_MACOS_CLANG_ARM64 = "macos-clang-arm64";
+export const INTELLISENSE_MODE_WINDOWS_CLANG_X64 = "windows-clang-x64";
+export const INTELLISENSE_MODE_WINDOWS_CLANG_X86 = "windows-clang-x86";
+export const INTELLISENSE_MODE_WINDOWS_MSVC_X64 = "windows-msvc-x64";
+export const INTELLISENSE_MODE_WINDOWS_MSVC_X86 = "windows-msvc-x86";
+export const INTELLISENSE_MODE_CLANG_X64 = "clang-x64";
 
 export const PLATFORM_WINDOWS = "win32";
 export const CPUID_MACM1 = "Apple M1";
 
-export const MACM1_DEFAULT_COMPILER_PATH = "/usr/bin/clang";
+export const MACM1_DEFAULT_COMPILER_PATH = "/usr/bin/clang++";

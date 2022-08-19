@@ -1,5 +1,13 @@
 ### [TODO]
 
+# [3.2.0] 2022-8-18
+### Changed
+- Changed default intellisenseMode for Mac M1 users to clang-x64
+- Changed default Mac M1 compiler setting to clang++ instead of clang
+### Added
+- Added editable intellisenseMode extension setting (For Mac M1 users it will be auto set to clang-x64)
+- Warning for Mac users for setting UEIntellisenseFixes.compiler.path
+
 # [3.1.6] 2022-8-15
 ### Fixed
 - Fixed response file path regex to support dashes

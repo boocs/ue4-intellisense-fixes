@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense configuration on startup.",
-	"version": "3.1.6",
+	"version": "3.2.0",
 	"publisher": "boocs",
 	"license": "MIT",
 	"repository": {
@@ -64,7 +64,13 @@
 				"UEIntellisenseFixes.compiler.strictPath": {
 					"type": "boolean",
 					"default": false,
-					"markdownDescription": "Force compiler path to be set in compile commands. `Use only` if UEIntellisenseFixes.compiler.path setting doesn't work. Reset project after `unchecking` this.",
+					"markdownDescription": "`(Mac users: skip this setting unless you've set the full xcode/clang++ path in the path setting)` Forces compiler path to be set in compile commands. `Use only` if UEIntellisenseFixes.compiler.path setting doesn't work. Reset project after `unchecking` this.",
+					"scope": "application"
+				},
+				"UEIntellisenseFixes.compiler.intellisenseMode": {
+					"type": "string",
+					"default": "",
+					"markdownDescription": "`Most users won't need to set this:` Mac M1 users will automatically be set to macos-clang-x64 if blank. If creating a Mac M1 Native/arm64 project you'll need to set this to clang-arm64. `Restart VSCode after setting this. Reset project if you ever delete this.`",
 					"scope": "application"
 				}
 			}
