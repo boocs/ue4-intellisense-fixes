@@ -19,17 +19,21 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
-# 3.2.0 Aug 18, 2022
+## 3.3.0 Aug 31, 2022
+- When not using strict setting will auto copy Unreal's compiler choice to the path setting.
+- Stop recommending to use the extension's strict setting(it's now an error but can stil be used). Users using the strict setting should uncheck the setting and reset their project(Generate Project Files)
+
+### 3.2.0 Aug 18, 2022
 - Changed default intellisenseMode for Mac M1 users to clang-x64
 - Added editable intellisenseMode extension setting (For Mac M1 users it will be auto set to clang-x64)
 - Changed default Mac M1 compiler setting to clang++ instead of clang
 - Added warning for Mac users for setting UEIntellisenseFixes.compiler.path
 
-# 3.1.6 Aug 15, 2022
+### 3.1.6 Aug 15, 2022
 - Fixed response file path regex to support dashes
 - Better error message for response file regex being unable to read path
 
-# 3.1.5 Aug 14, 2022
+### 3.1.5 Aug 14, 2022
 - Retrying Mac M1 generated.h regex path tester (Not sure if it's M1 only fix or a general Mac fix)
 
 ### 3.1.4 June 22, 2022

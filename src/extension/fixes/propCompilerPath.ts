@@ -13,33 +13,32 @@ export async function fixPropCompilerPath(project: ProjectUE4) {
     console.log("Fixing compiler path in c_cpp_properties.json.");
 
     const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
-    let currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
 
+    const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
+    const currentExtStrictSetting = config.get<boolean>(consts.CONFIG_SETTING_STRICT_PATH);
 
-    if(!currentExtCompilerPath && isMacM1()){
-        console.log("Extension compiler path isn't set. Mac M1 compiler path will be auto set.");
+    const compileCommandsCompilerPath = getCompileCommandsCompilerPath(project);
 
+    if(!compileCommandsCompilerPath) {
+        return;
+    }
+
+    const hasValidatedCurrentExtCompilerPath = !currentExtCompilerPath || currentExtCompilerPath !== compileCommandsCompilerPath
+
+    if(hasValidatedCurrentExtCompilerPath && !currentExtStrictSetting) {
+        console.log(`Auto updating extension's compiler setting to ${compileCommandsCompilerPath}`)
         try {
-            await config.update(consts.CONFIG_SETTINGS_PATH, consts.MACM1_DEFAULT_COMPILER_PATH, true);
+            await config.update(consts.CONFIG_SETTINGS_PATH, compileCommandsCompilerPath, true);
         } catch (error) {
-            console.error("Error updating M1 Mac compiler path setting!")
+            console.error("Couldn't update extension's compiler setting!");
+            return;
         }
-           
-        currentExtCompilerPath = consts.MACM1_DEFAULT_COMPILER_PATH;  // Even with error we can still set it below
+        
     }
-
-    console.log(`Extension compiler path is set to: ${currentExtCompilerPath} (can be blank)`);
-
-    if(!currentExtCompilerPath) {
-
-            console.log("Extension compiler path isn't set. Will not force compiler path in c_cpp_properties. (Not an error)");
-            console.log("If the extension's compiler path setting was previously set you should reset your UE project to get back the c_cpp_properties default path.\n");      
-    }
-    else {
-
-        setCCppPropCompilerPathToExtPath(project, currentExtCompilerPath);
-    }
-
+    
+    // Set this any way because it won't save if nothing has changed
+    setCCppPropCompilerPathToExtPath(project, compileCommandsCompilerPath);
+    
     console.log("End fix c_cpp_properties compiler path.\n");
 }
 
@@ -60,3 +59,31 @@ function setCCppPropCompilerPathToExtPath(project: ProjectUE4, currentExtCompile
     }
 
 }
+
+
+function getCompileCommandsCompilerPath(project: ProjectUE4) {
+    const compileCommandsConfigFirstIndex = project.getCompileCommandsAtConfigIndex(project.mainWorkspaceKey, 0);
+
+    const firstCommandOfFirstIndex = compileCommandsConfigFirstIndex?.compileCommands[0].command;
+
+    if(!firstCommandOfFirstIndex){
+        console.error("Couldn't get command from Compile Commands!");
+        return null;
+    }
+
+    return getCompilerPathFromString(firstCommandOfFirstIndex);
+
+}
+
+function getCompilerPathFromString(firstCommandOfFirstIndex: string) {
+    const match = firstCommandOfFirstIndex.match(consts.RE_COMPILE_COMMAND_COMPILER_EXE_AND_RSP_PATH);
+
+    if(match?.length !== 3 || !match[2].startsWith("@")) {
+        console.log("Error with matching compiler path and response file path.");
+        return null;
+    }
+
+
+    return match[0].replaceAll(`"`, "");
+}
+

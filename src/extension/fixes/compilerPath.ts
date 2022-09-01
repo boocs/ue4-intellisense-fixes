@@ -110,14 +110,16 @@ function getCompilerPathOverride() {
     const currentExtStrictSetting = config.get<boolean>(consts.CONFIG_SETTING_STRICT_PATH);
     const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
 
-    if(!currentExtStrictSetting && currentExtCompilerPath){
-        console.warning("You're using this extension's compiler path setting without using the 'strict' path setting.\n"
-                         + "** Although this can work, it's better to enable both.");
-        
+    if(currentExtStrictSetting && currentExtCompilerPath){
+        console.error(
+            "You're using this extension's compiler path setting and using the 'strict' path setting.\n" +
+            "** This should almost never be needed.\n" +
+            "** New extension update means turning strict off allowing Unreal's compiler choice\n" +
+            "** to be copied to this extension's compiler path setting.\n" +
+            "** Turn off the strict setting and reset your project(Generate Project Files) to fix this.");  
     }
 
     if(!currentExtStrictSetting || !currentExtCompilerPath){
-        console.log("Will not override compiler path in compile commands file. (Not an error)");
         return "";
     }
 

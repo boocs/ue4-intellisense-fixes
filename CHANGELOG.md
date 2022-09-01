@@ -1,5 +1,10 @@
 ### [TODO]
 
+# [3.3.0] 2022-8-31
+### Changed
+- When not using the extension's strict setting will auto copy Unreal's compiler choice to the path setting.
+- Stop recommending to use the extension's strict setting(it's now an error but can stil be used)
+
 # [3.2.0] 2022-8-18
 ### Changed
 - Changed default intellisenseMode for Mac M1 users to clang-x64
