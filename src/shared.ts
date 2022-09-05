@@ -344,3 +344,29 @@ function getUrisFromBasePathAndSuffixes(base: string, pathSuffixes: string[]): v
 
     return uris;
 }
+
+export function getCompileCommandsCompilerPath(project: ProjectUE4) {
+    const compileCommandsConfigFirstIndex = project.getCompileCommandsAtConfigIndex(project.mainWorkspaceKey, 0);
+
+    const firstCommandOfFirstIndex = compileCommandsConfigFirstIndex?.compileCommands[0].command;
+
+    if(!firstCommandOfFirstIndex){
+        console.error("Couldn't get command from Compile Commands!");
+        return null;
+    }
+
+    return getCompilerPathFromString(firstCommandOfFirstIndex);
+
+}
+
+function getCompilerPathFromString(firstCommandOfFirstIndex: string) {
+    const match = firstCommandOfFirstIndex.match(consts.RE_COMPILE_COMMAND_COMPILER_EXE_AND_RSP_PATH);
+
+    if(match?.length !== 3 || !match[2].startsWith("@")) {
+        console.log("Error with matching compiler path and response file path.");
+        return null;
+    }
+
+
+    return match[0].replaceAll(`"`, "");
+}

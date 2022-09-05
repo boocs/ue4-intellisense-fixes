@@ -1,5 +1,14 @@
 ### [TODO]
 
+# [3.4.0] 2022-9-5
+### Added
+- Added comment about compiler.path for Mac users. Probably needs to be set to /usr/bin/clang++ for Intellisense to work.
+### Changed
+- Extension's path setting. Will now pull from compile command's path if not set. If set will set both compile command compiler path and compilerPath setting.
+### Removed
+- Removed strict setting
+
+
 # [3.3.0] 2022-8-31
 ### Changed
 - When not using the extension's strict setting will auto copy Unreal's compiler choice to the path setting.

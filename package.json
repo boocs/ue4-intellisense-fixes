@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense configuration on startup.",
-	"version": "3.3.0",
+	"version": "3.4.0",
 	"publisher": "boocs",
 	"license": "MIT",
 	"repository": {
@@ -58,13 +58,7 @@
 				"UEIntellisenseFixes.compiler.path": {
 					"type": "string",
 					"default": "",
-					"markdownDescription": "This will be auto set for you. `Copies Unreal's compiler choice` from the compile commands `when strict setting is off`(which it now should be). This setting will force the path, that's set, to VSCode's compilerPath setting.",
-					"scope": "application"
-				},
-				"UEIntellisenseFixes.compiler.strictPath": {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "`Don't use this setting.` This copies the path set in this extension's path setting to the compile commands compiler settings. Using this setting is now an error but still can be used. `Uncheck and reset project`",
+					"markdownDescription": "The compiler path that will be set in compile commands and compilerPath setting. `Mac` users may have to set this to `/usr/bin/clang++` for Intellisense to work. `Restart after changing this.`",
 					"scope": "application"
 				},
 				"UEIntellisenseFixes.compiler.intellisenseMode": {

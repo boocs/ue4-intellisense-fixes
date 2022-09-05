@@ -19,6 +19,11 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+## 3.4.0 Sept 5, 2022
+- Changed Extension's path setting. Will now pull from compile command's path if not set. If set will set both compile command compiler path and compilerPath setting(c_cpp_properties.json).
+- Removed strict setting
+- Added comment about extension's compiler.path setting for Mac users. Probably needs to be set to /usr/bin/clang++ for Intellisense to work.
+
 ## 3.3.0 Aug 31, 2022
 - When not using strict setting will auto copy Unreal's compiler choice to the path setting.
 - Stop recommending to use the extension's strict setting(it's now an error but can stil be used). Users using the strict setting should uncheck the setting and reset their project(Generate Project Files)

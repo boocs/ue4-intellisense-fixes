@@ -9,13 +9,11 @@ export class V427Fixable extends CCResponseFixable {
 
     protected async fixProject(): Promise<void> {
 
-        // This needs to happen before fixCompilerPaths
-        // This means this will get called twice since it gets called for the 4.26 base class...
-        // Made the function check if it's already run.
-        await fixPropCompilerPath(this.project);  
-        
+        // This needs to run first in case compile commands compiler path needs to be set in empty extension path setting
         await fixCompilerPaths(this.project, this.isOptionalFixesEnabled);
 
+        await fixPropCompilerPath(this.project);  
+        
         await super.fixProject();
 
         return;

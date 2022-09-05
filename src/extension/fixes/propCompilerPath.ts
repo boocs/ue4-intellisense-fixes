@@ -15,29 +15,15 @@ export async function fixPropCompilerPath(project: ProjectUE4) {
     const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
 
     const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
-    const currentExtStrictSetting = config.get<boolean>(consts.CONFIG_SETTING_STRICT_PATH);
-
-    const compileCommandsCompilerPath = getCompileCommandsCompilerPath(project);
-
-    if(!compileCommandsCompilerPath) {
+    
+    
+    if(!currentExtCompilerPath){
+        console.error("Extension's compiler path setting wasn't set!")
         return;
-    }
-
-    const hasValidatedCurrentExtCompilerPath = !currentExtCompilerPath || currentExtCompilerPath !== compileCommandsCompilerPath
-
-    if(hasValidatedCurrentExtCompilerPath && !currentExtStrictSetting) {
-        console.log(`Auto updating extension's compiler setting to ${compileCommandsCompilerPath}`)
-        try {
-            await config.update(consts.CONFIG_SETTINGS_PATH, compileCommandsCompilerPath, true);
-        } catch (error) {
-            console.error("Couldn't update extension's compiler setting!");
-            return;
-        }
-        
     }
     
     // Set this any way because it won't save if nothing has changed
-    setCCppPropCompilerPathToExtPath(project, compileCommandsCompilerPath);
+    setCCppPropCompilerPathToExtPath(project, currentExtCompilerPath);
     
     console.log("End fix c_cpp_properties compiler path.\n");
 }
@@ -60,30 +46,4 @@ function setCCppPropCompilerPathToExtPath(project: ProjectUE4, currentExtCompile
 
 }
 
-
-function getCompileCommandsCompilerPath(project: ProjectUE4) {
-    const compileCommandsConfigFirstIndex = project.getCompileCommandsAtConfigIndex(project.mainWorkspaceKey, 0);
-
-    const firstCommandOfFirstIndex = compileCommandsConfigFirstIndex?.compileCommands[0].command;
-
-    if(!firstCommandOfFirstIndex){
-        console.error("Couldn't get command from Compile Commands!");
-        return null;
-    }
-
-    return getCompilerPathFromString(firstCommandOfFirstIndex);
-
-}
-
-function getCompilerPathFromString(firstCommandOfFirstIndex: string) {
-    const match = firstCommandOfFirstIndex.match(consts.RE_COMPILE_COMMAND_COMPILER_EXE_AND_RSP_PATH);
-
-    if(match?.length !== 3 || !match[2].startsWith("@")) {
-        console.log("Error with matching compiler path and response file path.");
-        return null;
-    }
-
-
-    return match[0].replaceAll(`"`, "");
-}
 

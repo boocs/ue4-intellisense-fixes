@@ -8,13 +8,9 @@ import * as vscode from "vscode";
 import type { ProjectUE4 } from '../../project/projectUE4';
 import type { CompileCommands } from "../../project/compileCommands";
 import * as consts from '../../consts';
+import {getCompileCommandsCompilerPath} from "../../shared"
 
 import * as console from '../../console';
-
-
-enum CompilerType {
-    clang = 1
-}
 
 
 export async function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: boolean) {
@@ -35,7 +31,7 @@ export async function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabl
         
     }
 
-    const compilerPathOverride = getCompilerPathOverride();
+    const compilerPathOverride = await getCompilerPathOverride(project);
 
     for (const compileCommand of compileCommands) {
         if (!compileCommand) { continue; }
@@ -82,6 +78,11 @@ async function fixCompileCommandFile(compileCommands: Map<string, CompileCommand
 
 function getCorrectedEntryCommand(command: string, compilerPathOverride: string) : string {
 
+    if(!compilerPathOverride){
+        console.error("getCorrectedEntryCommand was passed an empty compilerPathOverride!")
+        return "";
+    }
+
     const match = command.match(consts.RE_COMPILE_COMMAND_COMPILER_EXE_AND_RSP_PATH);
 
     if(match?.length !== 3 || !match[2].startsWith("@")) {
@@ -89,38 +90,32 @@ function getCorrectedEntryCommand(command: string, compilerPathOverride: string)
         return "";
     }
 
-    if(compilerPathOverride) {  
-        const newCommand =  getFixedCompilerPath(compilerPathOverride, match[2]);
+    const newCommand =  getFixedCompilerPath(compilerPathOverride, match[2]);
 
-        return newCommand === command ? "" : newCommand;
+    return newCommand === command ? "" : newCommand;
         
-    }  
-
-    if(match[0].startsWith(`"`)){
-        return "";  // compiler path is already fixed
-    }
-    
-    return getFixedCompilerPath(match[0], match[2]);
-
 }
 
-function getCompilerPathOverride() {
+async function getCompilerPathOverride(project: ProjectUE4): Promise<string> {
 
     const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
-    const currentExtStrictSetting = config.get<boolean>(consts.CONFIG_SETTING_STRICT_PATH);
     const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
 
-    if(currentExtStrictSetting && currentExtCompilerPath){
-        console.error(
-            "You're using this extension's compiler path setting and using the 'strict' path setting.\n" +
-            "** This should almost never be needed.\n" +
-            "** New extension update means turning strict off allowing Unreal's compiler choice\n" +
-            "** to be copied to this extension's compiler path setting.\n" +
-            "** Turn off the strict setting and reset your project(Generate Project Files) to fix this.");  
-    }
+    if(!currentExtCompilerPath){
+        const compileCommandCompilerPath = getCompileCommandsCompilerPath(project);
 
-    if(!currentExtStrictSetting || !currentExtCompilerPath){
-        return "";
+        if(!compileCommandCompilerPath){
+            console.error("Couldn't set extension's compile path setting because compiler is null!");
+            return "";
+        }
+
+        try {
+            await config.update(consts.CONFIG_SETTINGS_PATH, compileCommandCompilerPath, true)
+        } catch (error) {
+            console.error("Couldn't set extension's compile path setting!")
+            return ""
+        }
+        return compileCommandCompilerPath;
     }
 
     console.log(`Will override compile commands' compiler paths with ${currentExtCompilerPath}`);
@@ -132,27 +127,3 @@ function getFixedCompilerPath(compilerPath: string, responsePath: string): strin
 
     return `"` + compilerPath + `"` + " " + responsePath;
 }
-
-
-/*
-// ref: https://coderwall.com/p/0eds7q/detecting-64-bit-windows-in-node-js
-function isOSWin64() {
-    return process.arch === 'x64' || process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
-}
-
-function getNewIntellisenseMode(compilerType: CompilerType) {
-
-    let intellisenseMode: string = "";
-
-    if(compilerType === CompilerType.clang) {
-        if(isOSWin64()){
-            intellisenseMode = consts.INTELLISENSE_MODE_CLANG_X64;
-        }
-        else {
-            intellisenseMode = consts.INTELLISENSE_MODE_CLANG_X86;
-        }
-    }
-
-    return intellisenseMode;
-}
-*/
