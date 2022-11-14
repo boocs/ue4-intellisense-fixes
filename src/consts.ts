@@ -25,6 +25,7 @@ export const CONFIG_SETTING_STRICT_PATH = "strictPath";
 
 export const CONFIG_SECTION_EXTENSION_COMPILER = "UEIntellisenseFixes.compiler";
 export const CONFIG_SETTINGS_PATH = "path";
+export const CONFIG_SETTINGS_PATH_IS_PROJECT_SPECIFIC = "pathIsProjectSpecific";
 
 export const CONFIG_SETTING_LIMIT_SYMBOLS_TO_INCLUDED_HEADERS = "default.browse.limitSymbolsToIncludedHeaders";
 
@@ -134,5 +135,6 @@ export const INTELLISENSE_MODE_CLANG_X64 = "clang-x64";
 
 export const PLATFORM_WINDOWS = "win32";
 export const CPUID_MACM1 = "Apple M1";
+export const CPUID_MACM2  = "Apple M2";
 
 export const MACM1_DEFAULT_COMPILER_PATH = "/usr/bin/clang++";

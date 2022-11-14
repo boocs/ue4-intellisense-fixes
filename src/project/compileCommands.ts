@@ -101,7 +101,7 @@ export class CompileCommands {
     */
     getUniqueMatchesFromAllCommandLines(regExp: RegExp): string[] | undefined {
 
-        if (!this._compileCommands[0]?.command) {
+        if (!this._compileCommands[0]?.command && !this._compileCommands[0]?.arguments) {
             console.error("No compile commands found in compile command's file. Try resetting UE project.");
             return;
         }
@@ -109,17 +109,26 @@ export class CompileCommands {
         let uniqueMatches: Set<string> = new Set<string>();
 
         for (const commandObject of this) {
-            if (!commandObject.command) {
-                continue;
-            }
+            
+                let responseFileString = "";
 
-            const match: RegExpMatchArray | null = commandObject.command.match(regExp);
-
-            if (match?.length) {
-                for(const path of match){
-                    uniqueMatches.add(path);
+                if(commandObject.command){
+                    responseFileString = commandObject.command
                 }
-            }
+                else if(commandObject.arguments && commandObject.arguments.length > 1){
+                    responseFileString = commandObject.arguments[1];
+                }
+                else{
+                    continue;
+                }
+
+                const match: RegExpMatchArray | null = responseFileString.match(regExp);
+
+                if (match?.length) {
+                    for(const path of match){
+                        uniqueMatches.add(path);
+                    }
+                }
             
         }
     

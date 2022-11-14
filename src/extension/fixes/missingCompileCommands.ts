@@ -127,11 +127,16 @@ async function addFilesToCompileCommands(outCompileCommands: CompileCommands, pa
     const firstCommandObject = outCompileCommands.getCommandObjectFrom(0);
 
     for (const targetPath of paths) {
-        let newCommandObject: CommandObjectJson | undefined = { file: undefined, command: firstCommandObject.command, directory: firstCommandObject.directory };
+        let newCommandObject: CommandObjectJson | undefined = { 
+            file: undefined,
+            command: firstCommandObject.command,
+            directory: firstCommandObject.directory,
+            arguments: firstCommandObject.arguments
+        };
 
         addFileToCommandObject(newCommandObject, targetPath);
 
-        if (responsePaths.length > 1) {
+        if (responsePaths.length > 1) {  
             newCommandObject = await getCommandObjectFromResponseChoice(newCommandObject, responsePaths, outCompileCommands, targetPath);
 
             if (!newCommandObject) {
@@ -157,7 +162,12 @@ async function getCommandObjectFromResponseChoice(
     compileCommands: CompileCommands,
     targetPath: string): Promise<CommandObjectJson | undefined> {
 
-    const newCommandObject: CommandObjectJson = { file: commandObject.file, command: undefined, directory: commandObject.directory };
+    const newCommandObject: CommandObjectJson = { 
+        file: commandObject.file,
+        command: undefined,
+        arguments: undefined,
+        directory: commandObject.directory
+    };
 
     const targetFileName = path.parse(targetPath).base;
     const responseChoice = await vscode.window.showInformationMessage(
@@ -177,13 +187,28 @@ async function getCommandObjectFromResponseChoice(
         };
     }
 
-    const commandLine = findCommandFrom(compileCommands, responseChoice);
+    if(commandObject.command){
+        const commandLine = findCommandFrom(compileCommands, responseChoice);
 
-    if (!commandLine) {
+        if (!commandLine) {
+            return undefined;
+        }
+
+        newCommandObject.command = commandLine;
+    }
+    else if(commandObject.arguments && commandObject.arguments.length > 1){
+        const args = findArgumentsFrom(compileCommands, responseChoice);
+
+        if (!args) {
+            return undefined;
+        }
+
+        newCommandObject.arguments = args;
+    }
+    else{
         return undefined;
     }
-
-    newCommandObject.command = commandLine;
+    
 
     return newCommandObject;
 }
@@ -216,4 +241,22 @@ function findCommandFrom(compileCommands: CompileCommands, responseFileName: str
     }
 
     return command;
+}
+
+function findArgumentsFrom(compileCommands: CompileCommands, responseFileName: string): string[] | undefined {
+
+    let args: string[] | undefined = [];
+
+    for (const commandObject of compileCommands) {
+        if(!commandObject.arguments){
+            continue;
+        }
+
+        if (commandObject.arguments[1].includes(responseFileName)) {
+            args = commandObject.arguments;
+            break;
+        }
+    }
+
+    return args;
 }

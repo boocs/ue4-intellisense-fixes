@@ -1,5 +1,17 @@
 ### [TODO]
 
+
+# [3.5.0] 2022-11-14
+### Added
+- Support for UE 5.1: They changed how they use compile commands(arguments instead of command)
+- Will ask to overwrite compiler setting if compiler path is different in compile commands
+- Compiler path setting can now be either local(project) or global (can't have both)
+- Added new setting that turns on/off local(project) compiler path functionality
+- With 5.1, Epic includes hundreds of include directories that don't exists. We only give a warning about how many and don't attempt to fix.
+### Updated
+- package-lock.json
+
+
 # [3.4.0] 2022-9-5
 ### Added
 - Added comment about compiler.path for Mac users. Probably needs to be set to /usr/bin/clang++ for Intellisense to work.

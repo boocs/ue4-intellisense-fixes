@@ -13,7 +13,7 @@ import * as text from "./text";
 
 import * as console from "./console";
 
-const EXTENSION_VERSION = "3.4.0";
+const EXTENSION_VERSION = "3.5.0";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
@@ -57,16 +57,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.error("Couldn't create file watchers!")
 	}
 	
-	
-	
 	console.log(`\n*** Number of error messages: ${console.getErrorCount()}`);
 	console.log(`*** Number of warning messages: ${console.getWarningCount()}`)
 	console.log("If you get any errors you can try restarting VSCode to check if they've been fixed.")
 	console.outputChannel.show(true);
 	
-
 	await endRun(statusItem);
-	
 	
 }
 
@@ -103,51 +99,6 @@ async function runExtensionNoProgress(): Promise<Fixable | undefined> {
 	return fixableProject;
 }
 
-async function runExtensionWithProgress(): Promise<Fixable | undefined> {
-
-	return await vscode.window.withProgress(
-		{
-			location: vscode.ProgressLocation.Notification,
-			title: "\nIntellisense Fix Extension!\n",
-			cancellable: false
-		}
-		, async (progress, token) => {
-
-			progress.report({ increment: 0, message: text.PLEASE_WAIT_INTELLISENSE_FIXES });
-
-			let fixableProject: Fixable | undefined;
-			try {
-				fixableProject = await getFixableProject();
-			}
-			catch {
-				return;
-			}
-			progress.report({ increment: 30, message: text.PLEASE_WAIT_INTELLISENSE_FIXES });
-
-
-			try {
-
-				if (!fixableProject) {
-					console.error("No fixable project could be created.\n");
-				}
-				else {
-					await fixableProject.execFixes();
-				}
-			}
-			catch {
-				// This should never hit			
-				return undefined;
-			}
-			progress.report({ increment: 40, message: text.PLEASE_WAIT_INTELLISENSE_FIXES });
-
-
-			
-			progress.report({ increment: 30, message: text.PLEASE_WAIT_INTELLISENSE_FIXES });
-			return fixableProject;
-
-		});
-
-}
 
 function createAndShowMainStatusItem(): vscode.StatusBarItem {
 	const statusItem = vscode.window.createStatusBarItem(consts.MAIN_STATUS_ALIGN, consts.MAIN_STATUS_PRIORITY);
@@ -259,91 +210,3 @@ function createFileWatcher(workspaceFolder: vscode.WorkspaceFolder, glob: string
 
 	return vscode.workspace.createFileSystemWatcher(relPattern, ignore.create, ignore.change, ignore.delete);
 }
-
-/*
-async function disableDefaultIntellisense(): Promise<void> {
-
-
-	let workspacesWithWorkspaceFile: vscode.WorkspaceFolder[] = await getworkspacesWithWorkspaceFile();
-
-	if (!workspacesWithWorkspaceFile.length) {
-		return;
-	}
-
-	for (const workspace of workspacesWithWorkspaceFile) {
-
-		const config = vscode.workspace.getConfiguration("C_Cpp", workspace);
-
-		await config.update(consts.CONFIG_SETTING_INTELLISENSE_ENGINE, consts.CONFIG_SETTING_INTELLISENSE_ENGINE_TAG_PARSER, false);
-
-	}
-
-	try {
-		await vscode.commands.executeCommand('C_Cpp.PauseParsing');
-	}
-	catch {
-		// do nothing
-	}
-
-	console.log("Temporarily disabling Intellisense.\n");
-	await delay(consts.INTELLISENSE_ENABLE_DISABLE_DELAY);
-	return;
-}
-
-
-async function enableDefaultIntellisense() {
-	console.log("Reenabling Intellisense.\n");
-	await delay(consts.INTELLISENSE_ENABLE_DISABLE_DELAY);
-
-	try {
-		await vscode.commands.executeCommand('C_Cpp.ResumeParsing');
-	}
-	catch {
-		// do nothing
-	}
-
-	let workspacesWithWorkspaceFile: vscode.WorkspaceFolder[] = await getworkspacesWithWorkspaceFile();
-
-	if (!workspacesWithWorkspaceFile.length) {
-		return;
-	}
-
-	for (const workspace of workspacesWithWorkspaceFile) {
-
-		const config = vscode.workspace.getConfiguration("C_Cpp", workspace);
-
-		await config.update(consts.CONFIG_SETTING_INTELLISENSE_ENGINE, undefined, false);
-	}
-}
-
-
-async function hasWorkspaceFile(workspace: vscode.WorkspaceFolder): Promise<boolean> {
-
-	const relPattern = new vscode.RelativePattern(workspace, consts.GLOB_WORKSPACE_FILE);
-
-	const foundFile = await vscode.workspace.findFiles(relPattern);
-
-	if (!foundFile.length) {
-		return false;
-	}
-	else {
-		return true;
-	}
-}
-
-async function getworkspacesWithWorkspaceFile(): Promise<vscode.WorkspaceFolder[]> {
-	const workspaces = vscode.workspace.workspaceFolders;
-	if (!workspaces) {
-		return [];
-	}
-
-	let workspacesWithWorkspaceFile: vscode.WorkspaceFolder[] = [];
-	for (const workspace of workspaces.values()) {
-		if (await hasWorkspaceFile(workspace)) {
-			workspacesWithWorkspaceFile.push(workspace);
-		}
-	}
-
-	return workspacesWithWorkspaceFile;
-}
-*/

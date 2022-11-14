@@ -11,6 +11,7 @@ import * as consts from '../../consts';
 import {getCompileCommandsCompilerPath} from "../../shared"
 
 import * as console from '../../console';
+import { config } from "process";
 
 
 export async function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: boolean) {
@@ -33,6 +34,12 @@ export async function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabl
 
     const compilerPathOverride = await getCompilerPathOverride(project);
 
+    if(!compilerPathOverride){
+        console.error("No compiler path override found. Not fixing compiler path!");
+        return;
+    }
+
+    
     for (const compileCommand of compileCommands) {
         if (!compileCommand) { continue; }
 
@@ -51,21 +58,30 @@ async function fixCompileCommandFile(compileCommands: Map<string, CompileCommand
         
         for( const entry of compileCommand) {
 
-            if(!entry.command) { continue;};
+            if(!entry.command && !entry.arguments) { 
+                continue;
+            };
 
             
+            if(entry.command){
+                const correctedCommand = getCorrectedEntryCommand(entry.command, compilerPathOverride);
 
-            const correctedCommand = getCorrectedEntryCommand(entry.command, compilerPathOverride);
-
-            if (correctedCommand){
-                compileCommand.isDirty = true;
-                entry.command = correctedCommand;
+                if (correctedCommand){
+                    compileCommand.isDirty = true;
+                    entry.command = correctedCommand;
+                }
             }
+            else if(entry.arguments){
+                entry.arguments[0] = compilerPathOverride;
+                compileCommand.isDirty = true;
+            }
+            
 
             if(!hasLogged) {
                 hasLogged = true;
+                const logInfo = entry.arguments? entry.arguments[0] : entry.command;
                 console.log("Below is the compile commands first entry command. (WARNING) If getting errors and the compiler path is unexpected reset your UE project.");
-                console.log(`command: ${entry.command}`);
+                console.log(`command/arguments[0]: ${logInfo}`);
             }
 
         }
@@ -98,11 +114,18 @@ function getCorrectedEntryCommand(command: string, compilerPathOverride: string)
 
 async function getCompilerPathOverride(project: ProjectUE4): Promise<string> {
 
-    const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
+    let config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
+    const compilePathIsProjectSpecific = config.get<boolean>(consts.CONFIG_SETTINGS_PATH_IS_PROJECT_SPECIFIC, false);
+
+    const isCompilePathGlobal = compilePathIsProjectSpecific ? false : true;  // true means global, false means project(workspace)
+    await checkAndRemoveCompilePathSetting(config, isCompilePathGlobal);  // remove project path if global, remove global path if project specific
+
+    config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER); // need updated config after check and remove function above
     const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
+    const compileCommandCompilerPath = getCompileCommandsCompilerPath(project);
 
     if(!currentExtCompilerPath){
-        const compileCommandCompilerPath = getCompileCommandsCompilerPath(project);
+        
 
         if(!compileCommandCompilerPath){
             console.error("Couldn't set extension's compile path setting because compiler is null!");
@@ -110,15 +133,32 @@ async function getCompilerPathOverride(project: ProjectUE4): Promise<string> {
         }
 
         try {
-            await config.update(consts.CONFIG_SETTINGS_PATH, compileCommandCompilerPath, true)
+            await updatePathSetting(config, compileCommandCompilerPath, isCompilePathGlobal);
+            //await config.update(consts.CONFIG_SETTINGS_PATH, compileCommandCompilerPath, isCompilePathGlobal)
         } catch (error) {
             console.error("Couldn't set extension's compile path setting!")
             return ""
         }
         return compileCommandCompilerPath;
     }
+    else if(compileCommandCompilerPath && compileCommandCompilerPath !== currentExtCompilerPath){
+        const responseChoice = await vscode.window.showInformationMessage(
+            `Compiler path choice!\n\n1:  ${compileCommandCompilerPath}\n2:  ${currentExtCompilerPath}\n\nDo you want to use the 1st or 2nd compiler path?`,
+            { modal: true },
+            "1", "2"
+        );
 
-    console.log(`Will override compile commands' compiler paths with ${currentExtCompilerPath}`);
+        
+        if(responseChoice === "2"){
+            return currentExtCompilerPath;
+        }
+        else{
+            await updatePathSetting(config, compileCommandCompilerPath, isCompilePathGlobal);
+            //await config.update(consts.CONFIG_SETTINGS_PATH, compileCommandCompilerPath, isCompilePathGlobal)
+            return compileCommandCompilerPath;
+        }
+    }
+
     return currentExtCompilerPath;  
 }
 
@@ -126,4 +166,30 @@ async function getCompilerPathOverride(project: ProjectUE4): Promise<string> {
 function getFixedCompilerPath(compilerPath: string, responsePath: string): string {
 
     return `"` + compilerPath + `"` + " " + responsePath;
+}
+
+
+async function checkAndRemoveCompilePathSetting(config: vscode.WorkspaceConfiguration, isCompilerPathGlobal: boolean) {
+
+    if(isCompilerPathGlobal){
+        await updatePathSetting(config, undefined, false);
+        //await config.update(consts.CONFIG_SETTINGS_PATH, undefined, false);
+    }
+    else{
+        await updatePathSetting(config, undefined, true);
+        //await config.update(consts.CONFIG_SETTINGS_PATH, undefined, true);
+    }
+}
+
+async function updatePathSetting(config: vscode.WorkspaceConfiguration, path: string | undefined, isGlobal: boolean, section: string = consts.CONFIG_SETTINGS_PATH) {
+    try {
+        await config.update(section, path, isGlobal);
+    } catch (e) {
+        let errMessage = ""
+        if(e instanceof Error){
+            errMessage = e.message;
+        }
+
+        console.error(`Error trying to update path setting!\n${errMessage}`)
+    }
 }

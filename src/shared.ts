@@ -275,6 +275,7 @@ export function getWorkspacesCCppConfigs(project: ProjectUE4): Record<string, CC
     return workspaces;
 }
 
+// TODO: Updated for M2 but needs to be tested
 // ref: https://stackoverflow.com/questions/65146751/detecting-apple-silicon-mac-in-javascript
 export function isMacM1(isLog = true): boolean {
 
@@ -282,7 +283,7 @@ export function isMacM1(isLog = true): boolean {
         console.log(`Cpu: ${os.cpus()[0].model}`);
     }
 
-    return os.cpus()[0].model.includes(consts.CPUID_MACM1);
+    return os.cpus()[0].model.includes(consts.CPUID_MACM1) || os.cpus()[0].model.includes(consts.CPUID_MACM2);
 }
 
 
@@ -348,7 +349,16 @@ function getUrisFromBasePathAndSuffixes(base: string, pathSuffixes: string[]): v
 export function getCompileCommandsCompilerPath(project: ProjectUE4) {
     const compileCommandsConfigFirstIndex = project.getCompileCommandsAtConfigIndex(project.mainWorkspaceKey, 0);
 
-    const firstCommandOfFirstIndex = compileCommandsConfigFirstIndex?.compileCommands[0].command;
+    let firstCommandOfFirstIndex = "";
+    
+    
+    if(compileCommandsConfigFirstIndex?.compileCommands[0].command){
+        firstCommandOfFirstIndex = compileCommandsConfigFirstIndex.compileCommands[0].command
+    }
+    else if(compileCommandsConfigFirstIndex?.compileCommands[0].arguments && compileCommandsConfigFirstIndex?.compileCommands[0].arguments[0]){
+        return compileCommandsConfigFirstIndex?.compileCommands[0].arguments[0]
+    }
+    
 
     if(!firstCommandOfFirstIndex){
         console.error("Couldn't get command from Compile Commands!");

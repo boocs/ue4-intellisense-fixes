@@ -19,6 +19,14 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+## 3.5.0 Nov 14, 2022
+- Support for UE 5.1: They changed how they use compile commands(arguments instead of command)
+- Will ask to overwrite compiler setting if compiler path is different in compile commands
+- Compiler path setting can now be either local(project) or global (can't have both)
+- Added new setting that turns on/off local(project) compiler path functionality
+- Updated package-lock.json
+- With 5.1, Epic includes hundreds of include directories that don't exists. We only give a warning about how many and don't attempt to fix.
+
 ## 3.4.0 Sept 5, 2022
 - Changed Extension's path setting. Will now pull from compile command's path if not set. If set will set both compile command compiler path and compilerPath setting(c_cpp_properties.json).
 - Removed strict setting

@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense configuration on startup.",
-	"version": "3.4.0",
+	"version": "3.5.0",
 	"publisher": "boocs",
 	"license": "MIT",
 	"repository": {
@@ -59,6 +59,12 @@
 					"type": "string",
 					"default": "",
 					"markdownDescription": "The compiler path that will be set in compile commands and compilerPath setting. `Mac` users may have to set this to `/usr/bin/clang++` for Intellisense to work. `Restart after changing this.`",
+					"scope": "window"
+				},
+				"UEIntellisenseFixes.compiler.pathIsProjectSpecific": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "True: Compiler path is project specific and set in project's workspace config. False: Compiler path is set in the User(global) config.",
 					"scope": "application"
 				},
 				"UEIntellisenseFixes.compiler.intellisenseMode": {

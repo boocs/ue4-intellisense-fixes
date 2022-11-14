@@ -96,6 +96,9 @@ export function fixKnownInvalidPathsInFile(responsePath: string, originalRespons
 
     if (!invalidPaths.fixable.length) {
         console.log("No invalid paths returned. No fixes needed.");
+        if(invalidPaths.unfixable > 0){
+            console.warning(`Epic Games has included ${invalidPaths.unfixable} paths that don't exist. Is this on purpose?`);
+        }
         return originalResponseString;  // need to return orginal for additional fixes
     }
 
@@ -149,8 +152,8 @@ function getInvalidWithValidPaths(outPaths: string[]): { unfixable: number, fixa
         }
 
         invalidStringsObject.unfixable++;
-        console.error(`Couldn't fix ${outPaths[key]} from compile commands.`);
-        console.error("You may have to Build the version specified in the path before the path is fixed (e.g. The path contains Development and/or Win64)\n");
+        //console.error(`Couldn't fix ${outPaths[key]} from compile commands.`);
+        //console.error("You may have to Build the version specified in the path before the path is fixed (e.g. The path contains Development and/or Win64)\n");
 
     }
 

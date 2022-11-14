@@ -4,7 +4,7 @@ export type CommandObjectJson = {
 	command?: string;
 	directory?: string;
 	file?: string;
-	arguments?: string;
+	arguments?: string[];
 	output?: string;
 };
 
