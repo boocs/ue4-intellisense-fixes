@@ -13,7 +13,7 @@ import * as text from "./text";
 
 import * as console from "./console";
 
-const EXTENSION_VERSION = "3.5.0";
+const EXTENSION_VERSION = "3.5.1";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;

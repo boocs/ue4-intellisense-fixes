@@ -19,6 +19,10 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+## 3.5.1 Jan 18, 2023
+- Fixed Promise function not having await in launch.json fix
+
+
 ## 3.5.0 Nov 14, 2022
 - Support for UE 5.1: They changed how they use compile commands(arguments instead of command)
 - Will ask to overwrite compiler setting if compiler path is different in compile commands

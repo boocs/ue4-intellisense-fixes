@@ -72,7 +72,7 @@ export async function fixLaunchFile(project: ProjectUE4) {
 
     if(errors || isRepairedJson){
         
-        writeJsonOrStringToFile(launchFilePath, launchFileJson); 
+        await writeJsonOrStringToFile(launchFilePath, launchFileJson); 
     }
     else{
         console.log("There was nothing to fix!");

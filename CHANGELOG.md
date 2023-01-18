@@ -1,5 +1,8 @@
 ### [TODO]
 
+# [3.5.1] 2023-1-18
+### Fixed
+- Fixed Promise function not having await in launch.json fix
 
 # [3.5.0] 2022-11-14
 ### Added
