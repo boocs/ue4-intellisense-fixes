@@ -376,5 +376,5 @@ function getCompilerPathFromString(firstCommandOfFirstIndex: string) {
     }
 
 
-    return match[0].replaceAll(`"`, "");
+    return match[0].replace(/"/gm, "");
 }

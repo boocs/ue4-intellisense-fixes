@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense configuration on startup.",
-	"version": "3.6.0",
+	"version": "3.7.0",
 	"publisher": "boocs",
 	"license": "MIT",
 	"repository": {
@@ -71,7 +71,7 @@
 					"type": "string",
 					"default": "",
 					"markdownDescription": "`Most users won't need to set this:` Mac M1 users will automatically be set to clang-x64 if blank. If creating a Mac M1 Native/arm64 project you'll need to set this to clang-arm64. `Restart VSCode after setting this. Reset project if you ever delete this.`",
-					"scope": "application"
+					"scope": "window"
 				}
 			}
 		}

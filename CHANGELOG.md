@@ -1,5 +1,12 @@
 ### [TODO]
 
+# [3.7.0] 2023-1-19
+### Fixed
+- Switched String replaceAll function with replace (caused exception by not being supported by all systems with this config)
+### Changed
+- Extension's intellisenseMode can now be set on a per project basis in Workspace settings
+- Extension's Mac M1/M2 default intellisenseMode is now auto set in Workspace setting
+
 # [3.6.0] 2023-1-19
 ### Added
 - More launch fix logs

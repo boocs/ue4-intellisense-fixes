@@ -109,7 +109,7 @@ function repairLaunchFile(launchFileStr: string) : string {
     let fileString;
 
     try {
-        fileString = launchFileStr.replaceAll(consts.RE_LAUNCH_SOURCE_FILE_MAP, `D:\\\\build\\\\++UE5\\\\Sync`);
+        fileString = launchFileStr.replace(consts.RE_LAUNCH_SOURCE_FILE_MAP, `D:\\\\build\\\\++UE5\\\\Sync`);
     } catch (error) {
         console.error("Replace all exception!")
         if(error instanceof Error){

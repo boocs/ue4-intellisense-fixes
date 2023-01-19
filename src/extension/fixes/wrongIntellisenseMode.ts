@@ -22,9 +22,12 @@ export async function fixWrongIntellisenseMode(project: ProjectUE4) {
     
     if(isMacM1() && !intellisenseMode){
         try {
-            await compilerConfig.update(INTELLISENSE_MODE, consts.INTELLISENSE_MODE_APPLE_MACM1_DEFAULT)
+            await compilerConfig.update(INTELLISENSE_MODE, consts.INTELLISENSE_MODE_APPLE_MACM1_DEFAULT, vscode.ConfigurationTarget.Workspace)
         } catch (error) {
             console.error("Couldn't update extension setting intellisenseMode!")
+            if(error instanceof Error){
+                console.error(`${error.message}`)
+            }
             return;
         }
         
