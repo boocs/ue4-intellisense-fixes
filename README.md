@@ -19,6 +19,11 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+## 3.5.2 Jan 18, 2023
+- Since it now works correctly changed Mac M1/M2 intellisenseMode default to "macos-clang-arm64" (can be changed in this extension's settings)
+- Fixed async/await in wrong intellisenseMode fix which fixes it
+- Fixed async/await in file watchers
+
 ## 3.5.1 Jan 18, 2023
 - Fixed Promise function not having await in launch.json fix
 

@@ -10,7 +10,7 @@ import * as console from "../../console";
 
 const INTELLISENSE_MODE = "intellisenseMode"
 
-export function fixWrongIntellisenseMode(project: ProjectUE4) {
+export async function fixWrongIntellisenseMode(project: ProjectUE4) {
     console.log("Start fix wrong intellisense mode");
 
     const compilerConfig = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER)
@@ -22,13 +22,13 @@ export function fixWrongIntellisenseMode(project: ProjectUE4) {
     
     if(isMacM1() && !intellisenseMode){
         try {
-            compilerConfig.update(INTELLISENSE_MODE, consts.INTELLISENSE_MODE_CLANG_X64)
+            await compilerConfig.update(INTELLISENSE_MODE, consts.INTELLISENSE_MODE_APPLE_MACM1_DEFAULT)
         } catch (error) {
             console.error("Couldn't update extension setting intellisenseMode!")
             return;
         }
         
-        intellisenseMode = consts.INTELLISENSE_MODE_CLANG_X64;
+        intellisenseMode = consts.INTELLISENSE_MODE_APPLE_MACM1_DEFAULT;
         return;
     }
 

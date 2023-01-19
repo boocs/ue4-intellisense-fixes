@@ -13,7 +13,7 @@ import * as text from "./text";
 
 import * as console from "./console";
 
-const EXTENSION_VERSION = "3.5.1";
+const EXTENSION_VERSION = "3.5.2";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
@@ -172,7 +172,6 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 }
 
 
-// TODO testing making this async to try to fix buggy startup
 function createWatchers(fixableProject: Fixable) {
 
 	const mainWorkspace = fixableProject?.project.mainWorkspaceFolder;
@@ -180,17 +179,17 @@ function createWatchers(fixableProject: Fixable) {
 	resetEventFileWatcher = createFileWatcher(mainWorkspace, consts.GLOB_PROJECT_RESET_FILE_CREATION, { create: true, change: false, delete: true });
 	newFileWatcher = createFileWatcher(mainWorkspace, consts.GLOB_ALL_HEADERS_AND_SOURCE_FILES, { create: false, change: true, delete: true });
 
-	resetEventFileWatcher?.onDidChange(e => {	
+	resetEventFileWatcher?.onDidChange(async e => {	
 
 		console.log("Detected reset!");
 		console.log("WARNING: Restart VSCode to fix Intellisense errors.\n");
 
 		console.outputChannel?.show(true);
 
-		vscode.window.showInformationMessage("Detected project reset. Restart VSCode to fix Intellisense errors!", text.OK);
+		await vscode.window.showInformationMessage("Detected project reset. Restart VSCode to fix Intellisense errors!", text.OK);
 	});
 
-	newFileWatcher?.onDidCreate(uri => {
+	newFileWatcher?.onDidCreate(async uri =>  {
 
 		const filePath = path.parse(uri.fsPath);
 		const fileName = filePath.base;
@@ -200,7 +199,7 @@ function createWatchers(fixableProject: Fixable) {
 
 		console.outputChannel?.show(true);
 		
-		vscode.window.showInformationMessage("New Soure/Header files detected: Restart VSCode if you get Intellisense errors with these new files.  This extension will add them to the appropriate file on startup.", text.OK);
+		await vscode.window.showInformationMessage("New Soure/Header files detected: Restart VSCode if you get Intellisense errors with these new files.  This extension will add them to the appropriate file on startup.", text.OK);
 		
 	});
 }

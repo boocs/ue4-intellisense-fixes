@@ -11,7 +11,6 @@ import * as consts from '../../consts';
 import {getCompileCommandsCompilerPath} from "../../shared"
 
 import * as console from '../../console';
-import { config } from "process";
 
 
 export async function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: boolean) {

@@ -132,6 +132,7 @@ export const INTELLISENSE_MODE_WINDOWS_CLANG_X86 = "windows-clang-x86";
 export const INTELLISENSE_MODE_WINDOWS_MSVC_X64 = "windows-msvc-x64";
 export const INTELLISENSE_MODE_WINDOWS_MSVC_X86 = "windows-msvc-x86";
 export const INTELLISENSE_MODE_CLANG_X64 = "clang-x64";
+export const INTELLISENSE_MODE_APPLE_MACM1_DEFAULT = "macos-clang-arm64"
 
 export const PLATFORM_WINDOWS = "win32";
 export const CPUID_MACM1 = "Apple M1";

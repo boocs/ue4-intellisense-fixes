@@ -55,7 +55,7 @@ async function addDefinesToForcedInclude(mainWorkspace: vscode.WorkspaceFolder, 
     const definesUris: vscode.Uri[] | undefined = await findDefintionUris(mainWorkspace);
 
     if (!definesUris?.length) { // If no defines files were found, display message to build.
-        vscode.window.showInformationMessage(text.MESSAGE_BUILD_SUCCESSFUL_PROJECT, text.OK);
+        await vscode.window.showInformationMessage(text.MESSAGE_BUILD_SUCCESSFUL_PROJECT, text.OK);
         return;
 
     }

@@ -1,5 +1,12 @@
 ### [TODO]
 
+# [3.5.2] 2023-1-18
+### Changed
+- Changed Mac M1/M2 intellisenseMode default to be set to "macos-clang-arm64"
+### Fixed
+- Fixed async/await in wrong intellisenseMode fix which fixes it
+- Fixed async/await in file watchers
+
 # [3.5.1] 2023-1-18
 ### Fixed
 - Fixed Promise function not having await in launch.json fix

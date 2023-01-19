@@ -35,7 +35,7 @@ export class V425Fixable extends Fixable {
         fixWrongCppStandard(this.project);
         console.log("End fix wrong cppStandard.\n");
 
-        fixWrongIntellisenseMode(this.project);
+        await fixWrongIntellisenseMode(this.project);
         console.log("End fix wrong intellisense mode.\n");
         
         await fixPropCompilerPath(this.project);

@@ -51,7 +51,7 @@ export class CCResponseFixable extends Fixable {
         await fixLaunchFile(this.project);
         console.log("End fix launch.json.\n");
 
-        fixWrongIntellisenseMode(this.project);
+        await fixWrongIntellisenseMode(this.project);
         console.log("End fix wrong intellisense mode.\n");
 
         return;

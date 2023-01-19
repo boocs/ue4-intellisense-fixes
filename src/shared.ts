@@ -14,7 +14,6 @@ import { CCppConfigurationJson } from './project/ntypes';
 
 import * as console from './console';
 import { TextEncoder } from 'util';
-import { relative } from 'path';
 
 
 /**
@@ -213,7 +212,7 @@ export function delay(ms: number) {
  * 
  * @param regExpString Format: "re/flags" : The '/' is required but flags are optional
  */
-export function createRegExpFrom(regExpString: string): RegExp {
+export async function createRegExpFrom(regExpString: string): Promise<RegExp> {
 
     // Build regex and regex flags from string
     const reSeparatedArray = regExpString.split(consts.RE_SEPARATOR);
@@ -226,7 +225,7 @@ export function createRegExpFrom(regExpString: string): RegExp {
     catch (error) {
         console.error(`RegExp was invalid: reString: ${regexString} , reFlags: ${regexFlags}`);
 
-        vscode.window.showErrorMessage(text.INVALID_REGEX, text.OK);
+        await vscode.window.showErrorMessage(text.INVALID_REGEX, text.OK);
         throw error;
     }
 }
