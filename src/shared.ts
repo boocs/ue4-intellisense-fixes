@@ -13,7 +13,7 @@ import { ProjectUE4 } from './project/projectUE4';
 import { CCppConfigurationJson } from './project/ntypes';
 
 import * as console from './console';
-import { TextEncoder } from 'util';
+import { TextDecoder, TextEncoder } from 'util';
 
 
 /**
@@ -40,13 +40,14 @@ export async function readStringFromFile(path: string, encoding: BufferEncoding 
         fileArray = await vscode.workspace.fs.readFile(fileUri);
     }
     catch (error) {
+        console.error(`Error reading file: ${path}`)
         if (error instanceof Error) {
             console.error(`Error reading ${path}. Message: ${error.message}`);
         }
         return undefined;
     }
 
-    return fileArray.toString();
+    return new TextDecoder().decode(fileArray);
 }
 
 /**
@@ -87,15 +88,13 @@ export async function writeJsonOrStringToFile(path: string, data: any, encoding:
     spacing: number = consts.JSON_SPACING) {
     try {
         const writeData = typeof data === "string" ? data : JSON.stringify(data, undefined, spacing);
-        //await fsAsync.writeFile(path, writeData, encoding);
-        const textEnc = new TextEncoder();
-        const fileBuffer = Uint8Array.from(textEnc.encode(writeData));
+        const fileBuffer = new TextEncoder().encode(writeData);
         await vscode.workspace.fs.writeFile(vscode.Uri.file(path), fileBuffer);
-        return;
     }
     catch (error) {
+        console.error(`Error writing file: ${path}`)
         if (error instanceof Error) {
-            console.error(`Error writing json file. Message: ${error.message}`);
+            console.error(`${error.message}`);
         }
         return;
     }

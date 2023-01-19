@@ -13,12 +13,11 @@ import { jsonParseSafe, readStringFromFile, writeJsonOrStringToFile } from '../.
 
 import * as console from "../../console";
 
+
 type hasFixed = boolean;
 
 const REPLACEMENT_CONSOLE_SETTING = "externalTerminal";
-
 const OLD_REPLACEMENT_CONSOLE_SETTING = "newExternalWindow";
-
 
 export async function fixLaunchFile(project: ProjectUE4) {
     console.log("Fixing launch.json.");
@@ -34,9 +33,15 @@ export async function fixLaunchFile(project: ProjectUE4) {
     const fixedLaunchFile = repairLaunchFile(launchFile);
 
     let isRepairedJson = false;
-    if(fixedLaunchFile !== launchFile){
+    if(!fixedLaunchFile){
+        console.error("Repaired json was empty!")
+    }
+    else if(fixedLaunchFile !== launchFile){
         console.log("Malformed json in launch.json was repaired!");
         isRepairedJson = true;
+    }
+    else {
+        console.log("No fixes need for malformed json!");
     }
 
     const unModifiedLaunchFileJson = jsonParseSafe(fixedLaunchFile) as LaunchJson;
@@ -56,6 +61,7 @@ export async function fixLaunchFile(project: ProjectUE4) {
         return;
     }
 
+    console.log("Checking for deprecated external console...");
     let errors = 0;
     for(const config of configs){
         errors = fixExternalConsole(config) ? errors +=1 : errors += 0;
@@ -67,11 +73,11 @@ export async function fixLaunchFile(project: ProjectUE4) {
     }
 
     if(errors){
-        console.log(`Errors fixed: ${errors}`)
+        console.log(`Errors fixed: ${errors}`);
     }
 
     if(errors || isRepairedJson){
-        
+        console.log("Writing launch.json...")
         await writeJsonOrStringToFile(launchFilePath, launchFileJson); 
     }
     else{
@@ -100,6 +106,20 @@ function repairLaunchFile(launchFileStr: string) : string {
 
     console.log("\nAttempting to fix the json of launch.json...");
 
-    return launchFileStr.replaceAll(consts.RE_LAUNCH_SOURCE_FILE_MAP, `D:\\\\build\\\\++UE5\\\\Sync`);
+    let fileString;
+
+    try {
+        fileString = launchFileStr.replaceAll(consts.RE_LAUNCH_SOURCE_FILE_MAP, `D:\\\\build\\\\++UE5\\\\Sync`);
+    } catch (error) {
+        console.error("Replace all exception!")
+        if(error instanceof Error){
+            console.error(`${error.message}`)
+        }
+        console.error("Will use original launch file string...")
+        return launchFileStr;
+    }
+
+    console.log("Returning fixed launch file string.");
+    return fileString;
  
 }

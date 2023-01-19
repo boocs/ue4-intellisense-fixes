@@ -1,5 +1,11 @@
 ### [TODO]
 
+# [3.6.0] 2023-1-19
+### Added
+- More launch fix logs
+### Changed
+- Reading/writing files
+
 # [3.5.2] 2023-1-18
 ### Changed
 - Changed Mac M1/M2 intellisenseMode default to be set to "macos-clang-arm64"
