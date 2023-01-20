@@ -32,7 +32,6 @@ export async function fixWrongIntellisenseMode(project: ProjectUE4) {
         }
         
         intellisenseMode = consts.INTELLISENSE_MODE_APPLE_MACM1_DEFAULT;
-        return;
     }
 
     if(intellisenseMode){

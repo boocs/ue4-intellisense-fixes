@@ -1,5 +1,9 @@
 ### [TODO]
 
+# [3.7.1] 2023-1-19
+### Fixed
+- Errant return, in intellisense fix, caused intellisenseMode to only set after VSCode restart
+
 # [3.7.0] 2023-1-19
 ### Fixed
 - Switched String replaceAll function with replace (caused exception by not being supported by all systems with this config)

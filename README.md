@@ -19,7 +19,10 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
-# 3.7.0 Jan 19, 2023
+## 3.7.1 Jan 19, 2023
+- Fixed errant return, in intellisense fix, that caused intellisenseMode to only set after VSCode restart
+
+## 3.7.0 Jan 19, 2023
 - Switched String replaceAll function with replace (caused exception by not being supported by all systems with this config)
 - Extension's intellisenseMode can now be set on a per project basis in Workspace settings
 - Extension's Mac M1/M2 default intellisenseMode is now auto set in Workspace setting
