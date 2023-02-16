@@ -46,7 +46,6 @@ export function warning(message: string) {
     }
 
     outputChannel.appendLine("\n** Warning **: ".concat(message));
-    outputChannel.show();
 }
 
 export function resetCounts() {

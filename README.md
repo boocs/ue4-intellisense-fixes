@@ -19,6 +19,10 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+## 3.7.2 Feb 15, 2023
+- Only force show logs when there's an error
+- More gentle log message if not Unreal project
+
 ## 3.7.1 Jan 19, 2023
 - Fixed errant return, in intellisense fix, that caused intellisenseMode to only set after VSCode restart
 

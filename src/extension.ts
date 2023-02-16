@@ -13,7 +13,7 @@ import * as text from "./text";
 
 import * as console from "./console";
 
-const EXTENSION_VERSION = "3.7.1";
+const EXTENSION_VERSION = "3.7.2";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
@@ -24,19 +24,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// This is a workaround because the glob activation event sometimes didn't work
 	// For some people it was really bad
-	const hasUProjectFile: boolean = await workspaceHasUprojectFile();
+	const hasUProjectFile: boolean = await isUnrealProject();
 	if(hasUProjectFile === false) {
-		console.log('No *.uproject file found!');
+		// console.log('No *.uproject file found!');
 		return;
 	}
 	else if(hasUProjectFile === true) {
 		console.log('*.uproject file was found!');
 	}
-	else {
-		console.log("Bad return from workspaceHasUprojectFile()");
-		return;
-	}
-
+	
 	console.log(`\nExtension "UE Intellisense Fixes" ${EXTENSION_VERSION} is now active!\n`);
 
 	context.subscriptions.push(vscode.commands.registerCommand("UEIntellisenseFixes.showLog", () => {
@@ -60,8 +56,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	console.log(`\n*** Number of error messages: ${console.getErrorCount()}`);
 	console.log(`*** Number of warning messages: ${console.getWarningCount()}`)
 	console.log("If you get any errors you can try restarting VSCode to check if they've been fixed.")
-	console.outputChannel.show(true);
-	
+		
 	await endRun(statusItem);
 	
 }
@@ -74,16 +69,29 @@ export function deactivate() {
 }
 
 // Check if any workspace has a uproject file
-async function workspaceHasUprojectFile() : Promise<boolean> {
-	console.log('Searching for *.uproject file...');
-
-	const foundFile = await shared.findFiles(consts.GLOB_ANY_UPROJECT_IN_TOPLEVEL, null, 1);
-
-	if(!foundFile?.length) {
+async function isUnrealProject(): Promise<boolean> {
+	
+	const workspaceFolders = vscode.workspace.workspaceFolders;
+	if(!workspaceFolders){
+		console.log("No workspace folders found! Will not activate extension.");
 		return false;
 	}
-	
-	return true;
+
+	for (const folder of workspaceFolders) {
+		if(folder.name === "UE5"){ // skip UE5 folder
+			continue;
+		}
+		const workspaceFileType = await vscode.workspace.fs.readDirectory(folder.uri);
+		const hasFound = workspaceFileType.find( e => {
+			return e[0].endsWith(".uproject");
+		});
+
+		if(hasFound){
+			return true;
+		}
+	}
+
+	return false;
 }
 
 async function runExtensionNoProgress(): Promise<Fixable | undefined> {

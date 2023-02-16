@@ -1,5 +1,10 @@
 ### [TODO]
 
+# [3.7.2] 2023-2-15
+### Fixed
+- No longer force shows logs unless there's an error.
+- Changed to more gentle log message if not an unreal project.
+
 # [3.7.1] 2023-1-19
 ### Fixed
 - Errant return, in intellisense fix, caused intellisenseMode to only set after VSCode restart
