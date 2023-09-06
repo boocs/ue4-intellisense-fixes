@@ -19,6 +19,10 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+## 3.7.3 Sept 6, 2023
+- Cpp standard fix now supports UE 5.3+ and c++20
+- Check for 5.3+ to bypass launch.json fix
+
 ## 3.7.2 Feb 15, 2023
 - Only force show logs when there's an error
 - More gentle log message if not Unreal project

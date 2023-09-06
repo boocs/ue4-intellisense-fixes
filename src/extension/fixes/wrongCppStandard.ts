@@ -16,14 +16,17 @@ import * as console from "../../console";
 const EXTENSION_CPP_STANDARD_SETTING = "cppStandard";
 const VSC_CCPP_STANDARD_SETTING = `default.${EXTENSION_CPP_STANDARD_SETTING}`;
 const DEFAULT_UE5_CPP_STANDARD = "c++17"
+const DEFAULT_UE5_3_CPP_STANDARD = "c++20"
 
 
-export function fixWrongCppStandard(project: ProjectUE4) {
+export function fixWrongCppStandard(project: ProjectUE4, ue_version: { major: number; minor: number; patch: number; }) {
     console.log("Attempting to fix wrong cppStandard.");
 
-    console.log("Info : UE4 should be default c++14 (it can be c++17 with some special configuration)")
-    console.log("Info : UE5 should be c++17");
+    console.log("Info : Unreal 4 should be default c++14 (it can be c++17 with some special configuration)")
+    console.log("Info : Unreal 5 should be c++17");
+    console.log("Info : Unreal 5.3+ should be c++20")
 
+    
     const extensionSettings = vscode.workspace.getConfiguration(CONFIG_SECTION_EXTENSION); // change to extension cppStandard
     const extensionCppStandard = extensionSettings?.get<string>(EXTENSION_CPP_STANDARD_SETTING);
 
@@ -31,7 +34,7 @@ export function fixWrongCppStandard(project: ProjectUE4) {
 
     if (!extensionCppStandard) {
         if (extensionCppStandard !== '') {
-            console.error("Error getting cppStandard setting.\nUE4 will use cpptool's cppStandard setting instead of this extension's setting.");
+            console.error("Error getting cppStandard setting.\nUE will use cpptool's cppStandard setting instead of this extension's setting.");
         }
         else {
             console.log("Extension's cppStandard setting was set to empty string.\nIntellisense will use cpptools cppStandard setting instead of this extension's setting.");
@@ -39,13 +42,11 @@ export function fixWrongCppStandard(project: ProjectUE4) {
         isOverride = false;
     }
 
-    const isUE5 = vscode.workspace.workspaceFolders?.find(value => {
-        return value.name === WORKSPACE_FOLDER_NAME_UE5
-    });
-
+    const ue5_cpp_standard = getUE5CppStandard(ue_version);
+    
     let isWarnedAboutUE5 = false;
-    if (isUE5 && extensionCppStandard && extensionCppStandard !== DEFAULT_UE5_CPP_STANDARD) {
-        console.error("UE5 should be c++17 but you have a different cppStandard forced in this extension's settings!");
+    if (ue5_cpp_standard && extensionCppStandard && extensionCppStandard !== ue5_cpp_standard) {
+        console.error(`UE5 should be ${ue5_cpp_standard} but you have a different cppStandard forced in this extension's settings!`);
         isWarnedAboutUE5 = true;
     }
 
@@ -74,8 +75,8 @@ export function fixWrongCppStandard(project: ProjectUE4) {
             }
 
             if (!isWarnedAboutUE5 && config.cppStandard && config.cppStandard !== ''
-                && config.cppStandard !== DEFAULT_UE5_CPP_STANDARD) {
-                console.error(`UE5 should be c++17 but you have a different cppStandard in ${key} c_cpp_properties.json`);
+                && config.cppStandard !== ue5_cpp_standard) {
+                console.error(`UE5 should be ${ue5_cpp_standard} but you have a different cppStandard in ${key} c_cpp_properties.json`);
                 isWarnedAboutUE5 = true;
         }
 
@@ -90,8 +91,8 @@ export function fixWrongCppStandard(project: ProjectUE4) {
         }
 
         if (!isWarnedAboutUE5 && currentVSCodeCppStandard && currentVSCodeCppStandard !== ''
-                && currentVSCodeCppStandard !== DEFAULT_UE5_CPP_STANDARD) {
-                console.error(`UE5 should be c++17 but you have a different cppStandard in ${key} VSCode configs`);
+                && currentVSCodeCppStandard !== ue5_cpp_standard) {
+                console.error(`UE5 should be ${ue5_cpp_standard} but you have a different cppStandard in ${key} VSCode configs`);
                 console.error("You should force a cppStandard in this extension's settings.")
                 isWarnedAboutUE5 = true;
         }
@@ -124,4 +125,18 @@ function getWorkspacesCCppConfigs(project: ProjectUE4): Record<string, CCppConfi
     workspaces[project.ue4WorkspaceKey] = ue4CCppPropertiesConfiguration;
 
     return workspaces;
+}
+
+function getUE5CppStandard(ue_version: { major: number; minor: number; patch: number; }): string {
+    const isUE5_0_thru_5_2 = ue_version.major === 5 && ue_version.minor < 3;
+    const isUE5_3_plus = ue_version.major === 5 && ue_version.minor >= 3;
+
+    if(isUE5_0_thru_5_2 === true){
+        return DEFAULT_UE5_CPP_STANDARD;
+    }
+    else if(isUE5_3_plus === true){
+        return DEFAULT_UE5_3_CPP_STANDARD;
+    }
+
+    return ""
 }

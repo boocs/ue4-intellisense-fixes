@@ -1,5 +1,11 @@
 ### [TODO]
 
+# [3.7.3] 2023-9-6
+### Fixed
+- Cpp standard fix now supports UE 5.3+ and c++20
+### Removed
+- launch.json fix for UE 5.3+
+
 # [3.7.2] 2023-2-15
 ### Fixed
 - No longer force shows logs unless there's an error.

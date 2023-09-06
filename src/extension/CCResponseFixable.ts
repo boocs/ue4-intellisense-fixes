@@ -28,7 +28,7 @@ export class CCResponseFixable extends Fixable {
         return await CCResponseProject.create(this.isOptionalFixesEnabled);
     }
 
-    protected async fixProject(): Promise<void> {
+    protected async fixProject(ue_version: { major: number; minor: number; patch: number; }): Promise<void> {
         
         await fixResponse(this.project);
         console.log("End fixing invalid paths in response files.\n");
@@ -45,11 +45,15 @@ export class CCResponseFixable extends Fixable {
         fixTagIncludes(this.project);
         console.log("End fix UE workspace(Add empty tag parser).\n");
 
-        fixWrongCppStandard(this.project);
+        fixWrongCppStandard(this.project, ue_version);
         console.log("End fix wrong cppStandard.\n");
         
-        await fixLaunchFile(this.project);
-        console.log("End fix launch.json.\n");
+        if(!(ue_version.major === 5 && ue_version.minor >= 3))
+        {
+            await fixLaunchFile(this.project);
+            console.log("End fix launch.json.\n");
+        }
+        
 
         await fixWrongIntellisenseMode(this.project);
         console.log("End fix wrong intellisense mode.\n");

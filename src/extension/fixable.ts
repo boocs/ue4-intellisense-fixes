@@ -9,7 +9,7 @@ export abstract class Fixable{
     protected _project: ProjectUE4 | undefined;
     protected _isFixesEnabled: boolean;
     protected _isOptionalFixesEnabled: boolean;
-
+    
     constructor(isFixesEnabled: boolean, isOptionalFixesEnabled: boolean) {
         this._isFixesEnabled = isFixesEnabled;
         this._isOptionalFixesEnabled = isOptionalFixesEnabled;
@@ -21,7 +21,7 @@ export abstract class Fixable{
         return this._isOptionalFixesEnabled;
     }
    
-    public async execFixes() : Promise<void> { 
+    public async execFixes(ue_version: { major: number; minor: number; patch: number; }) : Promise<void> { 
         
         this._project = await this.initializeProject();
         if(!this._project){
@@ -30,7 +30,7 @@ export abstract class Fixable{
         }
 
         if(this._isFixesEnabled){
-            await this.fixProject();
+            await this.fixProject(ue_version);
         }
         else{
             console.log("Fixes aren't enabled in settings.");
@@ -48,7 +48,7 @@ export abstract class Fixable{
     };
 
     protected abstract initializeProject() : Promise<ProjectUE4|undefined>;
-    protected abstract fixProject() : Promise<void>;
+    protected abstract fixProject(ue_version: { major: number; minor: number; patch: number; }) : Promise<void>;
     protected abstract fixOptional(isEnabled: boolean) : Promise<void>;
     protected abstract postFixProject(): Promise<void>;
     

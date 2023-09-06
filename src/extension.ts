@@ -13,10 +13,12 @@ import * as text from "./text";
 
 import * as console from "./console";
 
-const EXTENSION_VERSION = "3.7.2";
+const EXTENSION_VERSION = "3.7.3";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
+
+let ue_version: { major: number; minor: number; patch: number; };
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -78,7 +80,7 @@ async function isUnrealProject(): Promise<boolean> {
 	}
 
 	for (const folder of workspaceFolders) {
-		if(folder.name === "UE5"){ // skip UE5 folder
+		if(folder.name === "UE5" || folder.name === "UE4"){ // skip UE4/UE5 folder
 			continue;
 		}
 		const workspaceFileType = await vscode.workspace.fs.readDirectory(folder.uri);
@@ -102,7 +104,7 @@ async function runExtensionNoProgress(): Promise<Fixable | undefined> {
 		return;
 	}
 	
-	await fixableProject.execFixes();
+	await fixableProject.execFixes(ue_version);
 	
 	return fixableProject;
 }
@@ -152,15 +154,17 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 		return;
 	}
 
-	console.log(`Found Unreal Engine v${version.major}.${version.minor}.${version.patch}\n`);
+	ue_version = version;
 
-	if (version.major === 4 ){
-		if (version.minor === 25) {
+	console.log(`Found Unreal Engine v${ue_version.major}.${ue_version.minor}.${ue_version.patch}\n`);
+
+	if (ue_version.major === 4 ){
+		if (ue_version.minor === 25) {
 			return new V425Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 		}
-		else if (version.minor === 26) {
+		else if (ue_version.minor === 26) {
 	
-			if (version.patch > 0) {
+			if (ue_version.patch > 0) {
 				return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 			}
 			else { // We don't support 4.26.0
@@ -168,11 +172,11 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 				return;
 			}
 		}
-		else if (version.minor === 27) {
+		else if (ue_version.minor === 27) {
 			return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 		}
 	}
-	else if(version.major === 5 ){
+	else if(ue_version.major === 5 ){
 		return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 	}
 	
