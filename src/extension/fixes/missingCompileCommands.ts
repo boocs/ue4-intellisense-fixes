@@ -2,16 +2,20 @@
 import * as vscode from "vscode";
 import * as path from "path";
 
-import { CONFIG_SETTING_DEFAULT_INTELLISENSE_MODE, GLOB_ALL_HEADERS_AND_SOURCE_FILES } from "../../consts";
+import * as consts from "../../consts";
 import * as shared from "../../shared";
+import * as tr from "../../text";
 
 import type { CompileCommands } from "../../project/compileCommands";
 import type { CommandObjectJson } from "../../project/ntypes";
 import type { ProjectUE4 } from "../../project/projectUE4";
 
+
 import * as console from "../../console";
 
 const cancelRemainingMissingFixesCommand = "Cancel Remaining";
+
+type ShouldWarn = "DontWarn" | "Warn";
 
 /**
  *
@@ -22,6 +26,13 @@ const cancelRemainingMissingFixesCommand = "Cancel Remaining";
 export async function fixMissingResponseCompileCommands(project: ProjectUE4, uriToCheck?: vscode.Uri): Promise<void | undefined> {
     console.log("Fixing missing compile command files.");
 
+    const shouldWarn = getCurrentShouldWarn(project.mainWorkspaceFolder);
+
+    if(shouldWarn === "DontWarn"){
+        console.log("Should Warn is false. It won't prompt, about resetting project, if source file is not found in compile commands. (not an error)")
+        return;
+    }
+
     const mainCompileCommands = project.getMainWorkspaceCompileCommands();
 
     if (!mainCompileCommands) {
@@ -29,19 +40,14 @@ export async function fixMissingResponseCompileCommands(project: ProjectUE4, uri
         return;
     }
 
+    let hasAlreadyWarned = false;
     for (const [index, compileCommand] of mainCompileCommands) {
-        const allUsedResponsePaths = compileCommand?.getAllUsedResponsePaths();
-
-        if (!allUsedResponsePaths?.length) {
-            console.log("Can't fix compile commands. No response files found.");
-            continue;
-        }
-
+        
         let potentialCompileCommandsFiles: vscode.Uri[];
         if (!uriToCheck) { // Check every file since we don't specify a single uri to check
             const mainWorkspace = project.mainWorkspaceFolder;
 
-            const relGlob = new vscode.RelativePattern(mainWorkspace, GLOB_ALL_HEADERS_AND_SOURCE_FILES);
+            const relGlob = new vscode.RelativePattern(mainWorkspace, consts.GLOB_ALL_HEADERS_AND_SOURCE_FILES);
             potentialCompileCommandsFiles = await shared.findFiles(relGlob, null);
         }
         else {
@@ -60,16 +66,53 @@ export async function fixMissingResponseCompileCommands(project: ProjectUE4, uri
             console.log("No missing file paths found. No fixes needed.");
             continue;
         }
-        console.log(`Found ${missingFilePaths.length} missing file paths.`);
+        else {
+            console.log(`Found ${missingFilePaths.length} missing file paths.`);
 
-        await addFilesToCompileCommands(compileCommand, missingFilePaths, allUsedResponsePaths);
+            const currentShouldWarn = getCurrentShouldWarn(project.mainWorkspaceFolder);
 
-        await compileCommand.saveToFile();
+            if(currentShouldWarn === "DontWarn" || hasAlreadyWarned){
+                continue;
+            }
 
+            const modifiedShouldWarn: ShouldWarn = await warnMissingFilesInCompileCommands(compileCommand, missingFilePaths);
+            hasAlreadyWarned = true;
+
+            if(modifiedShouldWarn === "DontWarn"){
+                await setDontWarn(project.mainWorkspaceFolder);
+            }
+        }
     }
 
 }
 
+function getCurrentShouldWarn(mainWorkspaceFolder: vscode.WorkspaceFolder): ShouldWarn {
+    const fixesConfig = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_FIXES, mainWorkspaceFolder).get<boolean>(consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC);
+
+    if(fixesConfig === undefined)
+    {
+        console.error(`Couldn't get Fixes Config setting: ${consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC}`)
+        return "Warn";
+    }
+
+    return fixesConfig? "Warn" : "DontWarn";
+
+}
+
+async function setDontWarn(mainWorkspaceFolder: vscode.WorkspaceFolder) {
+    const fixesConfig = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_FIXES, mainWorkspaceFolder);
+
+    try {
+        await fixesConfig.update(consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC, false, vscode.ConfigurationTarget.Workspace);
+    } catch (error) {
+        console.error(`Couldn't set setting: ${consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC}`);
+        if(error instanceof Error){
+            console.error(`${error.message}`);
+        }
+        return;
+    }
+    
+}
 
 /**
  * Iterate through every source/header file and check if they're in the compile commands file
@@ -113,47 +156,28 @@ function findMissingFilePaths(sourceFiles: vscode.Uri[], compileCommands: Compil
  * @param outCompileCommands the compile command we're modifying
  * @param paths paths that need to be added
  */
-async function addFilesToCompileCommands(outCompileCommands: CompileCommands, paths: string[], responsePaths: string[]) {
-
-    // check for response path length
-    // if > than 1 then offer choice menu for each file added
-    // find choice 'command object' to copy and use that instead of just copying first command object
+async function warnMissingFilesInCompileCommands(outCompileCommands: CompileCommands, paths: string[]): Promise<ShouldWarn> {
 
     if (!outCompileCommands.length) {
         console.log("No compile commands we're found. Cannot parse command objects.");
-        return;
+        return "Warn";
     }
 
-    const firstCommandObject = outCompileCommands.getCommandObjectFrom(0);
-
-    for (const targetPath of paths) {
-        let newCommandObject: CommandObjectJson | undefined = { 
-            file: undefined,
-            command: firstCommandObject.command,
-            directory: firstCommandObject.directory,
-            arguments: firstCommandObject.arguments
-        };
-
-        addFileToCommandObject(newCommandObject, targetPath);
-
-        if (responsePaths.length > 1) {  
-            newCommandObject = await getCommandObjectFromResponseChoice(newCommandObject, responsePaths, outCompileCommands, targetPath);
-
-            if (!newCommandObject) {
-                continue;
-            }
-
-            if (newCommandObject.command === cancelRemainingMissingFixesCommand) {
-                // If the user selects Cancel Remaining in the prompt for asking for a
-                // a missing path, we stop requesting for more missing paths by escaping
-                // this loop
-                break;
-            }
-
-        }
-
-        outCompileCommands.addCommandObject(newCommandObject);
+    const responseChoice = await vscode.window.showInformationMessage(
+        `New Source files found!\nYou must do a "soft reset" of your project to add new source files to Intellisense.`,
+        {
+            detail: `Note: After resetting you may still see this message. If you do, choose "Don't Warn Again". You'll have to remember to Soft Reset your project whenever you add new source files.`,
+            modal: true
+        },
+        tr.OK, tr.DONT_WARN_AGAIN
+    );
+    
+    if(responseChoice === tr.DONT_WARN_AGAIN){
+        return "DontWarn";
     }
+
+    return "Warn";
+      
 }
 
 async function getCommandObjectFromResponseChoice(

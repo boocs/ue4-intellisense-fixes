@@ -26,6 +26,8 @@ export const CONFIG_SETTING_STRICT_PATH = "strictPath";
 export const CONFIG_SECTION_EXTENSION_COMPILER = "UEIntellisenseFixes.compiler";
 export const CONFIG_SETTINGS_PATH = "path";
 export const CONFIG_SETTINGS_PATH_IS_PROJECT_SPECIFIC = "pathIsProjectSpecific";
+export const CONFIG_SECTION_FIXES = "UEIntellisenseFixes.fixes";
+export const CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC = "warnIfMissingSourceInCC";
 
 export const CONFIG_SETTING_LIMIT_SYMBOLS_TO_INCLUDED_HEADERS = "default.browse.limitSymbolsToIncludedHeaders";
 

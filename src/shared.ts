@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from "os";
 
-import * as fglob from "fast-glob";
+import fg = require('fast-glob');
 
 import * as consts from './consts';
 import * as text from './text';
@@ -317,7 +317,7 @@ export async function findFiles(include: vscode.GlobPattern, exclude: vscode.Glo
     const fileUris: vscode.Uri[] = [];
     for (const searchPath of searchPaths) {
         //console.log(`Searching... pattern:(${pattern})  search path:(${searchPath})`)
-        const pathSuffixes: string[] = await fglob(pattern, { cwd: searchPath });
+        const pathSuffixes: string[] = await fg(pattern, { cwd: searchPath });
 
         if (!pathSuffixes.length) {
             console.log("Searching with fast-glob found nothing. (Sometimes isn't bug)");

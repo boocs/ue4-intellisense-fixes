@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense configuration on startup.",
-	"version": "3.7.3",
+	"version": "3.8.0",
 	"publisher": "boocs",
 	"license": "MIT",
 	"repository": {
@@ -72,12 +72,23 @@
 					"default": "",
 					"markdownDescription": "`Most users won't need to set this:` Mac M1 users will automatically be set to clang-x64 if blank. If creating a Mac M1 Native/arm64 project you'll need to set this to clang-arm64. `Restart VSCode after setting this. Reset project if you ever delete this.`",
 					"scope": "window"
+				},
+				"UEIntellisenseFixes.fixes.warnIfMissingSourceInCC": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "`Shouldn't have to manually set` True: No longer warns to reset project if source files are not found compile commands. `You'll have to remember to reset project when adding files.`",
+					"scope": "machine-overridable"
 				}
 			}
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
+		"vscode:prepublish": "npm run esbuild-base -- --minify",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+		"esbuild": "npm run esbuild-base -- --sourcemap",
+		"esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+		"test-compile": "tsc -p ./",
+		"buvscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
@@ -91,6 +102,7 @@
 		"@types/vscode": "^1.63.1",
 		"@typescript-eslint/eslint-plugin": "^5.10.1",
 		"@typescript-eslint/parser": "^5.10.1",
+		"esbuild": "^0.19.5",
 		"eslint": "^8.7.0",
 		"glob": "^7.2.0",
 		"mocha": "^9.2.0",

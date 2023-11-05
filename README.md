@@ -19,6 +19,10 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 **Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
 
 ---
+## 3.8.0 Nov 4, 2023
+- Now says to user to soft reset project which is proper way to add new source files intellisense.
+- Now uses esbuild to bundles extension (smaller download size and faster start)
+
 ## 3.7.3 Sept 6, 2023
 - Cpp standard fix now supports UE 5.3+ and c++20
 - Check for 5.3+ to bypass launch.json fix
