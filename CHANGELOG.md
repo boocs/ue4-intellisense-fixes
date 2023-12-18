@@ -1,5 +1,9 @@
 ### [TODO]
 
+# [3.8.1] 2023-12-17
+### Fixed
+- Fixed glob, that detected new source files, so that it only detects source files in the immediate Source directory.
+
 # [3.8.0] 2023-11-4
 ### Changed
 - Now says to user to soft reset project which is proper way to add new source files intellisense.

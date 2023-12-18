@@ -102,7 +102,7 @@ export const GLOB_UE4_SOURCE_FILE_VERSION_H = "Engine/Source/Runtime/Launch/Reso
 export const RE_UE4_VERSION = "(?<=#define\\sENGINE_(?:MAJOR|MINOR|PATCH)_VERSION\\s)\\d+";
 
 //export const MAIN_WORKSPACE_SOURCE_DIRECTORY_NAME = "Source";
-export const GLOB_ALL_HEADERS_AND_SOURCE_FILES = "**/Source/**/*.{h,hpp,hh,HPP,c,cpp,cc,CPP}";
+export const GLOB_ALL_HEADERS_AND_SOURCE_FILES = "Source/**/*.{h,hpp,hh,HPP,c,cpp,cc,CPP}";
 
 export const GLOB_PROJECT_RESET_FILE_CREATION = "Intermediate/TargetInfo.json";
 export const FILE_WATCHER_EXEC_WAIT = 3000;

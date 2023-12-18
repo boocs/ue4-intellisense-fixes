@@ -13,7 +13,7 @@ import * as text from "./text";
 
 import * as console from "./console";
 
-const EXTENSION_VERSION = "3.8.0";
+const EXTENSION_VERSION = "3.8.1";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
@@ -211,7 +211,10 @@ function createWatchers(fixableProject: Fixable) {
 
 		console.outputChannel?.show(true);
 		
-		await vscode.window.showInformationMessage("New Soure/Header files detected: Soft Reset your Unreal project and restart VSCode", text.OK);
+		await vscode.window.showInformationMessage(
+			"New Soure/Header files detected: Soft Reset your Unreal project to add new files to Intellisense.",
+			text.OK
+		);
 		
 	});
 }
