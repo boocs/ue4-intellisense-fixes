@@ -1,6 +1,6 @@
 
 import * as vscode from "vscode";
-import * as path from "path";
+import * as pathLib from "path";
 
 import * as consts from "../../consts";
 import * as shared from "../../shared";
@@ -29,7 +29,7 @@ export async function fixMissingResponseCompileCommands(project: ProjectUE4, uri
     const shouldWarn = getCurrentShouldWarn(project.mainWorkspaceFolder);
 
     if(shouldWarn === "DontWarn"){
-        console.log("Should Warn is false. It won't prompt, about resetting project, if source file is not found in compile commands. (not an error)")
+        console.log("Should Warn is false. It won't prompt, about resetting project, if source file is not found in compile commands. (not an error)");
         return;
     }
 
@@ -41,7 +41,7 @@ export async function fixMissingResponseCompileCommands(project: ProjectUE4, uri
     }
 
     let hasAlreadyWarned = false;
-    for (const [index, compileCommand] of mainCompileCommands) {
+    for (const [, compileCommand] of mainCompileCommands) {
         
         let potentialCompileCommandsFiles: vscode.Uri[];
         if (!uriToCheck) { // Check every file since we don't specify a single uri to check
@@ -91,11 +91,11 @@ function getCurrentShouldWarn(mainWorkspaceFolder: vscode.WorkspaceFolder): Shou
 
     if(fixesConfig === undefined)
     {
-        console.error(`Couldn't get Fixes Config setting: ${consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC}`)
+        console.error(`Couldn't get Fixes Config setting: ${consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC}`);
         return "Warn";
     }
 
-    return fixesConfig? "Warn" : "DontWarn";
+    return fixesConfig ? "Warn" : "DontWarn";
 
 }
 
@@ -103,7 +103,7 @@ async function setDontWarn(mainWorkspaceFolder: vscode.WorkspaceFolder) {
     const fixesConfig = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_FIXES, mainWorkspaceFolder);
 
     try {
-        await fixesConfig.update(consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC, false, vscode.ConfigurationTarget.Workspace);
+        await fixesConfig.update(consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC, false, vscode.ConfigurationTarget.WorkspaceFolder);
     } catch (error) {
         console.error(`Couldn't set setting: ${consts.CONFIG_SETTING_WARN_IF_MISSING_SOURCE_IN_CC}`);
         if(error instanceof Error){
@@ -123,17 +123,17 @@ async function setDontWarn(mainWorkspaceFolder: vscode.WorkspaceFolder) {
  */
 function findMissingFilePaths(sourceFiles: vscode.Uri[], compileCommands: CompileCommands): string[] {
 
-    let missingFilePaths: string[] = [];
+    const missingFilePaths: string[] = [];
     for (const uri of sourceFiles) {
 
         let wasFound = false;
 
-        const normalizedSourcePath = path.normalize(uri.fsPath);
+        const normalizedSourcePath = pathLib.normalize(uri.fsPath);
         for (const commandObject of compileCommands) {
             if (!commandObject.file) {
                 continue;
             }
-            const commandObjectPath = path.normalize(commandObject.file);
+            const commandObjectPath = pathLib.normalize(commandObject.file);
 
 
             if (shared.isEqualPaths(normalizedSourcePath, commandObjectPath)) {
@@ -193,7 +193,7 @@ async function getCommandObjectFromResponseChoice(
         directory: commandObject.directory
     };
 
-    const targetFileName = path.parse(targetPath).base;
+    const targetFileName = pathLib.parse(targetPath).base;
     const responseChoice = await vscode.window.showInformationMessage(
         `Intellisense Fix\nChoose response file for new Source/Header:\n${targetFileName}\n(Resetting project can also fix this or any incorrect choice)`,
         { modal: true },
@@ -237,17 +237,17 @@ async function getCommandObjectFromResponseChoice(
     return newCommandObject;
 }
 
-function addFileToCommandObject(commandObject: CommandObjectJson, path: string) {
-    const stringifiedPath = JSON.stringify(path);
+function addFileToCommandObject(commandObject: CommandObjectJson, pathStr: string) {
+    const stringifiedPath = JSON.stringify(pathStr);
     const removedQuotesPath = stringifiedPath.replace(/^"|"$/g, '');
     commandObject.file = removedQuotesPath;
 }
 
 function convertPathsToFileNames(paths: string[]): string[] {
-    let fileNames: string[] = [];
+    const fileNames: string[] = [];
 
     for (const responsePath of paths) {
-        fileNames.push(path.parse(responsePath).base);
+        fileNames.push(pathLib.parse(responsePath).base);
     }
 
     return fileNames;
@@ -255,7 +255,7 @@ function convertPathsToFileNames(paths: string[]): string[] {
 
 function findCommandFrom(compileCommands: CompileCommands, responseFileName: string): string {
 
-    let command: string = "";
+    let command = "";
 
     for (const commandObject of compileCommands) {
         if (commandObject.command?.includes(responseFileName)) {

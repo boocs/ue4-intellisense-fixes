@@ -1,7 +1,7 @@
 
 import * as vscode from 'vscode';
 
-import * as path from 'path';
+import * as pathLib from 'path';
 import * as os from "os";
 
 import fg = require('fast-glob');
@@ -26,11 +26,20 @@ import { TextDecoder, TextEncoder } from 'util';
  * 
  * @logs console.error Error.code
  */
-export async function readStringFromFile(path: string, encoding: BufferEncoding = consts.ENCODING_UTF_8): Promise<string | undefined> {
+export async function readStringFromFile(pathStr: string, encoding: BufferEncoding = consts.ENCODING_UTF_8): Promise<string | undefined> {
+    
+    const normPath = pathLib.normalize(pathStr);
+    let fileUri: vscode.Uri;
+    try {
+        fileUri = vscode.Uri.file(normPath);
+    } catch (error) {
+        console.error(`Error trying to create Uri: ${pathStr}`);
+        return undefined;
+    }
+    
 
-    const fileUri = vscode.Uri.file(path);
     if(!fileUri?.fsPath){
-        console.error(`Error trying to read invalid file path: ${path}`)
+        console.error(`Error trying to read invalid file path: ${pathStr}`);
         return;
     }
 
@@ -40,9 +49,9 @@ export async function readStringFromFile(path: string, encoding: BufferEncoding 
         fileArray = await vscode.workspace.fs.readFile(fileUri);
     }
     catch (error) {
-        console.error(`Error reading file: ${path}`)
+        console.error(`Error reading file: ${pathStr}`);
         if (error instanceof Error) {
-            console.error(`Error reading ${path}. Message: ${error.message}`);
+            console.error(`Error reading ${pathStr}. Message: ${error.message}`);
         }
         return undefined;
     }
@@ -84,15 +93,15 @@ export async function readStringFromFile(path: string, encoding: BufferEncoding 
  * @param encoding Default 'utf-8'
  * @logs console.error Error.code
  */
-export async function writeJsonOrStringToFile(path: string, data: any, encoding: BufferEncoding = consts.ENCODING_UTF_8,
+export async function writeJsonOrStringToFile(pathStr: string, data: any, encoding: BufferEncoding = consts.ENCODING_UTF_8,
     spacing: number = consts.JSON_SPACING) {
     try {
         const writeData = typeof data === "string" ? data : JSON.stringify(data, undefined, spacing);
         const fileBuffer = new TextEncoder().encode(writeData);
-        await vscode.workspace.fs.writeFile(vscode.Uri.file(path), fileBuffer);
+        await vscode.workspace.fs.writeFile(vscode.Uri.file(pathStr), fileBuffer);
     }
     catch (error) {
-        console.error(`Error writing file: ${path}`)
+        console.error(`Error writing file: ${pathStr}`);
         if (error instanceof Error) {
             console.error(`${error.message}`);
         }
@@ -152,7 +161,7 @@ export function jsonParseSafe(data: string): any | undefined {
  * 
  * @param nameSuffix compileCommands_nameSuffix.json
  */
-export function createGlobCompileCommandFileName(nameSuffix: string = "*"): string {
+export function createGlobCompileCommandFileName(nameSuffix = "*"): string {
     return `compileCommands_${nameSuffix}.json`;
 }
 
@@ -195,7 +204,7 @@ export async function findVSCodeFolderFiles(
 
 export function isEqualPaths(path1: string, path2: string): boolean {
     try {
-        return !path.relative(path1, path2);
+        return !pathLib.relative(path1, path2);
     }
     catch (error) {
         console.error(`Error with path.relative: ${path1} === ${path2}`);
@@ -290,18 +299,18 @@ export function isMacM1(isLog = true): boolean {
 export async function findFiles(include: vscode.GlobPattern, exclude: vscode.GlobPattern | null | undefined = null, maxResults?: number | undefined): Promise<vscode.Uri[]> {
 
     const searchPaths: string[] = [];
-    let pattern: string = "";
+    let pattern = "";
 
     if (typeof include === "string") {
         if (!vscode.workspace.workspaceFolders) {
             console.error("No workspaceFolders found while trying to findFiles(shared).");
-            return []
+            return [];
         }
 
         pattern = include;
 
         for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-            const convertedPath = workspaceFolder.uri.fsPath.split(path.sep).join(path.posix.sep);
+            const convertedPath = workspaceFolder.uri.fsPath.split(pathLib.sep).join(pathLib.posix.sep);
             searchPaths.push(convertedPath);
         }
     }
@@ -310,7 +319,7 @@ export async function findFiles(include: vscode.GlobPattern, exclude: vscode.Glo
 
         pattern = relPattern.pattern;
         // ref: https://stackoverflow.com/questions/53799385/how-can-i-convert-a-windows-path-to-posix-path-using-node-path
-        const convertedPath = relPattern.base.split(path.sep).join(path.posix.sep);
+        const convertedPath = relPattern.base.split(pathLib.sep).join(pathLib.posix.sep);
         searchPaths.push(convertedPath);
     }
 
@@ -333,9 +342,9 @@ function getUrisFromBasePathAndSuffixes(base: string, pathSuffixes: string[]): v
 
     const uris: vscode.Uri[] = [];
     for (const pathSuffix of pathSuffixes) {
-        const fullPath = path.join(base, pathSuffix);
+        const fullPath = pathLib.join(base, pathSuffix);
         //console.log(`Created path from search: ${fullPath}`)
-        const newUri = vscode.Uri.file(fullPath)
+        const newUri = vscode.Uri.file(fullPath);
         //console.log(`Uri created. Has path: ${newUri.fsPath}`)
         uris.push(newUri);
 
@@ -351,10 +360,10 @@ export function getCompileCommandsCompilerPath(project: ProjectUE4) {
     
     
     if(compileCommandsConfigFirstIndex?.compileCommands[0].command){
-        firstCommandOfFirstIndex = compileCommandsConfigFirstIndex.compileCommands[0].command
+        firstCommandOfFirstIndex = compileCommandsConfigFirstIndex.compileCommands[0].command;
     }
     else if(compileCommandsConfigFirstIndex?.compileCommands[0].arguments && compileCommandsConfigFirstIndex?.compileCommands[0].arguments[0]){
-        return compileCommandsConfigFirstIndex?.compileCommands[0].arguments[0]
+        return compileCommandsConfigFirstIndex?.compileCommands[0].arguments[0];
     }
     
 
@@ -377,4 +386,17 @@ function getCompilerPathFromString(firstCommandOfFirstIndex: string) {
 
 
     return match[0].replace(/"/gm, "");
+}
+
+/**
+ * Returns folder that contains the *.code-workspace file that opened the workspace
+ */
+export function getMainWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
+    const workspaceFileUri = vscode.workspace.workspaceFile;
+    if(!workspaceFileUri) {
+        console.error("Unreal project wasn't opened by workspace file. *.code-workspace file not found!");
+        return;
+    }
+
+    return vscode.workspace.getWorkspaceFolder(workspaceFileUri);
 }

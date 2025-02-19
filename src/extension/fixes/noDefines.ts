@@ -77,7 +77,7 @@ async function addDefinesToForcedInclude(mainWorkspace: vscode.WorkspaceFolder, 
 
     try {
         console.log("Fixing No Defines.");
-        await cppSettings.update(consts.CONFIG_SETTING_DEFAULT_FORCED_INCLUDE, forcedIncludePaths, false);
+        await cppSettings.update(consts.CONFIG_SETTING_DEFAULT_FORCED_INCLUDE, forcedIncludePaths, vscode.ConfigurationTarget.WorkspaceFolder);
     } catch (error) {
         console.error("Error trying to update Forced Include setting.");
         return;

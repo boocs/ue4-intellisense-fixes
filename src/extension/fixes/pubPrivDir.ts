@@ -19,7 +19,7 @@ export async function warnPubPrivDir(project: ProjectUE4) {
     const relPatternPrivate = new vscode.RelativePattern(project.mainWorkspaceFolder, GLOB_PRIVATE_DIR_STRUCTURE);
 
     const relPatterns = [relPatternPublic, relPatternPrivate];
-
+    
     for (const relPattern of relPatterns) {
         const uris = await shared.findFiles(relPattern);
 

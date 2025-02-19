@@ -24,7 +24,7 @@ export class V425Fixable extends Fixable {
        return await V425Project.create();
     }
 
-    protected async fixProject(ue_version: { major: number; minor: number; patch: number; }): Promise<void> {
+    protected async fixProject(ueVersion: { major: number; minor: number; patch: number; }): Promise<void> {
                 
         fixTagIncludes(this.project);
         console.log("End fix UE4 workspace(Add empty array to Tag Includes).\n");
@@ -32,7 +32,7 @@ export class V425Fixable extends Fixable {
         await fixNoDefines(this.project);
         console.log("End fix No Defines.\n");
 
-        fixWrongCppStandard(this.project, ue_version);
+        fixWrongCppStandard(this.project, ueVersion);
         console.log("End fix wrong cppStandard.\n");
 
         await fixWrongIntellisenseMode(this.project);

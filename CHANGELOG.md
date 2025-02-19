@@ -1,5 +1,22 @@
 ### [TODO]
 
+# [3.8.2] 2025-2-13
+### Added
+- Warn if user sets project specific extension setting in Workspace. Most settings should go in Workspace 'Folder'.
+- eslint settings
+### Fixed
+- Prevent compiler path fix from saving if compiler paths are equal
+- Check if compile command setting is a string, in c_cpp_properties.json, and give error if not and tell user to Refresh project.
+- eslint errors
+### Changed
+- Added missing semicolons
+- Renamed some vars
+- Most settings have been switched so you they can only be set in Workspace(bad) or Workspace Folder(good)
+- Optional fixes are on by default. You can still disable them.
+### Removed
+- Settings where you have to enable fixes. Fixes will run if you have the extension enabled. You can still disable optional fixes.
+- Setting where you could choose compiler path to be global(user) or project specific
+
 # [3.8.1] 2023-12-17
 ### Fixed
 - Fixed glob, that detected new source files, so that it only detects source files in the immediate Source directory.

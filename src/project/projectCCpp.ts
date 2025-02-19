@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 
 import { CCppProperties } from "./cCppProperties";
 import { ValidatedBuilderBase, IsValid } from "./builderBase";
-import type { CCppConfigurationJson, LaunchJson } from "./ntypes";
+import type { CCppConfigurationJson } from "./ntypes";
 import { CompileCommands } from "./compileCommands";
 
 import * as console from "../console";
@@ -33,7 +33,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
 
     protected async cCppPostConstructionSetup(setupVars: Record<WorkspaceKey, WorkspaceSetupVars>): Promise<IsValid> {
 
-        let isValid = super.basePostConstructionSetup();
+        const isValid = super.basePostConstructionSetup();
         
         if (!isValid) {
             return false;
@@ -53,7 +53,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
 
         const workspaceConfigurations = new Map<WorkspaceKey, vscode.WorkspaceConfiguration | undefined>();
 
-        for (let [key, workspaceSetupVars] of Object.entries(setupVars)) {
+        for (const [key, workspaceSetupVars] of Object.entries(setupVars)) {
 
             const workspace = workspaceSetupVars.configurationsWorkspace;
 
@@ -80,7 +80,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
     private async createProperties(setupVars: Record<WorkspaceKey, WorkspaceSetupVars>): Promise<Map<WorkspaceKey, CCppProperties | undefined> | undefined> {
         const workspaceProperties = new Map<WorkspaceKey, CCppProperties | undefined>();
 
-        for (let [key, workspaceSetupVars] of Object.entries(setupVars)) {
+        for (const [key, workspaceSetupVars] of Object.entries(setupVars)) {
 
             const workspace = workspaceSetupVars.propertiesWorkspace;
 
@@ -212,7 +212,7 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
                 return;
             }
 
-            for (let [workspaceKey, cCppProperties] of allCCppProperties) {
+            for (const [, cCppProperties] of allCCppProperties) {
                 await cCppProperties?.writeConfigurationsIfNotEqual();
             }
             return;
@@ -244,7 +244,13 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
             return false;
         }
 
+        //  compileCommands array check
         const compileCommandsPath = cCppProperties.configurations?.[configIndex].compileCommands;
+        if(typeof compileCommandsPath !== 'string'){
+            console.error(`Compile commands path wasn't a string! Try using the Unreal Refresh Project ability.`);
+            return false;
+        }
+
         if (!compileCommandsPath) {
             console.error(`Error getting compile commands path from ${workspaceKey} c_cpp_properties.json at config index ${configIndex}.`);
             return false;
@@ -288,27 +294,32 @@ export abstract class ProjectCCpp extends ValidatedBuilderBase {
 
         const cCppProperties = this.getCCppProperties(workspaceKey);
         if (!cCppProperties) {
-            console.error(`Error, no getCCppProperties with key:${workspaceKey}!`)
+            console.error(`Error, no getCCppProperties with key:${workspaceKey}!`);
             return false;
         }
 
         if (!cCppProperties.configurations) {
-            console.error(`Error, no cCppProperties.configurations with key:${workspaceKey}!`)
+            console.error(`Error, no cCppProperties.configurations with key:${workspaceKey}!`);
             return false;
         }
 
 
         for (const configIndex in cCppProperties.configurations) {
-
+            //  compileCommands array check
             const compileCommandsPath = cCppProperties.configurations?.[configIndex].compileCommands;
+            if(typeof compileCommandsPath !== 'string'){
+                console.error(`Compile commands path wasn't a string! Try using the Unreal Refresh Project ability.`);
+                return false;
+            }
+
             if (!compileCommandsPath) {
-                console.error(`${configIndex}: No compileCommandsPath found in cCppProperties with key:${workspaceKey}! (not an error with UE 4.25.#)`)  // Does 4.25 even use this function?
+                console.error(`${configIndex}: No compileCommandsPath found in cCppProperties with key:${workspaceKey}! (not an error with UE 4.25.#)`); // Does 4.25 even use this function?
                 continue;
             }
 
             const compileCommands = await CompileCommands.create(compileCommandsPath);
             if (!compileCommands.isValid) {
-                console.error(`${configIndex}: Couldn't create compileCommands from ${compileCommandsPath} with key:${workspaceKey}! (not an error with UE 4.25.#)`)
+                console.error(`${configIndex}: Couldn't create compileCommands from ${compileCommandsPath} with key:${workspaceKey}! (not an error with UE 4.25.#)`);
                 continue;
             }
 

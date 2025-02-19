@@ -10,8 +10,17 @@ export const UE4_425_DIR_FOLDER_NAME = "UE_4.25";
 
 export const CONFIG_SECTION_EXTENSION = "UEIntellisenseFixes";
 
-export const CONFIG_SETTING_ENABLE_FIXES = "enableFixes";
+//export const CONFIG_SETTING_ENABLE_FIXES = "enableFixes";
 export const CONFIG_SETTING_ENABLE_OPTIONAL_FIXES = "enableOptionalFixes"; 
+
+export const SETTINGS_NONE_IN_WORKSPACE = [
+    "enableFixes",
+    "enableOptionalFixes",
+    "cppStandard",
+    "compiler.path",
+    "compiler.intellisenseMode",
+    "fixes.warnIfMissingSourceInCC"
+];
 
 export const CONFIGURATION_C_CPP = "C_Cpp";
 export const CONFIG_SETTING_DEFAULT_INCLUDE_PATH = "default.includePath";
@@ -134,7 +143,7 @@ export const INTELLISENSE_MODE_WINDOWS_CLANG_X86 = "windows-clang-x86";
 export const INTELLISENSE_MODE_WINDOWS_MSVC_X64 = "windows-msvc-x64";
 export const INTELLISENSE_MODE_WINDOWS_MSVC_X86 = "windows-msvc-x86";
 export const INTELLISENSE_MODE_CLANG_X64 = "clang-x64";
-export const INTELLISENSE_MODE_APPLE_MACM1_DEFAULT = "macos-clang-arm64"
+export const INTELLISENSE_MODE_APPLE_MACM1_DEFAULT = "macos-clang-arm64";
 
 export const PLATFORM_WINDOWS = "win32";
 export const CPUID_MACM1 = "Apple M1";

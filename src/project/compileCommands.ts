@@ -12,15 +12,15 @@ export class CompileCommands {
 
     protected _path: string;
     protected _compileCommands: CommandObjectJson[];
-    protected _isDirty: boolean = false;
-    protected _isValid : boolean = false;
+    protected _isDirty = false;
+    protected _isValid  = false;
 
     /**
      * @param path to compile commands file
      * @throws Error
      */
-    private constructor(path: string, compileCommands: CommandObjectJson[]) {
-        this._path = path;
+    private constructor(pathStr: string, compileCommands: CommandObjectJson[]) {
+        this._path = pathStr;
         this._compileCommands = compileCommands;
         if(this.length){  // This class is an iterator so it checks _compileCommands length
             this._isValid = true;
@@ -28,10 +28,10 @@ export class CompileCommands {
                 
     }
 
-    public static async create(path: string) {
-        const compileCommands = await CompileCommands.createCompileCommands(path);
+    public static async create(pathStr: string) {
+        const compileCommands = await CompileCommands.createCompileCommands(pathStr);
 
-        return new CompileCommands(path, compileCommands);
+        return new CompileCommands(pathStr, compileCommands);
     }
 
     get compileCommands(): CommandObjectJson[] {
@@ -54,7 +54,7 @@ export class CompileCommands {
     }
 
     *[Symbol.iterator]() {
-        for (let commandObject of this._compileCommands) {
+        for (const commandObject of this._compileCommands) {
             yield commandObject;
         }
     }
@@ -79,11 +79,11 @@ export class CompileCommands {
     /**
      * @returns empty array on error
      */
-    protected static async createCompileCommands(path: string): Promise<CommandObjectJson[]> {
-        const jsonString = await shared.readStringFromFile(path);
+    protected static async createCompileCommands(pathStr: string): Promise<CommandObjectJson[]> {
+        const jsonString = await shared.readStringFromFile(pathStr);
 
         if(!jsonString){
-            console.error(`Couldn't read compile commands file: ${path}`);
+            console.error(`Couldn't read compile commands file: ${pathStr}`);
             return [];
         }
         
@@ -106,14 +106,14 @@ export class CompileCommands {
             return;
         }
 
-        let uniqueMatches: Set<string> = new Set<string>();
+        const uniqueMatches: Set<string> = new Set<string>();
 
         for (const commandObject of this) {
             
                 let responseFileString = "";
 
                 if(commandObject.command){
-                    responseFileString = commandObject.command
+                    responseFileString = commandObject.command;
                 }
                 else if(commandObject.arguments && commandObject.arguments.length > 1){
                     responseFileString = commandObject.arguments[1];

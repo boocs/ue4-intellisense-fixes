@@ -13,7 +13,7 @@ export type CommandObjectJson = {
 export type CCppConfigurationJson = {
 	name?: string;
 	intelliSenseMode?: string;
-	compileCommands?: string;
+	compileCommands?: string | string[];
 	forcedInclude?: string[];
 	includePath?: string[];
 	browse?: {

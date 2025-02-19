@@ -8,13 +8,13 @@ import * as vscode from "vscode";
 import type { ProjectUE4 } from '../../project/projectUE4';
 import type { CompileCommands } from "../../project/compileCommands";
 import * as consts from '../../consts';
-import {getCompileCommandsCompilerPath} from "../../shared"
+import {getCompileCommandsCompilerPath, getMainWorkspaceFolder} from "../../shared";
 
 import * as console from '../../console';
 
 
 export async function fixCompilerPaths(project: ProjectUE4, isOptionalFixesEnabled: boolean) {
-
+    
     console.log("Fixing compiler paths in compile commands.");
 
     const mainCompileCommands = project.getMainWorkspaceCompileCommands();
@@ -53,13 +53,13 @@ async function fixCompileCommandFile(compileCommands: Map<string, CompileCommand
 
     let hasLogged = false;
 
-    for (const [index, compileCommand] of compileCommands) {
+    for (const [, compileCommand] of compileCommands) {
         
         for( const entry of compileCommand) {
 
             if(!entry.command && !entry.arguments) { 
                 continue;
-            };
+            }
 
             
             if(entry.command){
@@ -70,12 +70,13 @@ async function fixCompileCommandFile(compileCommands: Map<string, CompileCommand
                     entry.command = correctedCommand;
                 }
             }
-            else if(entry.arguments){
-                entry.arguments[0] = compilerPathOverride;
-                compileCommand.isDirty = true;
+            else if(entry.arguments && entry.arguments.length > 0){
+                if(entry.arguments[0] !== compilerPathOverride){
+                    entry.arguments[0] = compilerPathOverride;
+                    compileCommand.isDirty = true;
+                } 
             }
             
-
             if(!hasLogged) {
                 hasLogged = true;
                 const logInfo = entry.arguments? entry.arguments[0] : entry.command;
@@ -94,7 +95,7 @@ async function fixCompileCommandFile(compileCommands: Map<string, CompileCommand
 function getCorrectedEntryCommand(command: string, compilerPathOverride: string) : string {
 
     if(!compilerPathOverride){
-        console.error("getCorrectedEntryCommand was passed an empty compilerPathOverride!")
+        console.error("getCorrectedEntryCommand was passed an empty compilerPathOverride!");
         return "";
     }
 
@@ -111,15 +112,14 @@ function getCorrectedEntryCommand(command: string, compilerPathOverride: string)
         
 }
 
-async function getCompilerPathOverride(project: ProjectUE4): Promise<string> {
+async function getCompilerPathOverride(project: ProjectUE4): Promise<string | undefined> {
 
-    let config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
-    const compilePathIsProjectSpecific = config.get<boolean>(consts.CONFIG_SETTINGS_PATH_IS_PROJECT_SPECIFIC, false);
-
-    const isCompilePathGlobal = compilePathIsProjectSpecific ? false : true;  // true means global, false means project(workspace)
-    await checkAndRemoveCompilePathSetting(config, isCompilePathGlobal);  // remove project path if global, remove global path if project specific
-
-    config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER); // need updated config after check and remove function above
+    const mainWorkspaceFolder = getMainWorkspaceFolder();
+    if(!mainWorkspaceFolder){
+        return;
+    }
+    const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER, mainWorkspaceFolder);
+    
     const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
     const compileCommandCompilerPath = getCompileCommandsCompilerPath(project);
 
@@ -132,11 +132,11 @@ async function getCompilerPathOverride(project: ProjectUE4): Promise<string> {
         }
 
         try {
-            await updatePathSetting(config, compileCommandCompilerPath, isCompilePathGlobal);
+            await updatePathSetting(config, compileCommandCompilerPath);
             //await config.update(consts.CONFIG_SETTINGS_PATH, compileCommandCompilerPath, isCompilePathGlobal)
         } catch (error) {
-            console.error("Couldn't set extension's compile path setting!")
-            return ""
+            console.error("Couldn't set extension's compile path setting!");
+            return "";
         }
         return compileCommandCompilerPath;
     }
@@ -152,8 +152,7 @@ async function getCompilerPathOverride(project: ProjectUE4): Promise<string> {
             return currentExtCompilerPath;
         }
         else{
-            await updatePathSetting(config, compileCommandCompilerPath, isCompilePathGlobal);
-            //await config.update(consts.CONFIG_SETTINGS_PATH, compileCommandCompilerPath, isCompilePathGlobal)
+            await updatePathSetting(config, compileCommandCompilerPath);
             return compileCommandCompilerPath;
         }
     }
@@ -168,27 +167,28 @@ function getFixedCompilerPath(compilerPath: string, responsePath: string): strin
 }
 
 
-async function checkAndRemoveCompilePathSetting(config: vscode.WorkspaceConfiguration, isCompilerPathGlobal: boolean) {
-
-    if(isCompilerPathGlobal){
-        await updatePathSetting(config, undefined, false);
-        //await config.update(consts.CONFIG_SETTINGS_PATH, undefined, false);
-    }
-    else{
-        await updatePathSetting(config, undefined, true);
-        //await config.update(consts.CONFIG_SETTINGS_PATH, undefined, true);
-    }
-}
-
-async function updatePathSetting(config: vscode.WorkspaceConfiguration, path: string | undefined, isGlobal: boolean, section: string = consts.CONFIG_SETTINGS_PATH) {
+/**
+ * 
+ * @param config 
+ * @param pathStr 
+ * @param target
+ * If true updates Global settings.
+ * 
+ * If false updates Workspace settings.
+ * 
+ * If undefined or null updates to Workspace folder settings if configuration is resource specific, otherwise to Workspace settings. 
+ * @param section 
+ */
+async function updatePathSetting(config: vscode.WorkspaceConfiguration, pathStr: string | undefined, section: string = consts.CONFIG_SETTINGS_PATH) {
     try {
-        await config.update(section, path, isGlobal);
+
+        await config.update(section, pathStr, vscode.ConfigurationTarget.WorkspaceFolder);  // undefined = workspace folder
     } catch (e) {
-        let errMessage = ""
+        let errMessage = "";
         if(e instanceof Error){
             errMessage = e.message;
         }
 
-        console.error(`Error trying to update path setting!\n${errMessage}`)
+        console.error(`Error trying to update path setting!\n${errMessage}`);
     }
 }

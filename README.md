@@ -1,10 +1,45 @@
+# Announcement
+Please stop using this extension and Microsoft's C++ extension for Unreal code completion.
+
+## clangd
+The VSCode extension `clangd` has blazing fast code completion in comparison. I've made a VSCode extension for it:
+
+https://github.com/boocs/unreal-clangd
+
+You will use clangd for code completion(Intellisense) and use Microsoft's C++ extension for Building/Debugging
+
+---
+
+## Rider
+
+There's also a free for non-commercial use editor made for Unreal called Rider if you want to try it:
+
+https://www.jetbrains.com/lp/rider-unreal/
+
+
+---
+
+
 ## VSCode/UE Intellisense Fix
 
 VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+**
 
+## Quick Start Guide
+1. Download the `vsix` file from this github. It's in the `Releases` section on the right hand side of this page (You might have to scroll up).
+2. Install the extension with the vsix file (see below)
+
+    ![image](https://gist.githubusercontent.com/boocs/876a39952d6f69c82df38d6c0aa13da1/raw/4e392ddc86997d865a7dde6cc483aa09ee12570b/vsix-install.png)
+
+3. The extension's `fixes` are now automatically `enabled by default`. (Most users won't have to mess with settings)
+4. If you do change this extension's settings make sure to use the Workspace `Folder` setting. You'll get a warning if you don't
+
+    `Reason`: When you refresh your project, to add new project files to Intellisense, the *.code-workspace file is also refreshed which will delete any new settings added to it.
+5. `Warning`: Your compiler path is saved in your project's .vscode/settings.json file. If you want to upgrade your C++ compiler make sure to delete this setting. After you install the new compiler do a project 'Refresh'.
+
+
 ### ReadMe link:
 
-### [More Detailed Readme](https://gist.github.com/boocs/f63a4878156295b6e854cac68672f305)
+### [Old out-of-date detailed readme](https://gist.github.com/boocs/f63a4878156295b6e854cac68672f305)
 
 ---
 **WARNING:**
@@ -16,7 +51,16 @@ VSCode Extension supports Unreal Engine **v4.25** / **v4.26.1+** / and **v5.0.0+
 - File Changed: Unreal Source's .vscode/settings.json
 
 ---
-**Note:** Check out the Running section of the Readme to take advantage of the smaller Tag Parser cache
+## 3.8.2 Feb 18, 2025
+- Warn if user sets project specific extension setting in Workspace. Most settings should go in Workspace 'Folder'.
+- Fixed eslint settings
+- Prevent compiler path fix from saving if compiler paths are equal
+- Check if compile command setting is a string, in c_cpp_properties.json, and give error if not and tell user to Refresh project.
+- Fixed eslint errors
+- Most settings have been switched so you they can only be set in Workspace(bad) or Workspace Folder(good)
+- Removed setting where you have to enable fixes. Fixes will run if you have the extension enabled. You can still disable optional fixes.
+- Optional fixes are on by default. You can still disable them.
+- Removed setting where you could choose compiler path to be global(user) or project specific
 
 ---
 ## 3.8.1 Dec 17, 2023

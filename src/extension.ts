@@ -7,18 +7,22 @@ import { V427Fixable } from "./extension/V427fixable";
 import { ProjectUE4 } from "./project/projectUE4";
 import * as consts from "./consts";
 import * as shared from "./shared";
-import * as path from "path";
+import * as pathLib from "path";
 
 import * as text from "./text";
 
 import * as console from "./console";
 
-const EXTENSION_VERSION = "3.8.1";
+// TODO ****************************************************************
+// Docs: create quick start guide
+  // Tell about setting settings in Folder setting (show how to pick project folder and not Unreal folder)
+
+const EXTENSION_VERSION = "3.8.2";
 
 let newFileWatcher: vscode.FileSystemWatcher | undefined;
 let resetEventFileWatcher: vscode.FileSystemWatcher | undefined;
 
-let ue_version: { major: number; minor: number; patch: number; };
+let _ueVersion: { major: number; minor: number; patch: number; };
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -34,6 +38,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	else if(hasUProjectFile === true) {
 		console.log('*.uproject file was found!');
 	}
+
+	await checkForSettingsInWorkspace(consts.SETTINGS_NONE_IN_WORKSPACE);
 	
 	console.log(`\nExtension "UE Intellisense Fixes" ${EXTENSION_VERSION} is now active!\n`);
 
@@ -41,6 +47,15 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.outputChannel?.show(true);
 	}
 	));
+
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration( async e => {
+		const mainWorkspaceFolder = shared.getMainWorkspaceFolder();
+		if(!mainWorkspaceFolder || !e.affectsConfiguration(consts.CONFIG_SECTION_EXTENSION, mainWorkspaceFolder)){return;}
+		
+		await checkForSettingsInWorkspace(consts.SETTINGS_NONE_IN_WORKSPACE);
+		
+	}));
+
 
 	const statusItem: vscode.StatusBarItem = createAndShowMainStatusItem();
 
@@ -52,12 +67,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		createWatchers(fixableProject);
 	}
 	else {
-		console.error("Couldn't create file watchers!")
+		console.error("Couldn't create file watchers!");
 	}
 	
 	console.log(`\n*** Number of error messages: ${console.getErrorCount()}`);
-	console.log(`*** Number of warning messages: ${console.getWarningCount()}`)
-	console.log("If you get any errors you can try restarting VSCode to check if they've been fixed.")
+	console.log(`*** Number of warning messages: ${console.getWarningCount()}`);
+	console.log("If you get any errors you can try restarting VSCode to check if they've been fixed.");
 		
 	await endRun(statusItem);
 	
@@ -104,7 +119,7 @@ async function runExtensionNoProgress(): Promise<Fixable | undefined> {
 		return;
 	}
 	
-	await fixableProject.execFixes(ue_version);
+	await fixableProject.execFixes(_ueVersion);
 	
 	return fixableProject;
 }
@@ -120,13 +135,16 @@ function createAndShowMainStatusItem(): vscode.StatusBarItem {
 }
 
 
-function getFixesEnabledSettings(): { isFixesEnabled: boolean, isOptionalFixesEnabled: boolean } {
-	const extensionSettings = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION);
+function getFixesEnabledSettings(): { isFixesEnabled: boolean, isOptionalFixesEnabled: boolean } | undefined {
+	const mainWorkspaceFolder = shared.getMainWorkspaceFolder();
+	if(!mainWorkspaceFolder){
+		return;
+	}
+	const extensionSettings = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION, mainWorkspaceFolder);
 
-	const isFixesEnabled = extensionSettings.get(consts.CONFIG_SETTING_ENABLE_FIXES, false);
-	const isOptionalFixesEnabled = extensionSettings.get(consts.CONFIG_SETTING_ENABLE_OPTIONAL_FIXES, false);
+	const isOptionalFixesEnabled = extensionSettings.get(consts.CONFIG_SETTING_ENABLE_OPTIONAL_FIXES, true);
 
-	return { isFixesEnabled: isFixesEnabled, isOptionalFixesEnabled: isOptionalFixesEnabled };
+	return { isFixesEnabled: true, isOptionalFixesEnabled: isOptionalFixesEnabled };
 }
 
 
@@ -148,23 +166,26 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 	const version = ProjectUE4.ue4VersionObject;
 
 	const fixesEnabledSettings = getFixesEnabledSettings();
+	if(!fixesEnabledSettings){
+		return;
+	}
 
 	if (!version) {
 		console.error("Couldn't parse Unreal Engine version.");
 		return;
 	}
 
-	ue_version = version;
+	_ueVersion = version;
 
-	console.log(`Found Unreal Engine v${ue_version.major}.${ue_version.minor}.${ue_version.patch}\n`);
+	console.log(`Found Unreal Engine v${_ueVersion.major}.${_ueVersion.minor}.${_ueVersion.patch}\n`);
 
-	if (ue_version.major === 4 ){
-		if (ue_version.minor === 25) {
+	if (_ueVersion.major === 4 ){
+		if (_ueVersion.minor === 25) {
 			return new V425Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 		}
-		else if (ue_version.minor === 26) {
+		else if (_ueVersion.minor === 26) {
 	
-			if (ue_version.patch > 0) {
+			if (_ueVersion.patch > 0) {
 				return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 			}
 			else { // We don't support 4.26.0
@@ -172,11 +193,11 @@ async function getFixableProject(): Promise<Fixable | undefined> {
 				return;
 			}
 		}
-		else if (ue_version.minor === 27) {
+		else if (_ueVersion.minor === 27) {
 			return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 		}
 	}
-	else if(ue_version.major === 5 ){
+	else if(_ueVersion.major === 5 ){
 		return new V427Fixable(fixesEnabledSettings.isFixesEnabled, fixesEnabledSettings.isOptionalFixesEnabled);
 	}
 	
@@ -203,7 +224,7 @@ function createWatchers(fixableProject: Fixable) {
 
 	newFileWatcher?.onDidCreate(async uri =>  {
 
-		const filePath = path.parse(uri.fsPath);
+		const filePath = pathLib.parse(uri.fsPath);
 		const fileName = filePath.base;
 
 		console.log(`\nWARNING: Detected new file (${fileName}).`);
@@ -223,4 +244,33 @@ function createFileWatcher(workspaceFolder: vscode.WorkspaceFolder, glob: string
 	const relPattern = new vscode.RelativePattern(workspaceFolder, glob);
 
 	return vscode.workspace.createFileSystemWatcher(relPattern, ignore.create, ignore.change, ignore.delete);
+}
+
+async function checkForSettingsInWorkspace(settingsToCheck: string[]) {
+
+	const mainWorkspace = shared.getMainWorkspaceFolder();
+	if(!mainWorkspace){
+		return;
+	}
+    // Get the workspace configuration
+    const workspaceConfig = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION, mainWorkspace);
+
+    const warnings: string[] = [ "Extension UE Intellisense Fixes Error:\n"];
+
+    for (const setting of settingsToCheck) {
+        const settingValue = workspaceConfig.inspect(setting);
+        
+        if (settingValue && settingValue.workspaceValue !== undefined) {
+            warnings.push(`Error: '${consts.CONFIG_SECTION_EXTENSION}.${setting}' is set in your *.code-workspace file.`);
+        }
+    }
+
+    if (warnings.length > 1) {  // 1 because we have the header already there.
+        // Show the errors in a message box
+		warnings.push("\nYou should not set extension settings in 'Workspace' config (*.code-workspace file).");
+        warnings.push("When you refresh your project, to add new project files to Intellisense, these settings will be deleted.");
+		warnings.push("Set these settings in your Workspace 'Folder' config instead (You can also set them manually in settings.json in .vscode folder)");
+        
+		await vscode.window.showErrorMessage(warnings.join('\n'), { modal: true});
+	}
 }

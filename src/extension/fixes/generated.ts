@@ -11,10 +11,10 @@ import * as shared from "../../shared";
 import * as console from "../../console";
 
 
-const GLOB_UE_EDITOR_GENERATED = "Intermediate/Build/**/UnrealEditor/Inc/**/*.generated.h"
-const GLOB_UE4_EDITOR_GENERATED = "Intermediate/Build/**/UE4Editor/Inc/**/*.generated.h"
+const GLOB_UE_EDITOR_GENERATED = "Intermediate/Build/**/UnrealEditor/Inc/**/*.generated.h";
+const GLOB_UE4_EDITOR_GENERATED = "Intermediate/Build/**/UE4Editor/Inc/**/*.generated.h";
 
-const REGEX_UE_EDITOR_GENERATED = /(?<!Engine)[\/|\\]Intermediate[\/|\\]Build[\/|\\](?:[\w\/|\\])+(?:Unreal|UE4)Editor[\/|\\]Inc/gm
+const REGEX_UE_EDITOR_GENERATED = /(?<!Engine)[\/|\\]Intermediate[\/|\\]Build[\/|\\](?:[\w\/|\\])+(?:Unreal|UE4)Editor[\/|\\]Inc/gm;
 
 
 export async function fixGenerated(project: ProjectUE4) : Promise<void> {
@@ -35,7 +35,7 @@ export async function fixGenerated(project: ProjectUE4) : Promise<void> {
     }
     else {
         console.log("Correct *.generated.h files are found! Note: This extension doesn't test if all *.generated.h files have been created.");
-        console.log("For Intellisense, you'll need to Build any newly created project files with the 'Editor' suffix config (e.g. MyProjectNameEditor (platform) Development Build).")
+        console.log("For Intellisense, you'll need to Build any newly created project files with the 'Editor' suffix config (e.g. MyProjectNameEditor (platform) Development Build).");
     }
 
     const mainCompileCommands = project.getMainWorkspaceCompileCommands();
@@ -66,8 +66,8 @@ function getUniqueResponsePathsFromCompileCommands(compileCommands: Map<string, 
     const allResponsePaths : string[] = [];
     
     for(const commands of compileCommands){
-        for (let [key, value] of commands) {
-            const rspPaths = value.getAllUsedResponsePaths()
+        for (const [, value] of commands) {
+            const rspPaths = value.getAllUsedResponsePaths();
             if(rspPaths){
                 allResponsePaths.push(...rspPaths);
             }
@@ -82,7 +82,7 @@ async function hasRegexInAllFiles(regExp: RegExp, paths: string[]) : Promise<boo
         const fileString = await shared.readStringFromFile(path);
 
         if(!fileString){
-            console.error(`File was empty or nonexistant: ${path}`)
+            console.error(`File was empty or nonexistant: ${path}`);
             continue;
         }
         
@@ -91,7 +91,7 @@ async function hasRegexInAllFiles(regExp: RegExp, paths: string[]) : Promise<boo
         if(!match?.length){
             console.error(`No match found for RegExp(${regExp.source}) on file: ${path}`);
             console.error("You must refresh your project by Generating Project files!");
-            console.error("You can do this with VSCode->Run/Debug(MS C# Ext required), right-clicking project's *.uproject file, or in the Unreal Engine menus.")
+            console.error("You can do this with VSCode->Run/Debug(MS C# Ext required), right-clicking project's *.uproject file, or in the Unreal Engine menus.");
             return false;
         }
     }

@@ -120,15 +120,15 @@ export class CCppProperties
     }
 
 
-    protected async getCurrentCCppProperties(path: string | undefined) : Promise<CCppPropertiesJson | undefined> {
+    protected async getCurrentCCppProperties(pathStr: string | undefined) : Promise<CCppPropertiesJson | undefined> {
         
-        if(!path){
+        if(!pathStr){
             console.error(`No path for ${this.workspace?.name} CCppProperties file found.`);
             return;
         }
 
         // Needs to be synchronous for when we read and then write in our write function
-        const currentFileString = await shared.readStringFromFile(path);
+        const currentFileString = await shared.readStringFromFile(pathStr);
 
         if (!currentFileString) {
             console.error(`Error while reading ${this.workspace?.name} CCppProperties file.`);

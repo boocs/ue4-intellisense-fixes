@@ -3,7 +3,7 @@
  */
 
 import { existsSync } from 'fs';
-import * as path from "path";
+import * as pathLib from "path";
 
 import * as consts from '../../consts';
 import * as shared from '../../shared';
@@ -22,7 +22,7 @@ export async function fixResponse(project: ProjectUE4) {
         return;
     }
 
-    for (const [index, compileCommand] of mainCompileCommands) {
+    for (const [, compileCommand] of mainCompileCommands) {
         
         const responsePaths: string[] | undefined = compileCommand.getAllUsedResponsePaths();
 
@@ -109,7 +109,7 @@ export function fixKnownInvalidPathsInFile(responsePath: string, originalRespons
         continue;
     }
 
-    const parsedPath = path.parse(responsePath);
+    const parsedPath = pathLib.parse(responsePath);
     console.log(`${parsedPath.name}: Fixed paths count(${invalidPaths.fixable.length}), Unfixed paths count(${invalidPaths.unfixable})`);
 
     return replacementString;

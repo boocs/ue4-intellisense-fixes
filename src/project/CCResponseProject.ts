@@ -3,7 +3,7 @@
 */
 
 import { ProjectUE4 } from "./projectUE4";
-import type { IsValid } from "./builderBase";
+
 
 import * as console from "../console";
 
@@ -27,13 +27,13 @@ export class CCResponseProject extends ProjectUE4 {
         let isValid = await super.ue4PostConstructionSetup(true, true, true, true);  
         
         if (!isValid ){
-            console.error("Error in ue4PostConstructionSetup!")
+            console.error("Error in ue4PostConstructionSetup!");
             return false;
         }
 
         isValid = await this.loadCompileCommandsFromWorkspace(this.mainWorkspaceKey);
         if(!isValid){
-            console.error("Error in loadCompileCommandsFromWorkspace!")
+            console.error("Error in loadCompileCommandsFromWorkspace!");
             return false;
         }
 

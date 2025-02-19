@@ -2,7 +2,7 @@
 	"name": "ue4-intellisense-fixes",
 	"displayName": "UE Intellisense Fixes",
 	"description": "Automatically fixes Unreal Engine Intellisense configuration on startup.",
-	"version": "3.8.1",
+	"version": "3.8.2",
 	"publisher": "boocs",
 	"license": "MIT",
 	"repository": {
@@ -26,17 +26,11 @@
 		"configuration": {
 			"title": "UE Intellisense fixes",
 			"properties": {
-				"UEIntellisenseFixes.enableFixes": {
-					"type": "boolean",
-					"markdownDescription": "`(Fix)` Fixes 4.25.*/4.26.1+/5.0.0+ VSCode project's configuration.",
-					"default": false,
-					"scope": "application"
-				},
 				"UEIntellisenseFixes.enableOptionalFixes": {
 					"type": "boolean",
 					"markdownDescription": "`(Optimization)` Unreal Source uses Tag Parser Intellisense instead of the Default Intellisense (modifies UnrealPath/.vscode/settings.json)",
-					"default": false,
-					"scope": "application"
+					"default": true,
+					"scope": "resource"
 				},
 				"UEIntellisenseFixes.cppStandard": {
 					"type": "string",
@@ -53,25 +47,20 @@
 						"Forces use of c++14",
 						"Forces use of c++17 (UE5 default)",
 						"Forces use of c++20 (future/experimental)"
-					]
+					],
+					"scope": "machine-overridable"
 				},
 				"UEIntellisenseFixes.compiler.path": {
 					"type": "string",
 					"default": "",
 					"markdownDescription": "The compiler path that will be set in compile commands and compilerPath setting. `Mac` users may have to set this to `/usr/bin/clang++` for Intellisense to work. `Restart after changing this.`",
-					"scope": "window"
-				},
-				"UEIntellisenseFixes.compiler.pathIsProjectSpecific": {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "True: Compiler path is project specific and set in project's workspace config. False: Compiler path is set in the User(global) config.",
-					"scope": "application"
+					"scope": "machine-overridable"
 				},
 				"UEIntellisenseFixes.compiler.intellisenseMode": {
 					"type": "string",
 					"default": "",
 					"markdownDescription": "`Most users won't need to set this:` Mac M1 users will automatically be set to clang-x64 if blank. If creating a Mac M1 Native/arm64 project you'll need to set this to clang-arm64. `Restart VSCode after setting this. Reset project if you ever delete this.`",
-					"scope": "window"
+					"scope": "machine-overridable"
 				},
 				"UEIntellisenseFixes.fixes.warnIfMissingSourceInCC": {
 					"type": "boolean",

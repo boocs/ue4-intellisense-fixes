@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 
-import * as path from "path";
-import { promises as fs } from 'fs';
+import * as pathLib from "path";
 
 import type { CCppConfigurationJson } from "./ntypes";
 import { ProjectCCpp, WorkspaceKey, WorkspaceSetupVars } from "./projectCCpp";
@@ -23,8 +22,8 @@ export abstract class ProjectUE4 extends ProjectCCpp {
     private _mainWorkspaceFolder: vscode.WorkspaceFolder | undefined;
     private _ue4WorkspaceFolder: vscode.WorkspaceFolder | undefined;
 
-    private _mainUProjectPath: string = "";
-    private _mainUProjectName: string = "";
+    private _mainUProjectPath = "";
+    private _mainUProjectName = "";
 
     protected constructor() {
         super();
@@ -76,7 +75,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
         isValid = await super.cCppPostConstructionSetup({ [MAIN_KEY]: mainSetupVars, [UE4_KEY]: ue4SetupVars });
 
         if (!isValid) {
-            console.error("Error in cCppPostConstructionSetup!")
+            console.error("Error in cCppPostConstructionSetup!");
             return false;
         }
 
@@ -137,7 +136,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
             return false;
         }
 
-        const parsedPath = path.parse(uprojectFiles[0].fsPath);
+        const parsedPath = pathLib.parse(uprojectFiles[0].fsPath);
 
         this._mainUProjectPath = parsedPath.dir;
         this._mainUProjectName = parsedPath.name;
@@ -158,7 +157,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
 
         if (!ueWorkspace) {
             console.error("Couldn't find the UE4/UE5 workspace.");
-            console.error("Try right-clicking your project's *.uproject file and choose Switch Engine Version. Select the same version as your project and hit ok.")
+            console.error("Try right-clicking your project's *.uproject file and choose Switch Engine Version. Select the same version as your project and hit ok.");
             return;
         }
 
@@ -172,7 +171,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
     * @logs console.error When no uproject files found.
     * @todo Can exclude pattern work somehow to filter out ue4 folder? This function still works with alternate exclude using filter.
     */
-    protected async findUProjectFiles(excludeUE4: boolean = true): Promise<vscode.Uri[] | undefined> {
+    protected async findUProjectFiles(excludeUE4 = true): Promise<vscode.Uri[] | undefined> {
 
         let uprojectFiles: vscode.Uri[] | undefined = undefined;
         try {
@@ -218,14 +217,14 @@ export abstract class ProjectUE4 extends ProjectCCpp {
             return [];
         }
 
-        let uprojectUris: vscode.Uri[] = [];
+        const uprojectUris: vscode.Uri[] = [];
         for(const workSpace of vscode.workspace.workspaceFolders){
             if(workSpace.name === "UE4" || workSpace.name === "UE5"){
                 continue;
             }
             
             //const uprojectFileNames: string[] = await fglob(consts.GLOB_ANY_UPROJECT_IN_TOPLEVEL, {cwd: uriPath});
-            const relPattern = new vscode.RelativePattern(workSpace, consts.GLOB_ANY_UPROJECT_IN_TOPLEVEL)
+            const relPattern = new vscode.RelativePattern(workSpace, consts.GLOB_ANY_UPROJECT_IN_TOPLEVEL);
             const uprojectUrisTemp = await shared.findFiles(relPattern, null);
             
             if(!uprojectUrisTemp.length){
@@ -233,7 +232,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
             }
 
             if(uprojectUrisTemp.length > 1){
-                console.log(`WARNING: Multiple *.uproject files in ${workSpace.uri.path} may cause the extension to break!`)
+                console.log(`WARNING: Multiple *.uproject files in ${workSpace.uri.path} may cause the extension to break!`);
             }
 
             uprojectUris.push(...uprojectUrisTemp);
@@ -261,7 +260,7 @@ export abstract class ProjectUE4 extends ProjectCCpp {
         }
 
         const workspace = vscode.workspace.workspaceFolders.find(workspaceFolder => {
-            return path.normalize(workspaceFolder.uri.fsPath) === path.normalize(mainWorkspacePath);
+            return pathLib.normalize(workspaceFolder.uri.fsPath) === pathLib.normalize(mainWorkspacePath);
         });
 
         if (!workspace) {
@@ -350,7 +349,8 @@ export abstract class ProjectUE4 extends ProjectCCpp {
 
     
     protected static async parseUnrealEngineVersionFrom(uri: vscode.Uri): Promise<RegExpMatchArray | null>{
-        const versionFile = await fs.readFile(uri.fsPath, {encoding: consts.UE4_SOURCE_ENCODING});
+        //const versionFile = await fs.readFile(uri.fsPath, {encoding: consts.UE4_SOURCE_ENCODING});
+        const versionFile = await shared.readStringFromFile(uri.fsPath);
 
         if (!versionFile){
             console.error(`Error while reading file: ${uri.fsPath}`);

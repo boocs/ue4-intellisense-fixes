@@ -4,21 +4,26 @@ import * as vscode from "vscode";
 
 import { ProjectUE4} from "../../project/projectUE4";
 import * as consts from "../../consts";
-import { isMacM1 } from "../../shared";
+
 
 import * as console from "../../console";
+import { getMainWorkspaceFolder } from "../../shared";
 
 export async function fixPropCompilerPath(project: ProjectUE4) {
     
     console.log("Fixing compiler path in c_cpp_properties.json.");
 
-    const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER);
+    const mainWorkspaceFolder = getMainWorkspaceFolder();
+    if(!mainWorkspaceFolder){
+        return;
+    }
+    const config = vscode.workspace.getConfiguration(consts.CONFIG_SECTION_EXTENSION_COMPILER, mainWorkspaceFolder);
 
     const currentExtCompilerPath = config.get<string>(consts.CONFIG_SETTINGS_PATH);
     
     
     if(!currentExtCompilerPath){
-        console.error("Extension's compiler path setting wasn't set!")
+        console.error("Extension's compiler path setting wasn't set!");
         return;
     }
     

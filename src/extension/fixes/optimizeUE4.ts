@@ -4,7 +4,7 @@
  */
 
 
-import * as vscode from "vscode"
+import * as vscode from "vscode";
 
 import { ProjectUE4 } from "../../project/projectUE4";
 
@@ -28,13 +28,13 @@ export async function fixUEOptimization(project: ProjectUE4, isOptimizationEnabl
     await updateSetting(cppConfig, SETTING_INTELLISENSE_ENGINE, value);
 
     if(isOptimizationEnabled){
-        console.warning("Optimization of UE is enabled!")
+        console.warning("Optimization of UE is enabled!");
         console.log("Enabling UE optimization disables red squiggle compiling for the Unreal Engine source code.");
         console.log("This does not affect your project's source code (it still can have red squiggles).");
-        console.log("You can disable this optimization in this extension's settings.")
+        console.log("You can disable this optimization in this extension's settings.");
     }
     else {
-        console.log("Optimization of UE is disabled.")
+        console.log("Optimization of UE is disabled.");
     }
     
     return;
@@ -50,9 +50,9 @@ async function updateSetting(cppConfig: vscode.WorkspaceConfiguration, setting: 
     }
 
     try {
-        await cppConfig.update(SETTING_INTELLISENSE_ENGINE, value, null);
+        await cppConfig.update(SETTING_INTELLISENSE_ENGINE, value, vscode.ConfigurationTarget.WorkspaceFolder);
     } catch (error) {
-        console.error(`Exception while updating ${SETTING_INTELLISENSE_ENGINE } setting with ${value}: UE Optimization`)
+        console.error(`Exception while updating ${SETTING_INTELLISENSE_ENGINE } setting with ${value}: UE Optimization`);
         return;
     }
 }
