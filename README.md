@@ -1,6 +1,8 @@
 # Announcement
 Please stop using this extension and Microsoft's C++ extension for Unreal code completion.
 
+- `vsix removed`: Bad security issues in some libraries
+
 ## clangd
 The VSCode extension `clangd` has blazing fast code completion in comparison. I've made a VSCode extension for it:
 
